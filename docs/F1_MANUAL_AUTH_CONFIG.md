@@ -120,11 +120,12 @@ Site key: 0x4AAAAAAFCdCcxwW8Jx02gI
 Allowed hosts:
 - facebai.party
 - www.facebai.party
+- dev.facebai.party
 - localhost
 - 127.0.0.1
 ```
 
-Before hosted testing on `dev.facebai.party`, add that hostname to the widget allow-list.
+`dev.facebai.party` is already present in the widget allow-list.
 
 The Turnstile secret must never be committed to Git, placed in `NEXT_PUBLIC_*`, or copied into application source.
 
@@ -154,7 +155,39 @@ A Supabase publishable key is intended for client applications, but FaceBai stil
 
 FaceBai requires server actions, SSR cookie sessions, and route handlers, so it must not be deployed as a static Pages export.
 
-Cloudflare's current recommended path for an existing Next.js 16 application is **vinext on Cloudflare Workers**. Before adopting it, F1 CI runs a pinned vinext compatibility check. Only after that check passes should the repository be migrated non-destructively and deployed to `dev.facebai.party`.
+The feature branch has been non-destructively migrated to Cloudflare's vinext Workers target. Permanent CI now proves all of the following on every feature/PR build:
+
+- locked dependency install
+- FaceBai auth/security tests
+- strict TypeScript typecheck
+- normal Next.js production build
+- vinext compatibility check
+- actual Cloudflare Workers production build
+
+The generated target uses Workers Cache only. F1 does not provision a KV namespace or Cloudflare Images binding.
+
+A dedicated modern Cloudflare Worker already exists:
+
+```text
+Worker: facebai-development
+workers.dev: https://facebai-development.gerardogalvezofficial.workers.dev
+Previews: enabled
+Deployment: none yet
+Custom domains: none yet
+```
+
+The private GitHub repository is also connected to Cloudflare Builds.
+
+Current deployment blocker: the Cloudflare account has no Workers Builds API token/build token. The connected automation credential can manage Workers and Builds but is not authorized to mint Cloudflare account API tokens. Do not bypass that permission boundary.
+
+One dashboard action is therefore required:
+
+1. Cloudflare → Workers & Pages → `facebai-development`.
+2. Settings → Builds → API token.
+3. Create/select a build token for this development Worker, preferably named `FaceBai Development Builds`.
+4. Keep the token secret in Cloudflare; never paste it into chat or commit it.
+
+After the token exists, the connector can discover its UUID and continue the repository trigger, environment, deployment, smoke-test, and `dev.facebai.party` attachment automatically.
 
 The root `facebai.party` stays reserved for the approved public release.
 
@@ -162,22 +195,23 @@ The root `facebai.party` stays reserved for the approved public release.
 
 After hosted configuration is complete, qualify in this order:
 
-1. Prove the current Next.js application passes the Cloudflare vinext compatibility gate.
-2. Deploy the qualified development build to `dev.facebai.party`.
-3. Add `dev.facebai.party` to the Turnstile widget allow-list.
-4. Set the development Supabase Site URL and explicit redirect URLs to the deployed HTTPS origin.
-5. Render `/register` and prove Turnstile loads.
-6. Register one valid 18+ test account.
-7. Prove `profiles` and `account_private` were created for that Auth user.
-8. Confirm the email and prove `/auth/confirm` creates the SSR cookie session.
-9. Prove `/tambayan` loads only while authenticated.
-10. Log out and prove `/tambayan` redirects to `/login`.
-11. Re-login.
-12. Exercise forgot-password → recovery email → `/auth/recover` → update password.
-13. Prove the old password fails and the new password succeeds.
-14. Create a second controlled test user and perform two-user RLS attack tests.
-15. Test under-18, missing-legal-acceptance, and duplicate-username rejection through the supported Auth API/UI.
-16. Prove missing/invalid Turnstile tokens fail for signup, password login, and password reset.
-17. Review light and dark auth UI using only approved FaceBai assets.
+1. Keep the permanent Next.js + Workers CI gate green.
+2. Create/select the Cloudflare Workers Builds token.
+3. Deploy the qualified development build and smoke-test the Worker.
+4. Attach `dev.facebai.party` only after the Worker deployment is healthy.
+5. Set the development Supabase Site URL and explicit redirect URLs to the deployed HTTPS origin.
+6. Render `/register` and prove Turnstile loads.
+7. Register one valid 18+ test account.
+8. Prove `profiles` and `account_private` were created for that Auth user.
+9. Confirm the email and prove `/auth/confirm` creates the SSR cookie session.
+10. Prove `/tambayan` loads only while authenticated.
+11. Log out and prove `/tambayan` redirects to `/login`.
+12. Re-login.
+13. Exercise forgot-password → recovery email → `/auth/recover` → update password.
+14. Prove the old password fails and the new password succeeds.
+15. Create a second controlled test user and perform two-user RLS attack tests.
+16. Test under-18, missing-legal-acceptance, and duplicate-username rejection through the supported Auth API/UI.
+17. Prove missing/invalid Turnstile tokens fail for signup, password login, and password reset.
+18. Review light and dark auth UI using only approved FaceBai assets.
 
 Do not mark F1 qualified and do not merge PR #3 until the evidence above is recorded.
