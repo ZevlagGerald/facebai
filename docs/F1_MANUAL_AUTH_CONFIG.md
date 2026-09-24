@@ -22,11 +22,11 @@ https://dev.facebai.party
 
 `dev.facebai.party` is attached to the dedicated Cloudflare Worker `facebai-development`.
 
-## B. Supabase Auth URL configuration — NEXT MANUAL GATE
+## B. Supabase Auth URL configuration — CONFIGURED
 
 Supabase Dashboard → `facebai-development` → Authentication → URL Configuration.
 
-Set:
+Owner-confirmed hosted development configuration:
 
 ```text
 Site URL
@@ -44,7 +44,7 @@ The localhost wildcard is development-only convenience. Production later uses `h
 
 Supabase Dashboard → Authentication → Email Templates → Confirm signup.
 
-The confirmation link must route through FaceBai's SSR verification endpoint:
+The confirmation link routes through FaceBai's SSR verification endpoint:
 
 ```html
 <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email">
@@ -62,7 +62,7 @@ FaceBai calls `resetPasswordForEmail()` with `${NEXT_PUBLIC_SITE_URL}/auth/recov
 
 The recovery endpoint exchanges the PKCE authorization code server-side and redirects to `/auth/update-password`.
 
-The hosted recovery URL must stay in Supabase's redirect allow-list.
+The hosted recovery URL is present in Supabase's redirect allow-list.
 
 ## E. Transactional auth email transport
 
@@ -99,7 +99,7 @@ Sender: FaceBai <no-reply@auth.facebai.party>
 Password: Resend API key (secret; dashboard only)
 ```
 
-## F. Cloudflare Turnstile
+## F. Cloudflare Turnstile — CONFIGURED
 
 Canonical widget:
 
@@ -115,14 +115,11 @@ Allowed hosts:
 - 127.0.0.1
 ```
 
+Supabase CAPTCHA protection is owner-confirmed enabled for `facebai-development` with provider **Turnstile by Cloudflare** and the FaceBai Auth widget secret saved in the dashboard.
+
 The Turnstile secret must never be committed to Git, placed in `NEXT_PUBLIC_*`, or copied into source.
 
-Supabase Dashboard → Authentication → Bot and Abuse Protection:
-
-1. Enable CAPTCHA protection.
-2. Select **Cloudflare Turnstile**.
-3. Enter the secret belonging to the `FaceBai Auth` widget.
-4. Save.
+Live acceptance/rejection still requires qualification through the hosted Auth flows before F1 is complete.
 
 ## G. Application environment
 
@@ -173,9 +170,11 @@ Hosted build evidence:
 - Build `5f3c1d39-bbd4-4b75-8f03-c7b8ca2076a5`: FAIL — `NODE_ENV=production` caused npm to omit devDependencies; no application version was promoted.
 - Build `2089431a-8c0c-4edd-92ef-84a045b33029`: PASS — vinext build and Cloudflare deploy both completed successfully.
 - `dev.facebai.party` was attached only after the successful build and has an issued Cloudflare certificate.
+- Commit `8dc3c65f68a03ad557e7facbf154b8d0ebbdbbaf` persists Workers Logs configuration in `wrangler.jsonc`.
+- Follow-up build `634db572-fe6a-41ab-b090-8178f3e3b7fd`: PASS — observability-preservation deployment completed successfully.
+- Worker observability and invocation logs remain enabled after redeploy.
+- Cloudflare Browser Rendering proves the hosted registration, login redirect, and forgot-password pages render from `dev.facebai.party` with the expected FaceBai Turnstile site key/actions.
 - `facebai.party` and `main` remain untouched.
-
-The successful deploy exposed one configuration drift: Wrangler deployment disabled Worker observability because the setting was absent from `wrangler.jsonc`. Commit `8dc3c65f68a03ad557e7facbf154b8d0ebbdbbaf` adds persistent Workers Logs configuration. That follow-up deployment must pass before runtime-log qualification is treated as proven.
 
 The Workers target uses Workers Cache only. F1 does not provision KV or Cloudflare Images.
 
@@ -194,33 +193,33 @@ Use `scripts/setup-f1-local.ps1` to create `.env.local` without writing service-
 
 ## J. Qualification order
 
-Infrastructure already proven:
+Infrastructure and hosted configuration already proven or owner-confirmed:
 
 1. Permanent Next.js + Workers CI gate passes.
 2. Dedicated Workers Builds token exists.
 3. Repository is connected to `facebai-development`.
 4. Corrected vinext hosted build/deploy passes.
 5. `dev.facebai.party` is attached to the development Worker.
-6. Turnstile allow-list includes `dev.facebai.party`.
+6. Worker observability/logs persist across deployment.
+7. Turnstile allow-list includes `dev.facebai.party`.
+8. Supabase Site URL and redirect allow-list are set to the hosted development origin.
+9. Supabase CAPTCHA protection is enabled with Cloudflare Turnstile and the FaceBai Auth secret.
+10. Hosted `/register`, `/login`, and `/forgot-password` render the expected Turnstile integrations.
 
 Remaining F1 qualification:
 
-1. Finish the observability-preservation deployment and confirm Worker logs remain enabled.
-2. Set the Supabase Site URL and redirect allow-list to `https://dev.facebai.party`.
-3. Enable the `FaceBai Auth` Turnstile secret in Supabase Bot and Abuse Protection.
-4. Open `/register` and prove the hosted UI and Turnstile widget render.
-5. Register one valid 18+ controlled account.
-6. Prove `profiles` and `account_private` were created for that Auth user.
-7. Prove the Resend confirmation email arrives.
-8. Confirm email and prove `/auth/confirm` creates the SSR cookie session.
-9. Prove `/tambayan` loads only while authenticated.
-10. Log out and prove `/tambayan` redirects to `/login`.
-11. Re-login.
-12. Exercise forgot-password → recovery email → `/auth/recover` → update password.
-13. Prove the old password fails and the new password succeeds.
-14. Create a second controlled test user and perform two-user RLS attack tests.
-15. Test under-18, missing-legal-acceptance, and duplicate-username rejection through supported Auth flows.
-16. Prove missing/invalid Turnstile tokens fail for signup, password login, and password reset.
-17. Review light and dark auth UI using only approved FaceBai assets.
+1. Register one valid 18+ controlled account through `https://dev.facebai.party/register`.
+2. Prove `profiles` and `account_private` were created for that Auth user.
+3. Prove the Resend confirmation email arrives and references the hosted development origin.
+4. Confirm email and prove `/auth/confirm` creates the SSR cookie session.
+5. Prove `/tambayan` loads only while authenticated.
+6. Log out and prove `/tambayan` redirects to `/login`.
+7. Re-login.
+8. Exercise forgot-password → recovery email → `/auth/recover` → update password.
+9. Prove the old password fails and the new password succeeds.
+10. Create a second controlled test user and perform two-user RLS attack tests.
+11. Test under-18, missing-legal-acceptance, and duplicate-username rejection through supported Auth flows.
+12. Prove missing/invalid Turnstile tokens fail for signup, password login, and password reset.
+13. Review light and dark auth UI using only approved FaceBai assets.
 
 Do not mark F1 qualified and do not merge PR #3 until the remaining live evidence is recorded.
