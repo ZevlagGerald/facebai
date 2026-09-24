@@ -53,19 +53,21 @@ FaceBai authentication must behave like a production product rather than a colle
 
 Only owner-approved FaceBai production assets may be used for logos and tropical backgrounds. Do not redraw, recolor, synthesize, or crop reference boards into production assets.
 
-Qualified sources already recovered and hash-verified during F1.5 review:
+Qualified source masters recovered and hash-verified during F1.5 review:
 
 - canonical light logo source: `7868ed17554366092282102a603085c84a8a3c4b675ea4b88a46db6fa4b3300b`
 - canonical dark logo source: `f25a1eead495e0aa85872539d254a58dccd9d428f95cb7a4acc3cb5bfd6d70ed`
 - canonical compact mark source: `dcb34c5aff700f03d092ea698d57c055272bfc578b45dd78a2b1112eff8e599c`
 - canonical light tropical background source: `6b23c95499d2e5fe3fff524931569a0792b0582f6435fc7df773e24a3b323c83`
-- approved light-background WebP derivative: `8b0eb905015593f740e4e4942b23646feaf554ec0ba840d497cb8c44a5877152`
+- approved full-size light-background WebP derivative: `8b0eb905015593f740e4e4942b23646feaf554ec0ba840d497cb8c44a5877152`
 
-Required deployable paths currently referenced by the app:
+Repository delivery derivatives are deterministic resize/compression products of those locked source masters, with no creative changes:
 
-- `public/brand/facebai-logo-light.png`
-- `public/brand/facebai-logo-dark.png`
-- `public/brand/facebai-background-light.webp`
+- `public/brand/facebai-logo-light.webp` — 420 × 140 — SHA-256 `784dcebdc15c2800373ba44d5dc1e47363f345179496629fe673a3a43c8487bf`
+- `public/brand/facebai-logo-dark.webp` — 420 × 140 — SHA-256 `f6865fa0803f56cb0600416b92d4424935f110bc2d837a55f975d3d7c2ff8362`
+- `public/brand/facebai-background-light.webp` — 480 × 270 — SHA-256 `2c8ef820d92627ea27aade3b57329c51907bd864fed0f6d7ab9657f6b35ee6f0`
+
+The lower-resolution background is a development delivery derivative intended to remove broken asset references and enable hosted F1.5 qualification. It does not supersede the separately locked full-size production derivative.
 
 A dark-mode development fallback may apply a neutral deep-forest scrim over the approved light background source. This does **not** qualify the final dark background. Final dark visual qualification still requires an isolated approved dark-theme background source or a separately owner-approved deterministic treatment. Cropping the theme board to manufacture that asset is prohibited.
 
