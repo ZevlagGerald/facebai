@@ -20,9 +20,8 @@ export function AuthShell({
           <p className="auth-domain">facebai.party</p>
           <div className="auth-brand-copy">
             <h2>Mas Lami ang Kinabuhi Together.</h2>
-            <p>Same people. Mas lami nga connections.</p>
+            <p>Same People. Mas Lami nga Connections.</p>
           </div>
-          <p className="auth-brand-tagline">Tambayan sa tanan nato.</p>
         </aside>
 
         <div className="auth-card-wrap">
