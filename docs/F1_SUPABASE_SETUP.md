@@ -41,13 +41,21 @@ Qualification queries must prove:
 
 Keep email confirmation enabled for F1.
 
-For SSR token-hash confirmation, set the Confirm signup email template link to:
+For SSR token-hash signup confirmation, set the Confirm signup email template link to:
 
 ```text
 {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email
 ```
 
-Set the development Site URL to the actual development application origin. Add explicit redirect URLs only for approved development/staging origins.
+Password recovery uses Supabase's PKCE flow. `resetPasswordForEmail()` redirects to:
+
+```text
+<FaceBai origin>/auth/recover
+```
+
+`/auth/recover` exchanges the returned Auth Code for a cookie-backed recovery session and then redirects to `/auth/update-password`.
+
+Set the development Site URL to the actual development application origin. Add explicit redirect URLs only for approved development/staging origins, including the recovery callback URL where required by Supabase configuration.
 
 ## 4. Turnstile
 
@@ -100,6 +108,10 @@ Before F1 can be merged/qualified, prove all of the following against the develo
 12. User A cannot read User B's `account_private` row.
 13. User A cannot update User B's `profiles` row.
 14. Invalid/missing Turnstile token fails after CAPTCHA is enabled.
-15. Light and dark auth pages pass visual review with approved FaceBai assets.
+15. Forgot-password returns the same generic response whether or not an account exists.
+16. Recovery email returns through `/auth/recover`, establishes a verified recovery session, and reaches `/auth/update-password`.
+17. Password update succeeds only with a valid recovery/authenticated session and signs the user out afterward.
+18. Old password no longer signs in after a successful reset; new password does.
+19. Light and dark auth pages pass visual review with approved FaceBai assets.
 
 Record evidence before changing status from **UNPROVEN** to **PROVEN**.
