@@ -9,6 +9,7 @@
   --brand: #2f7d32;
   --brand-strong: #0f5a34;
   --error: #9f2f2f;
+  --success: #247044;
   --shadow: 0 18px 60px rgba(27, 68, 40, .15);
   --auth-image: url('/brand/facebai-background-light.webp');
   --auth-overlay: rgba(248, 246, 237, .16);
@@ -24,6 +25,7 @@ html[data-theme='dark'] {
   --brand: #76c66e;
   --brand-strong: #8bd884;
   --error: #ffaaaa;
+  --success: #9ce7af;
   --shadow: 0 22px 70px rgba(0, 0, 0, .34);
   --auth-image: url('/brand/facebai-background-dark.webp');
   --auth-overlay: rgba(3, 22, 16, .12);
@@ -55,8 +57,10 @@ html[data-theme='dark'] .logo-dark { display: block; }
 .primary-button, .secondary-button { border: 0; border-radius: 999px; padding: 12px 18px; font-weight: 900; cursor: pointer; }
 .primary-button { background: var(--brand); color: #fff; }
 .secondary-button { background: var(--surface); color: var(--text); border: 1px solid var(--line); }
-.auth-links { margin-top: 20px; text-align: center; }
-.form-error { border: 1px solid color-mix(in srgb, var(--error) 35%, transparent); border-radius: 12px; padding: 10px 12px; background: color-mix(in srgb, var(--error) 8%, transparent); color: var(--error); font-size: 14px; }
+.auth-links { margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 18px; text-align: center; }
+.form-error, .form-success { border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.form-error { border: 1px solid color-mix(in srgb, var(--error) 35%, transparent); background: color-mix(in srgb, var(--error) 8%, transparent); color: var(--error); }
+.form-success { border: 1px solid color-mix(in srgb, var(--success) 35%, transparent); background: color-mix(in srgb, var(--success) 9%, transparent); color: var(--success); }
 .tambayan-shell { min-height: 100vh; padding: 24px; background: var(--bg); }
 .app-header { max-width: 1120px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .header-logo { width: 190px; height: auto; }
