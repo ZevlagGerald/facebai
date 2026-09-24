@@ -1,91 +1,130 @@
 # FaceBai Production Asset Manifest
 
-Status: required before frontend fidelity qualification
-Master visual authority: approved 2026-09-24 banana-leaf FaceBai dashboard
+Status: active
+Master visual authority: owner-approved 2026-09-24 banana-leaf FaceBai dashboard
 
-Assets are generated/approved individually. Do not bake important brand elements into one large screenshot.
+Production assets are generated and owner-approved individually. Important brand elements must never be replaced by cheap CSS approximations or redrawn substitutes.
 
 ## A0 — Core brand assets
 
-1. `brand/facebai-logo-horizontal.svg`
-   - primary wordmark + leaf accent
-   - transparent background
-   - dark-green master version
-   - must remain readable at header size
+### A0.1 Primary FaceBai horizontal logo — LOCKED
 
-2. `brand/facebai-logo-mark.svg`
-   - compact standalone mark for favicon/mobile/app icon
-   - original leaf/B motif; not Facebook-derived iconography
+Canonical source: `facebai_tropical_leaf_logo.png`
 
-3. `brand/facebai-logo-horizontal-light.svg`
-   - light variant for dark/photographic backgrounds
+Source SHA-256:
+`ab65a35448d33f648860e417a228fb83c527c0217ae5fe441b8056f0cae62b02`
 
-4. Favicons/app icons derived deterministically from approved logo mark:
-   - favicon.ico
-   - icon-192.png
-   - icon-512.png
-   - apple-touch-icon.png
+Approved production WebP derivative SHA-256:
+`65eeaecc02fa43c7f1cc3e5926f12a84f22c61a3dd0bac8b32cb224377a9183e`
+
+Intent:
+- transparent background
+- primary FaceBai wordmark
+- desktop header
+- authentication / onboarding
+- brand and marketing surfaces
+
+Locked visual identity:
+- layered banana-leaf emblem on the left
+- custom rounded green FaceBai lettering
+- leaf/sprout treatment integrated with the final `i`
+- forest / emerald / lime green palette
+
+Do not vector-redraw this asset by eye and call the redraw equivalent. Any future SVG must be produced and reviewed as an explicit derivative before it becomes canonical.
+
+### A0.2 Compact mark — PENDING
+
+Required for:
+- favicon
+- mobile navigation
+- PWA/app icon
+- compact FaceBai surfaces
+
+Must be separately generated and owner-approved. It should derive from the accepted FaceBai visual identity without simply shrinking the full wordmark until it becomes unreadable.
+
+### A0.3 Light logo variant — PENDING
+
+Only create if a real dark/photographic UI use case requires it.
+
+### A0.4 Icon package — PENDING A0.2
+
+Derive deterministically after compact mark approval:
+- favicon.ico
+- icon-192.png
+- icon-512.png
+- apple-touch-icon.png
 
 ## A1 — Banana-leaf environmental system
 
-5. `decor/banana-leaf-corner-top-left.webp`
-6. `decor/banana-leaf-corner-top-right.webp`
-7. `decor/banana-leaf-corner-bottom-left.webp`
-8. `decor/banana-leaf-corner-bottom-right.webp`
-   - transparent PNG/WebP masters
-   - decorative only; never interfere with readable content
+### A1.1 Primary tropical background — LOCKED
 
-9. `decor/banana-leaf-pattern.svg`
-   - low-contrast repeatable pattern used for large empty areas
-   - must tile seamlessly
+Canonical source: `sunlit_tropical_foliage_frame.png`
 
-10. `decor/paper-texture.webp`
-   - extremely subtle cream organic texture; small repeatable tile
+Source SHA-256:
+`6b23c95499d2e5fe3fff524931569a0792b0582f6435fc7df773e24a3b323c83`
 
-Prefer separate transparent leaf assets over a giant full-screen background so responsive layouts can reposition/hide decoration.
+Approved production WebP derivative SHA-256:
+`8b0eb905015593f740e4e4942b23646feaf554ec0ba840d497cb8c44a5877152`
+
+Intent:
+- authentication / registration environment
+- onboarding / welcome surfaces
+- selected branded empty-state or promotional surfaces
+- source art-direction reference for the environmental system
+
+Locked characteristics:
+- warm cream central negative space
+- premium illustrated banana foliage around edges
+- layered natural depth
+- subtle tropical coast/mountain scenery
+- no baked UI, text, logo or people
+
+The artwork itself must be used. CSS may position, crop, shade, blur, fade or responsively contain it, but CSS must not replace the illustration.
+
+### A1.2 Supplemental transparent leaf assets — PENDING / ONLY AS NEEDED
+
+Separate corner/edge assets may still be generated later for responsive dashboard decoration where the full background is inappropriate. They must visually match the locked primary background and master design.
+
+### A1.3 Organic paper/cream texture — PENDING / OPTIONAL
+
+Only create if visual qualification shows the UI needs it. Do not manufacture decorative assets merely to fill the manifest.
 
 ## A2 — Product illustration assets
 
-11. `illustrations/welcome-bai.webp`
-   - FaceBai-branded tropical welcome scene for registration/login
-   - no UI text baked into art
+Pending after core UI/auth requirements prove the need:
+- registration/onboarding supporting illustration, if the locked tropical background alone is insufficient
+- empty feed
+- empty Bai/friends
+- empty notifications
+- moderation/error empty states
 
-12. `illustrations/empty-feed.webp`
-13. `illustrations/empty-friends.webp`
-14. `illustrations/empty-notifications.webp`
-   - reusable empty states, same art direction
-
-15. optional `mascot/banana-bai.svg|webp`
-   - only if separately approved; not required for architecture
+All must match the approved art direction and be separately reviewed.
 
 ## A3 — Development fixtures
 
-Seed avatars/post photos are development/test fixtures, not brand assets. Production UI must work with arbitrary user uploads.
+Seed avatars/post photos are development/test fixtures, not FaceBai brand assets.
 
 Rules:
-- fixtures live under `public/fixtures/` or seed storage
-- never claim fixture identities are real users
-- no production dependency on seed content
+- never represent fixture identities as real users
+- production UI must work with arbitrary uploads
+- no production dependency on fixture content
 
 ## Asset quality gates
 
-Every production asset must have:
+Every production asset requires:
 - owner approval
-- final filename
-- dimensions/viewBox
+- canonical filename
+- source dimensions
 - transparent/opaque intent
-- SHA-256 lock where raster master matters
-- accessibility role (decorative vs meaningful)
-- compression/output derivative policy
+- SHA-256 source lock
+- accessibility role
+- derivative/compression policy
+- no silent creative alteration during optimization
 
-## Generation order
+## Current approved inventory
 
-Generate/approve in this order:
-1. primary FaceBai logo
-2. compact logo mark
-3. banana-leaf corner asset set
-4. repeatable banana-leaf pattern
-5. login/register illustration
-6. empty-state illustration family
+1. Primary FaceBai horizontal logo — **APPROVED / LOCKED**
+2. Primary tropical background — **APPROVED / LOCKED**
 
-Do not generate decorative extras before these core assets are accepted.
+Next required asset:
+3. Compact FaceBai mark/favicon master
