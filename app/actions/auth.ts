@@ -1,12 +1,18 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isAdult, normalizeUsername, USERNAME_PATTERN } from "@/lib/auth/validation";
+import { FACEBAI_LEGAL_VERSION, safeLocalPath, turnstileRequired } from "@/lib/auth/security";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
+function captchaToken(formData: FormData, path: string) {
+  const token = String(formData.get("cf-turnstile-response") ?? "").trim();
+  if (turnstileRequired() && !token) fail(path, "Please complete the security check.");
+  return token || undefined;
 }
 
 export async function register(formData: FormData) {
@@ -16,7 +22,8 @@ export async function register(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirm_password") ?? "");
-  const accepted = formData.get("accept_terms") === "on";
+  const acceptedTerms = formData.get("accept_terms") === "on";
+  const token = captchaToken(formData, "/register");
 
   if (fullName.length < 2 || fullName.length > 80) fail("/register", "Enter your real display name.");
   if (!USERNAME_PATTERN.test(username)) fail("/register", "Username must be 3–30 lowercase letters, numbers, dots, or underscores.");
@@ -24,37 +31,42 @@ export async function register(formData: FormData) {
   if (password.length < 10) fail("/register", "Use a password with at least 10 characters.");
   if (password !== confirmPassword) fail("/register", "Passwords do not match.");
   if (!isAdult(dateOfBirth)) fail("/register", "FaceBai private beta currently requires users to be 18 or older.");
-  if (!accepted) fail("/register", "You must accept the Terms and Privacy Notice.");
+  if (!acceptedTerms) fail("/register", "You must accept the Terms and Privacy Notice.");
 
   const supabase = await createClient();
-  const requestHeaders = await headers();
-  const origin = requestHeaders.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: origin,
+      captchaToken: token,
       data: {
         full_name: fullName,
         username,
         date_of_birth: dateOfBirth,
+        accepted_terms: true,
+        accepted_privacy: true,
+        legal_version: FACEBAI_LEGAL_VERSION,
       },
     },
   });
 
-  if (error) fail("/register", error.message);
+  if (error) fail("/register", "Registration could not be completed. Check your details and try again.");
   redirect(`/auth/check-email?email=${encodeURIComponent(email)}`);
 }
 
 export async function login(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  const requestedNext = String(formData.get("next") ?? "/tambayan");
-  const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/tambayan";
+  const next = safeLocalPath(String(formData.get("next") ?? "/tambayan"));
+  const token = captchaToken(formData, "/login");
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+    options: { captchaToken: token },
+  });
+
   if (error) fail("/login", "Incorrect email or password.");
   redirect(next);
 }
