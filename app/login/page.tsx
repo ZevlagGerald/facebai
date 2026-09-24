@@ -7,6 +7,7 @@ import { safeLocalPath } from "@/lib/auth/security";
 export default async function LoginPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const error = typeof params.error === "string" ? params.error : "";
+  const message = typeof params.message === "string" ? params.message : "";
   const next = safeLocalPath(typeof params.next === "string" ? params.next : "/tambayan");
 
   return (
@@ -14,6 +15,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <h1>Maayong pagbalik, Bai.</h1>
       <p className="auth-copy">Sulod sa imong FaceBai account.</p>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
+      {message ? <p className="form-success" role="status">{message}</p> : null}
       <form action={login} className="auth-form">
         <input type="hidden" name="next" value={next} />
         <label>Email<input name="email" type="email" autoComplete="email" required /></label>
@@ -21,7 +23,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <TurnstileField action="login" />
         <button className="primary-button" type="submit">Log in</button>
       </form>
-      <div className="auth-links"><Link href="/register">Create new FaceBai account</Link></div>
+      <div className="auth-links">
+        <Link href="/forgot-password">Forgot password?</Link>
+        <Link href="/register">Create new FaceBai account</Link>
+      </div>
     </AuthShell>
   );
 }
