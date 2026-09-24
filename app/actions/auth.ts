@@ -73,11 +73,13 @@ export async function login(formData: FormData) {
 
 export async function requestPasswordReset(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const token = captchaToken(formData, "/forgot-password");
   if (!email.includes("@")) fail("/forgot-password", "Enter a valid email address.");
 
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${canonicalSiteUrl()}/auth/recover`,
+    captchaToken: token,
   });
 
   redirect("/forgot-password?sent=1");
