@@ -1,41 +1,71 @@
 # FaceBai F1 — Supabase Development Qualification
 
-Status: **NOT YET QUALIFIED**
+Status: **DATABASE FOUNDATION PROVEN / LIVE AUTH FLOW NOT YET QUALIFIED**
 
-This document is for a dedicated **development** Supabase project only. Do not apply these steps to production until the owner explicitly authorizes production setup.
+This document is for the dedicated **development** Supabase project only. Do not apply these steps to production until the owner explicitly authorizes production setup.
 
-## 1. Project configuration
+## 1. Development project
+
+Canonical development project:
+
+```text
+name: facebai-development
+project ref: hxrrdwhttmkjluhcverb
+region: ap-southeast-1 (Singapore)
+API URL: https://hxrrdwhttmkjluhcverb.supabase.co
+```
 
 Required application environment variables:
 
 ```text
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_SUPABASE_URL=<development project URL>
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<development publishable key>
+NEXT_PUBLIC_SUPABASE_URL=https://hxrrdwhttmkjluhcverb.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<development publishable key; inject at runtime>
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=<Cloudflare Turnstile site key>
 ```
 
-Do not place Supabase service-role/secret keys in `NEXT_PUBLIC_*` variables or client code.
+Do not place Supabase service-role/secret keys in `NEXT_PUBLIC_*` variables or client code. The development publishable key is intentionally not committed to Git history.
 
 ## 2. Database
 
-Apply, in order:
+Applied migrations, in order:
 
 ```text
-supabase/migrations/0001_auth_profiles.sql
+0001_auth_profiles.sql
+0002_drop_redundant_username_index.sql
 ```
 
-Qualification queries must prove:
+### PROVEN against facebai-development
 
-- `profiles` exists and has RLS enabled;
-- `account_private` exists and has RLS enabled;
-- authenticated users can read profiles;
-- a user can update only their own profile;
-- `account_private` is readable only by its owner;
-- there is no public Data API update policy for DOB/legal-acceptance fields;
-- direct signup attempts for users under 18 are rejected by the database trigger;
-- signup without required legal-acceptance metadata is rejected;
-- duplicate usernames cannot create a second profile.
+- `profiles` exists and RLS is enabled.
+- `account_private` exists and RLS is enabled.
+- `profiles` has an authenticated SELECT policy.
+- profile UPDATE is restricted by RLS to the authenticated user's own `id`.
+- `account_private` has only an owner-scoped authenticated SELECT policy.
+- `account_private` exposes no authenticated UPDATE grant.
+- `anon` has no SELECT grant on either application table.
+- profile UPDATE grants are limited to `username`, `display_name`, `bio`, `avatar_key`, and `cover_key`.
+- `created_at` and `updated_at` are not directly user-updatable through the Data API.
+- auth bootstrap and timestamp trigger functions live in non-exposed `private` schema.
+- `anon` and `authenticated` have neither `USAGE` on `private` nor `EXECUTE` on its trigger functions.
+- auth-user bootstrap trigger exists on `auth.users`.
+- timestamp triggers exist on `profiles` and `account_private`.
+- Supabase security advisor: **0 findings** after migrations.
+- Supabase performance advisor: **0 findings** after removing the redundant username index.
+- generated TypeScript database types are committed as `lib/database.types.ts` and used by browser/server/proxy Supabase clients.
+
+### Still requires supported live Auth-flow testing
+
+The connected Supabase management plugin intentionally does not expose direct user-creation/Auth-configuration actions, and direct SQL writes into `auth.users` were blocked by the safety layer. Do not bypass that restriction.
+
+The following therefore remain live-flow checks rather than database-management checks:
+
+- valid signup creates both profile and private rows;
+- database trigger rejects under-18 signup;
+- database trigger rejects missing legal acceptance;
+- duplicate username rejects the second signup;
+- User A cannot read User B's private row through an authenticated client;
+- User A cannot update User B's profile through an authenticated client.
 
 ## 3. Authentication
 
@@ -114,4 +144,4 @@ Before F1 can be merged/qualified, prove all of the following against the develo
 18. Old password no longer signs in after a successful reset; new password does.
 19. Light and dark auth pages pass visual review with approved FaceBai assets.
 
-Record evidence before changing status from **UNPROVEN** to **PROVEN**.
+Record evidence before changing the overall status to **F1 QUALIFIED**.
