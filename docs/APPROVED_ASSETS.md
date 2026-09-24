@@ -159,41 +159,49 @@ Derivative policy:
 - resizing/compression from this exact source is allowed when aspect ratio and alpha are preserved
 - creative recoloring, redrawing, leaf replacement, font substitution, outline removal, or geometry changes are prohibited without explicit owner approval
 
-## A0.6 — Isolated Compact Mark, Light Mode
+## A0.6 — Isolated Compact Mark, Dual Theme
 
-Status: **APPROVED / LOCKED**
+Status: **APPROVED / LOCKED / DUAL-THEME QUALIFIED**
 
-Canonical production source filename: `facebai-mark-light.png`
+Canonical production source filename: `facebai-mark.png`
 
 Source qualification:
+- original approved source name: `facebai-mark-light.png`
 - dimensions: **1254 × 1254**
 - format: **RGBA PNG**
 - transparent background: **YES**
 - SHA-256: `dcb34c5aff700f03d092ea698d57c055272bfc578b45dd78a2b1112eff8e599c`
 
 Role:
-- canonical compact FaceBai mark for light-mode surfaces
-- source master for favicon/PWA/app-icon derivation after the dark mark is also approved
+- canonical compact FaceBai mark for both light and dark surfaces
+- source master for favicon/PWA/app-icon derivation
 - mobile/compact navigation surfaces where the horizontal wordmark is inappropriate
 
 Locked characteristics:
 - isolated leaf-integrated `F` mark only
 - square composition
-- vivid tropical green leaves with visible natural texture and dew highlights
-- cream/ivory internal `F` highlight for readability
+- vivid tropical green leaves with natural texture and dew highlights
+- cream/ivory internal `F` stroke remains readable on both approved light and dark surfaces
 - no `FaceBai` wordmark, tagline, board, label, background scene, or unrelated decoration
 - no CSS-redrawn substitute
 
 Theme classification:
-- **LIGHT MODE COMPACT PRODUCTION MARK**
-- use on cream, white, warm-sand, or otherwise qualified light surfaces
-- do not synthesize the dark-mode mark with CSS filters or recoloring
-- dark mode requires its own separately generated, owner-approved and hash-locked compact mark
+- **DUAL-THEME COMPACT PRODUCTION MARK**
+- visually qualified on the approved warm cream/light surface family
+- visually qualified on the approved deep-forest dark surface family
+- a second creative dark compact mark is **NOT REQUIRED** unless a future UI surface proves a real contrast failure
+- CSS filtering/recoloring is not required and remains prohibited
+
+Resource-conservation decision:
+- the attempted separately generated dark compact mark did not provide a useful theme distinction and is **REJECTED / NON-CANONICAL**
+- do not regenerate a dark compact mark merely for symmetry; reuse this canonical mark unless evidence demonstrates a real usability problem
 
 Derivative policy:
-- deterministic resizing/cropping with preserved square geometry and alpha is allowed
-- favicon/app/PWA derivatives must be generated from the approved compact-mark masters, not independently redesigned
+- deterministic resizing with preserved square geometry and alpha is allowed
+- favicon/app/PWA derivatives must be generated from this exact approved source
 - creative recoloring, leaf substitution, shape changes, extra borders, shadows, backgrounds, or icon-container treatments require explicit owner approval
+
+See [`ICON_DERIVATIVES.md`](./ICON_DERIVATIVES.md) for exact deterministic derivative hashes.
 
 ## Governance
 
@@ -204,3 +212,4 @@ Derivative policy:
 5. The approved master dashboard design remains the composition authority for how brand assets are used within FaceBai.
 6. The approved theme board remains the light/dark visual-treatment authority.
 7. Every future approved production asset must record its light/dark theme classification before qualification.
+8. Do not generate duplicate theme-specific assets when one approved asset demonstrably satisfies both themes; prefer deterministic reuse and verification.
