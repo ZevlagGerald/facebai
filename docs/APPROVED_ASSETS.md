@@ -5,6 +5,8 @@ Approved: **2026-09-24**
 
 These assets are canonical FaceBai brand assets. They must not be replaced, redrawn, recolored, reinterpreted, or approximated with CSS-generated artwork unless the owner explicitly approves a new asset revision.
 
+Theme adaptability is governed by [`THEME_ASSET_RULES.md`](./THEME_ASSET_RULES.md).
+
 ## A0.1 — Primary FaceBai Logo
 
 Canonical source filename: `facebai_tropical_leaf_logo.png`
@@ -24,6 +26,12 @@ Locked visual characteristics:
 - leaf/sprout treatment integrated with the final `i`
 - deep forest/emerald/lime green palette
 - transparent background
+
+Theme classification:
+- **light-surface primary logo**
+- light mode: approved
+- dark mode: use only where contrast has been visually verified; otherwise a separately generated and owner-approved dark-surface logo variant is required
+- CSS `invert`, `hue-rotate`, `brightness`, arbitrary recoloring, or equivalent filter-based theme conversion: **PROHIBITED**
 
 Approved production WebP derivative SHA-256:
 `65eeaecc02fa43c7f1cc3e5926f12a84f22c61a3dd0bac8b32cb224377a9183e`
@@ -48,13 +56,21 @@ Locked visual characteristics:
 - subtle tropical coastal/mountain depth
 - no text, logo, people, UI, or synthetic CSS replacement
 
+Theme classification:
+- **light-theme environmental background**
+- light mode: approved
+- dark mode: proportional crop/reposition plus a non-destructive neutral readability scrim may be evaluated where suitable
+- if a genuine dark environmental treatment is required, it must be a separately generated and owner-approved FaceBai asset with its own hash lock
+- CSS inversion, hue-shifting, destructive recoloring, or replacing the scene with synthetic CSS leaf artwork: **PROHIBITED**
+
 Approved production WebP derivative SHA-256:
 `8b0eb905015593f740e4e4942b23646feaf554ec0ba840d497cb8c44a5877152`
 
 ## Governance
 
 1. These hashes identify the exact owner-approved source images.
-2. CSS may control layout, positioning, cropping, responsive sizing, overlays, and accessibility contrast, but CSS must not replace the artwork itself.
+2. CSS may control layout, positioning, cropping, responsive sizing, neutral overlays/scrims, and accessibility contrast, but CSS must not replace or creatively alter the artwork itself.
 3. Optimized delivery derivatives may be produced only from these canonical sources without creative alteration.
-4. A new source image requires explicit owner approval and a new versioned hash record.
+4. A new source image or creative theme variant requires explicit owner approval and a new versioned hash record.
 5. The approved master dashboard design remains the composition authority for how these brand assets are used within FaceBai.
+6. Every future approved production asset must record its light/dark theme classification before qualification.
