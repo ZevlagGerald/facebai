@@ -1,7 +1,21 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeLocalPath } from "@/lib/auth/security";
 
 const PUBLIC_PREFIXES = ["/login", "/register", "/auth/", "/privacy", "/terms"];
+const CACHE_HEADERS = ["cache-control", "expires", "pragma"] as const;
+
+function redirectWithAuthState(url: URL, source: NextResponse) {
+  const redirected = NextResponse.redirect(url);
+  redirected.cookies.setAll(source.cookies.getAll());
+
+  for (const header of CACHE_HEADERS) {
+    const value = source.headers.get(header);
+    if (value) redirected.headers.set(header, value);
+  }
+
+  return redirected;
+}
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -33,15 +47,16 @@ export async function updateSession(request: NextRequest) {
   if (!isAuthenticated && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
+    url.search = "";
+    url.searchParams.set("next", safeLocalPath(`${pathname}${request.nextUrl.search}`));
+    return redirectWithAuthState(url, response);
   }
 
   if (isAuthenticated && (pathname === "/login" || pathname === "/register")) {
     const url = request.nextUrl.clone();
     url.pathname = "/tambayan";
     url.search = "";
-    return NextResponse.redirect(url);
+    return redirectWithAuthState(url, response);
   }
 
   return response;
