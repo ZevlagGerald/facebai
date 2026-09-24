@@ -122,6 +122,43 @@ Derivative policy:
 - resizing/compression from this exact source is allowed when aspect ratio and alpha are preserved
 - creative recoloring, redrawing, leaf replacement, font substitution, or geometry changes are prohibited without explicit owner approval
 
+## A0.5 — Isolated Primary Logo, Dark Mode
+
+Status: **APPROVED / LOCKED**
+
+Canonical production source filename: `facebai-logo-dark.png`
+
+Source qualification:
+- dimensions: **2171 × 724**
+- format: **RGBA PNG**
+- transparent background: **YES**
+- SHA-256: `f25a1eead495e0aa85872539d254a58dccd9d428f95cb7a4acc3cb5bfd6d70ed`
+
+Role:
+- deployable dark-mode FaceBai horizontal logo
+- dark authentication surfaces
+- dark navigation/header surfaces
+- dark marketing surfaces
+
+Locked characteristics:
+- isolated logo only; no board, labels, mockup, or background scene
+- leaf-integrated FaceBai `F` emblem
+- vivid natural green foliage with dew/highlight detail
+- cream/ivory FaceBai wordmark optimized for dark surfaces
+- botanical leaf accent above the final `i`
+- deep green edging/shadow treatment retained from the approved dark-mode identity
+- no CSS-redrawn substitute
+
+Theme classification:
+- **DARK MODE PRIMARY PRODUCTION LOGO**
+- use on deep forest, near-black, or other qualified dark surfaces
+- do not use CSS filters to adapt this source for light mode
+- light mode must use the separately approved and hash-locked light production logo
+
+Derivative policy:
+- resizing/compression from this exact source is allowed when aspect ratio and alpha are preserved
+- creative recoloring, redrawing, leaf replacement, font substitution, outline removal, or geometry changes are prohibited without explicit owner approval
+
 ## Governance
 
 1. These hashes identify the exact owner-approved source images.
