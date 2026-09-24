@@ -4,11 +4,13 @@
 
 ## Brand lock
 
-The canonical visual direction is the approved tropical banana-leaf master design stored at:
+The canonical visual direction is the owner-approved tropical banana-leaf master design dated **2026-09-24**. Its exact source-image SHA-256 is recorded in `docs/DESIGN_LOCK.txt`.
 
-`public/reference/facebai-master-design.png`
+A repository-friendly visual preview is stored at:
 
-The master design is a product reference, not a disposable mockup. New UI work must preserve its core visual language unless the owner explicitly approves a redesign.
+`public/reference/facebai-master-design-preview.jpg`
+
+The approved master design is a product authority, not a disposable mockup. New UI work must preserve its core visual language unless the owner explicitly approves a redesign.
 
 ## Current baseline
 
