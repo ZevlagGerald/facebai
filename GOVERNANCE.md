@@ -13,7 +13,9 @@ The owner is the final authority for product, design, deployment and production 
 
 ## Master-design protection
 
-The approved 2026-09-24 FaceBai banana-leaf dashboard is the canonical UI composition authority. The exact source-image hash and repository preview are recorded under `docs/`.
+The owner-approved FaceBai dashboard design dated 2026-09-24 is the canonical product-composition authority. Its exact source-image hash is recorded in `docs/DESIGN_LOCK.txt`.
+
+The owner-approved FaceBai light/dark brand identity board dated 2026-09-24 is the canonical theme/asset-treatment authority. Its exact source-image hash is recorded in `docs/THEME_REFERENCE_LOCK.md`.
 
 Do not silently:
 
@@ -22,22 +24,25 @@ Do not silently:
 - copy Facebook logos, icons, exact layouts, or trade dress;
 - remove the cream/green tropical palette;
 - replace Bisaya-oriented interface vocabulary with generic branding;
-- materially restructure the desktop three-column social experience without owner approval.
+- materially restructure the desktop three-column social experience without owner approval;
+- replace approved artwork with CSS-generated approximations;
+- recolor approved logo/background artwork using destructive CSS filters;
+- introduce a light/dark theme treatment that conflicts with the locked theme reference.
 
-Responsive adaptations are allowed when needed for usability.
+Responsive adaptations are allowed when needed for usability, provided the approved artwork and design intent remain intact.
 
-## Theme and production-asset protection
+## Light/dark theme rule
 
-FaceBai must support both **light mode** and **dark mode** as a first-class design requirement.
+Every production screen that supports theming must be visually qualified in both light and dark modes.
 
-Canonical approved artwork is immutable. Do not manufacture theme variants using CSS inversion, hue rotation, brightness hacks, or arbitrary recoloring.
+Theme-specific logos, marks, backgrounds, and illustrations must be either:
 
-If a locked asset does not work correctly on both themes, create a deliberate separate variant, visually review it, obtain owner approval, and record its version/hash before production use.
+1. deterministic technical derivatives of approved sources with no creative alteration; or
+2. separately generated, owner-approved, and SHA-256 locked.
 
-All future production assets must document their light/dark theme classification and approved usage before qualification.
+CSS may control layout, crop, size, position, neutral scrims, and accessibility contrast. CSS must not substitute for approved branded artwork.
 
-Canonical rules: [`docs/THEME_ASSET_RULES.md`](./docs/THEME_ASSET_RULES.md)
-Approved locked assets: [`docs/APPROVED_ASSETS.md`](./docs/APPROVED_ASSETS.md)
+See `docs/THEME_ASSET_RULES.md` and `docs/THEME_REFERENCE_LOCK.md`.
 
 ## Repository workflow
 
