@@ -7,7 +7,10 @@ const CACHE_HEADERS = ["cache-control", "expires", "pragma"] as const;
 
 function redirectWithAuthState(url: URL, source: NextResponse) {
   const redirected = NextResponse.redirect(url);
-  redirected.cookies.setAll(source.cookies.getAll());
+
+  for (const cookie of source.cookies.getAll()) {
+    redirected.cookies.set(cookie);
+  }
 
   for (const header of CACHE_HEADERS) {
     const value = source.headers.get(header);
