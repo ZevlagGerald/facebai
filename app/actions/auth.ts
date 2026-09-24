@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isAdult, normalizeUsername, USERNAME_PATTERN } from "@/lib/auth/validation";
-import { FACEBAI_LEGAL_VERSION, safeLocalPath, turnstileRequired } from "@/lib/auth/security";
+import { canonicalSiteUrl, FACEBAI_LEGAL_VERSION, safeLocalPath, turnstileRequired } from "@/lib/auth/security";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
@@ -69,6 +69,36 @@ export async function login(formData: FormData) {
 
   if (error) fail("/login", "Incorrect email or password.");
   redirect(next);
+}
+
+export async function requestPasswordReset(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  if (!email.includes("@")) fail("/forgot-password", "Enter a valid email address.");
+
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${canonicalSiteUrl()}/auth/recover`,
+  });
+
+  redirect("/forgot-password?sent=1");
+}
+
+export async function updatePassword(formData: FormData) {
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirm_password") ?? "");
+
+  if (password.length < 10) fail("/auth/update-password", "Use a password with at least 10 characters.");
+  if (password !== confirmPassword) fail("/auth/update-password", "Passwords do not match.");
+
+  const supabase = await createClient();
+  const { data, error: claimsError } = await supabase.auth.getClaims();
+  if (claimsError || !data?.claims?.sub) redirect("/login");
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) fail("/auth/update-password", "Password could not be updated. Request a new recovery link and try again.");
+
+  await supabase.auth.signOut();
+  redirect("/login?message=Password%20updated.%20Please%20sign%20in%20again.");
 }
 
 export async function logout() {
