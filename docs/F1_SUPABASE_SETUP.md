@@ -64,10 +64,10 @@ FaceBai delegates CAPTCHA verification to Supabase Auth.
 - configure Cloudflare Turnstile in Supabase Auth CAPTCHA settings;
 - store the Turnstile secret in Supabase's CAPTCHA configuration, not in browser-visible application variables;
 - expose only the Turnstile site key to the Next.js app;
-- registration and password login submit `cf-turnstile-response` as the Supabase `captchaToken`;
+- registration, password login, and password-reset request submit `cf-turnstile-response` as the Supabase `captchaToken`;
 - when `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is configured, the FaceBai server action fails closed if the response token is missing.
 
-Do not mark CAPTCHA as proven until a real bot-challenge token is accepted by the development Supabase project and a missing/invalid token is rejected.
+Do not mark CAPTCHA as proven until real challenge tokens are accepted by the development Supabase project for signup, login, and password reset, and missing/invalid tokens are rejected.
 
 ## 5. Legal acceptance / private-beta age rule
 
@@ -107,7 +107,7 @@ Before F1 can be merged/qualified, prove all of the following against the develo
 11. Duplicate username signup cannot create a second profile.
 12. User A cannot read User B's `account_private` row.
 13. User A cannot update User B's `profiles` row.
-14. Invalid/missing Turnstile token fails after CAPTCHA is enabled.
+14. Invalid/missing Turnstile token fails for signup, login, and password reset after CAPTCHA is enabled.
 15. Forgot-password returns the same generic response whether or not an account exists.
 16. Recovery email returns through `/auth/recover`, establishes a verified recovery session, and reaches `/auth/update-password`.
 17. Password update succeeds only with a valid recovery/authenticated session and signs the user out afterward.
