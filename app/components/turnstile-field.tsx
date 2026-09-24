@@ -2,7 +2,7 @@
 
 import Script from "next/script";
 
-export function TurnstileField({ action }: { action: "register" | "login" }) {
+export function TurnstileField({ action }: { action: "register" | "login" | "password-reset" }) {
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   if (!siteKey) return null;
 
