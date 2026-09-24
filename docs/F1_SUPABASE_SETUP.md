@@ -1,6 +1,6 @@
 # FaceBai F1 — Supabase Development Qualification
 
-Status: **DATABASE FOUNDATION PROVEN / LIVE AUTH FLOW NOT YET QUALIFIED**
+Status: **DATABASE + REPOSITORY FOUNDATION PROVEN / LIVE AUTH FLOW NOT YET QUALIFIED**
 
 This document is for the dedicated **development** Supabase project only. Do not apply these steps to production until the owner explicitly authorizes production setup.
 
@@ -25,6 +25,8 @@ NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAFCdCcxwW8Jx02gI
 ```
 
 Do not place Supabase service-role/secret keys in `NEXT_PUBLIC_*` variables or client code. The development publishable key is intentionally not committed to Git history.
+
+Exact hosted Auth dashboard configuration is maintained in `docs/F1_MANUAL_AUTH_CONFIG.md`.
 
 ## 2. Database
 
@@ -67,7 +69,33 @@ The following therefore remain live-flow checks rather than database-management 
 - User A cannot read User B's private row through an authenticated client;
 - User A cannot update User B's profile through an authenticated client.
 
-## 3. Authentication
+## 3. Repository/code qualification
+
+### PROVEN
+
+- strict TypeScript compilation passes.
+- Next.js production build passes.
+- Node auth/security test suite passes **7/7**.
+- DOB validation rejects malformed calendar dates instead of relying on JavaScript date normalization.
+- age calculation is boundary-tested at the exact 18th birthday.
+- username normalization/format rules are tested.
+- local redirect validation rejects external, protocol-relative, and backslash-based redirect attempts.
+- signup confirmation route accepts only Supabase `type=email`.
+- authenticated `/tambayan` is force-dynamic.
+- Supabase browser/server/proxy clients use generated live database types.
+- proxy refresh handling preserves Supabase cache headers and refreshed cookies.
+
+The current CI gate is:
+
+```text
+npm test
+npm run typecheck
+npm run build
+```
+
+All three must pass before further F1 code is accepted.
+
+## 4. Authentication
 
 Keep email confirmation enabled for F1.
 
@@ -87,7 +115,7 @@ Password recovery uses Supabase's PKCE flow. `resetPasswordForEmail()` redirects
 
 Set the development Site URL to the actual development application origin. Add explicit redirect URLs only for approved development/staging origins, including the recovery callback URL where required by Supabase configuration.
 
-## 4. Turnstile
+## 5. Turnstile
 
 Canonical Cloudflare Turnstile widget:
 
@@ -110,7 +138,7 @@ FaceBai delegates CAPTCHA verification to Supabase Auth.
 
 Do not mark CAPTCHA as proven until real challenge tokens are accepted by the development Supabase project for signup, login, and password reset, and missing/invalid tokens are rejected.
 
-## 5. Legal acceptance / private-beta age rule
+## 6. Legal acceptance / private-beta age rule
 
 Canonical F1 legal version:
 
@@ -131,7 +159,7 @@ The database records server-generated acceptance timestamps in `account_private`
 
 This 18+ private-beta rule is an engineering/safety gate and does not replace legal review or a future production age-assurance design.
 
-## 6. Live flow qualification
+## 7. Live flow qualification
 
 Before F1 can be merged/qualified, prove all of the following against the development project:
 
