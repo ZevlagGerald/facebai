@@ -6,7 +6,8 @@ import { isAdult, normalizeUsername, USERNAME_PATTERN } from "@/lib/auth/validat
 import { canonicalSiteUrl, FACEBAI_LEGAL_VERSION, safeLocalPath, turnstileRequired } from "@/lib/auth/security";
 
 function fail(path: string, message: string): never {
-  redirect(`${path}?error=${encodeURIComponent(message)}`);
+  const separator = path.includes("?") ? "&" : "?";
+  redirect(`${path}${separator}error=${encodeURIComponent(message)}`);
 }
 
 function captchaToken(formData: FormData, path: string) {
@@ -52,6 +53,26 @@ export async function register(formData: FormData) {
 
   if (error) fail("/register", "Registration could not be completed. Check your details and try again.");
   redirect(`/auth/check-email?email=${encodeURIComponent(email)}`);
+}
+
+export async function resendSignupConfirmation(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  if (!email.includes("@")) redirect("/login");
+
+  const returnPath = `/auth/check-email?email=${encodeURIComponent(email)}`;
+  const token = captchaToken(formData, returnPath);
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { captchaToken: token },
+  });
+
+  if (error) {
+    fail(returnPath, "A new verification email could not be sent yet. Please wait a moment and try again.");
+  }
+
+  redirect(`${returnPath}&sent=1`);
 }
 
 export async function login(formData: FormData) {
