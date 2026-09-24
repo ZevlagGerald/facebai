@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { safeLocalPath } from "@/lib/auth/security";
 
-const PUBLIC_PREFIXES = ["/login", "/register", "/auth/", "/privacy", "/terms"];
+const PUBLIC_PREFIXES = ["/login", "/register", "/forgot-password", "/auth/", "/privacy", "/terms"];
 const CACHE_HEADERS = ["cache-control", "expires", "pragma"] as const;
 
 function redirectWithAuthState(url: URL, source: NextResponse) {
