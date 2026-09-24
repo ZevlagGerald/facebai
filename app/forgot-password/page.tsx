@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requestPasswordReset } from "@/app/actions/auth";
 import { AuthShell } from "@/app/components/auth-shell";
+import { TurnstileField } from "@/app/components/turnstile-field";
 
 export default async function ForgotPasswordPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
@@ -15,6 +16,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
       {sent ? <p className="form-success" role="status">If an account exists for that email, a recovery link has been sent.</p> : null}
       <form action={requestPasswordReset} className="auth-form">
         <label>Email<input name="email" type="email" autoComplete="email" required /></label>
+        <TurnstileField action="password-reset" />
         <button className="primary-button" type="submit">Send recovery link</button>
       </form>
       <div className="auth-links"><Link href="/login">Back to login</Link></div>
