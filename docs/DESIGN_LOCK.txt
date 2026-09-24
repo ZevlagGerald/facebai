@@ -1,0 +1,7 @@
+FACEBAI MASTER DESIGN LOCK
+Approved: 2026-09-24
+File: public/reference/facebai-master-design.png
+SHA256: bebb2eea80e150ee89ee42977482a2dcf3132ae78a054d43ba04186e7e9506a7
+
+This hash identifies the canonical approved master-design image at project initialization.
+A replacement requires explicit owner approval and a new recorded hash.
