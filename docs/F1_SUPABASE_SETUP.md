@@ -21,7 +21,7 @@ Required application environment variables:
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=https://hxrrdwhttmkjluhcverb.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<development publishable key; inject at runtime>
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=<Cloudflare Turnstile site key>
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAFCdCcxwW8Jx02gI
 ```
 
 Do not place Supabase service-role/secret keys in `NEXT_PUBLIC_*` variables or client code. The development publishable key is intentionally not committed to Git history.
@@ -89,11 +89,22 @@ Set the development Site URL to the actual development application origin. Add e
 
 ## 4. Turnstile
 
+Canonical Cloudflare Turnstile widget:
+
+```text
+name: FaceBai Auth
+mode: managed
+site key: 0x4AAAAAAFCdCcxwW8Jx02gI
+domains: facebai.party, www.facebai.party, localhost, 127.0.0.1
+clearance: no_clearance
+```
+
+The Turnstile secret is intentionally excluded from Git and documentation.
+
 FaceBai delegates CAPTCHA verification to Supabase Auth.
 
-- configure Cloudflare Turnstile in Supabase Auth CAPTCHA settings;
-- store the Turnstile secret in Supabase's CAPTCHA configuration, not in browser-visible application variables;
-- expose only the Turnstile site key to the Next.js app;
+- configure the FaceBai Auth Turnstile secret in Supabase Auth CAPTCHA settings;
+- never place the secret in browser-visible application variables;
 - registration, password login, and password-reset request submit `cf-turnstile-response` as the Supabase `captchaToken`;
 - when `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is configured, the FaceBai server action fails closed if the response token is missing.
 
