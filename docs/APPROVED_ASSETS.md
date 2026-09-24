@@ -159,6 +159,42 @@ Derivative policy:
 - resizing/compression from this exact source is allowed when aspect ratio and alpha are preserved
 - creative recoloring, redrawing, leaf replacement, font substitution, outline removal, or geometry changes are prohibited without explicit owner approval
 
+## A0.6 — Isolated Compact Mark, Light Mode
+
+Status: **APPROVED / LOCKED**
+
+Canonical production source filename: `facebai-mark-light.png`
+
+Source qualification:
+- dimensions: **1254 × 1254**
+- format: **RGBA PNG**
+- transparent background: **YES**
+- SHA-256: `dcb34c5aff700f03d092ea698d57c055272bfc578b45dd78a2b1112eff8e599c`
+
+Role:
+- canonical compact FaceBai mark for light-mode surfaces
+- source master for favicon/PWA/app-icon derivation after the dark mark is also approved
+- mobile/compact navigation surfaces where the horizontal wordmark is inappropriate
+
+Locked characteristics:
+- isolated leaf-integrated `F` mark only
+- square composition
+- vivid tropical green leaves with visible natural texture and dew highlights
+- cream/ivory internal `F` highlight for readability
+- no `FaceBai` wordmark, tagline, board, label, background scene, or unrelated decoration
+- no CSS-redrawn substitute
+
+Theme classification:
+- **LIGHT MODE COMPACT PRODUCTION MARK**
+- use on cream, white, warm-sand, or otherwise qualified light surfaces
+- do not synthesize the dark-mode mark with CSS filters or recoloring
+- dark mode requires its own separately generated, owner-approved and hash-locked compact mark
+
+Derivative policy:
+- deterministic resizing/cropping with preserved square geometry and alpha is allowed
+- favicon/app/PWA derivatives must be generated from the approved compact-mark masters, not independently redesigned
+- creative recoloring, leaf substitution, shape changes, extra borders, shadows, backgrounds, or icon-container treatments require explicit owner approval
+
 ## Governance
 
 1. These hashes identify the exact owner-approved source images.
