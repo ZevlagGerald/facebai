@@ -1,0 +1,65 @@
+:root {
+  color-scheme: light;
+  --bg: #f8f6ed;
+  --surface: rgba(255, 253, 245, .94);
+  --surface-solid: #fffdf5;
+  --text: #183226;
+  --muted: #617166;
+  --line: rgba(24, 80, 48, .16);
+  --brand: #2f7d32;
+  --brand-strong: #0f5a34;
+  --error: #9f2f2f;
+  --shadow: 0 18px 60px rgba(27, 68, 40, .15);
+  --auth-image: url('/brand/facebai-background-light.webp');
+  --auth-overlay: rgba(248, 246, 237, .16);
+}
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0b251c;
+  --surface: rgba(12, 49, 36, .94);
+  --surface-solid: #0f3023;
+  --text: #f7f5e9;
+  --muted: #b9c9bf;
+  --line: rgba(219, 239, 226, .14);
+  --brand: #76c66e;
+  --brand-strong: #8bd884;
+  --error: #ffaaaa;
+  --shadow: 0 22px 70px rgba(0, 0, 0, .34);
+  --auth-image: url('/brand/facebai-background-dark.webp');
+  --auth-overlay: rgba(3, 22, 16, .12);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+a { color: var(--brand-strong); font-weight: 700; }
+button, input { font: inherit; }
+.auth-shell { min-height: 100vh; position: relative; isolation: isolate; display: grid; place-items: center; padding: 32px; overflow: hidden; }
+.auth-background { position: fixed; inset: 0; z-index: -3; background-image: var(--auth-image); background-size: cover; background-position: center; }
+.auth-shade { position: fixed; inset: 0; z-index: -2; background: var(--auth-overlay); }
+.theme-toggle { position: fixed; top: 18px; right: 18px; z-index: 2; border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; background: var(--surface); color: var(--text); font-weight: 800; backdrop-filter: blur(14px); }
+.auth-stage { width: min(1040px, 100%); display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(340px, .85fr); align-items: center; gap: 42px; }
+.auth-brand { padding: 32px; text-shadow: 0 1px rgba(255,255,255,.2); }
+.auth-brand p { max-width: 520px; font-size: clamp(18px, 2vw, 26px); line-height: 1.45; font-weight: 700; }
+.logo { width: min(560px, 100%); height: auto; display: block; }
+.logo-dark { display: none; }
+html[data-theme='dark'] .logo-light { display: none; }
+html[data-theme='dark'] .logo-dark { display: block; }
+.auth-card { border: 1px solid var(--line); border-radius: 24px; padding: 30px; background: var(--surface); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
+.auth-card h1 { margin: 0 0 8px; font-size: 28px; }
+.auth-copy { margin: 0 0 22px; color: var(--muted); line-height: 1.5; }
+.auth-form { display: grid; gap: 14px; }
+.auth-form label { display: grid; gap: 7px; font-size: 13px; font-weight: 800; }
+.auth-form input:not([type='checkbox']) { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 13px; background: var(--surface-solid); color: var(--text); outline: none; }
+.auth-form input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent); }
+.check-row { grid-template-columns: auto 1fr; align-items: start; font-weight: 500 !important; line-height: 1.4; }
+.check-row input { margin-top: 3px; }
+.primary-button, .secondary-button { border: 0; border-radius: 999px; padding: 12px 18px; font-weight: 900; cursor: pointer; }
+.primary-button { background: var(--brand); color: #fff; }
+.secondary-button { background: var(--surface); color: var(--text); border: 1px solid var(--line); }
+.auth-links { margin-top: 20px; text-align: center; }
+.form-error { border: 1px solid color-mix(in srgb, var(--error) 35%, transparent); border-radius: 12px; padding: 10px 12px; background: color-mix(in srgb, var(--error) 8%, transparent); color: var(--error); font-size: 14px; }
+.tambayan-shell { min-height: 100vh; padding: 24px; background: var(--bg); }
+.app-header { max-width: 1120px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.header-logo { width: 190px; height: auto; }
+.welcome-card, .legal-page { max-width: 760px; margin: 48px auto; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); padding: 30px; box-shadow: var(--shadow); }
+.eyebrow { letter-spacing: .18em; font-size: 12px; font-weight: 900; color: var(--brand); }
+@media (max-width: 820px) { .auth-shell { padding: 70px 16px 24px; } .auth-stage { grid-template-columns: 1fr; gap: 12px; } .auth-brand { padding: 10px 16px; text-align: center; } .auth-brand .logo { margin-inline: auto; max-width: 360px; } .auth-brand p { margin-inline: auto; font-size: 17px; } .auth-card { padding: 22px; } }

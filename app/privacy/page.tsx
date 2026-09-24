@@ -1,0 +1,1 @@
+export default function PrivacyPage() { return <main className="legal-page"><h1>FaceBai Privacy Notice</h1><p>Draft placeholder. Public launch is blocked until the owner-approved Philippine privacy notice, retention rules, data-subject request process, and child-safety/age-assurance assessment are complete.</p></main>; }
