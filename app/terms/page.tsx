@@ -1,0 +1,1 @@
+export default function TermsPage() { return <main className="legal-page"><h1>FaceBai Terms</h1><p>Draft placeholder. Public launch is blocked until final Terms and Community Standards are owner-approved.</p></main>; }

@@ -1,0 +1,41 @@
+name: FaceBai CI
+
+on:
+  push:
+    branches:
+      - "feature/**"
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_PUBLIC_SITE_URL: https://dev.facebai.party
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder_for_build_only
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAFCdCcxwW8Jx02gI
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Auth/security tests
+        run: npm test
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Next.js production build
+        run: npm run build
+      - name: Cloudflare vinext compatibility check
+        run: npx vinext check
+      - name: Cloudflare Workers production build
+        run: npm run build:vinext

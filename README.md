@@ -18,17 +18,46 @@ The approved master design is a product authority, not a disposable mockup. New 
 - React 19.3.0
 - TypeScript
 - App Router
-- Plain CSS design system for precise reproduction of the approved master design
+- Supabase Auth + Postgres + RLS foundation
+- Cloudflare Turnstile auth protection
+- light/dark production brand assets
 - Bisaya-first interface vocabulary
 
 ## Local development
 
+Install dependencies:
+
 ```bash
 npm install
+```
+
+On Windows/PowerShell, create the F1 development environment safely:
+
+```powershell
+PowerShell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-f1-local.ps1
+```
+
+The helper prompts only for the **development Supabase publishable key** and writes `.env.local`, which is gitignored. It does not request or write a Supabase secret/service-role key or the Turnstile secret.
+
+Before exercising real signup/login flows, complete:
+
+`docs/F1_MANUAL_AUTH_CONFIG.md`
+
+Then start FaceBai:
+
+```bash
 npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+Repository qualification gate:
+
+```bash
+npm test
+npm run typecheck
+npm run build
+```
 
 ## Product direction
 
@@ -36,4 +65,4 @@ Initial FaceBai MVP is a social network with a familiar feed-driven interaction 
 
 ## Governance
 
-See [`GOVERNANCE.md`](./GOVERNANCE.md) and [`docs/MASTER_DESIGN.md`](./docs/MASTER_DESIGN.md) before changing UI architecture or brand direction.
+See [`GOVERNANCE.md`](./GOVERNANCE.md), [`docs/MASTER_DESIGN.md`](./docs/MASTER_DESIGN.md), and [`docs/F1_SUPABASE_SETUP.md`](./docs/F1_SUPABASE_SETUP.md) before changing UI architecture, brand direction, or the authentication/data-security baseline.

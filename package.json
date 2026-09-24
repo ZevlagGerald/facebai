@@ -1,0 +1,41 @@
+{
+  "name": "facebai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "dev:vinext": "vinext dev --port 3001",
+    "build:vinext": "vinext build",
+    "start:vinext": "wrangler dev --config dist/server/wrangler.json",
+    "deploy:vinext": "vinext-cloudflare deploy --config dist/server/wrangler.json"
+  },
+  "dependencies": {
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.117.1",
+    "@vinext/cloudflare": "^1.0.0-beta.10",
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-server-dom-webpack": "^19.3.0",
+    "vinext": "^1.0.0-beta.12"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.59.0",
+    "@types/node": "22.20.3",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitejs/plugin-rsc": "^0.5.35",
+    "typescript": "7.0.2",
+    "vite": "^8.3.1",
+    "wrangler": "^4.138.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "type": "module"
+}
