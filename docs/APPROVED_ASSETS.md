@@ -86,6 +86,42 @@ This board is the canonical theme reference for:
 
 The board is a reference authority, not a license to crop individual production assets from the board without qualification. Final deployable logo/icon/background files should be generated or derived as isolated assets and hash-locked separately.
 
+## A0.4 — Isolated Primary Logo, Light Mode
+
+Status: **APPROVED / LOCKED**
+
+Canonical production source filename: `facebai-logo-light.png`
+
+Source qualification:
+- dimensions: **2172 × 724**
+- format: **RGBA PNG**
+- transparent background: **YES**
+- SHA-256: `7868ed17554366092282102a603085c84a8a3c4b675ea4b88a46db6fa4b3300b`
+
+Role:
+- deployable light-mode FaceBai horizontal logo
+- light authentication surfaces
+- light navigation/header surfaces
+- light marketing surfaces
+
+Locked characteristics:
+- isolated logo only; no board, labels, mockup, or background scene
+- leaf-integrated FaceBai `F` emblem
+- vivid natural green foliage with dew/highlight detail
+- custom rounded green `FaceBai` wordmark
+- botanical leaf accent above the final `i`
+- no CSS-redrawn substitute
+
+Theme classification:
+- **LIGHT MODE PRIMARY PRODUCTION LOGO**
+- use on cream, white, warm-sand, or other qualified light surfaces
+- do not use CSS filters to adapt this source for dark mode
+- dark mode must use its own separately generated, owner-approved and hash-locked production logo
+
+Derivative policy:
+- resizing/compression from this exact source is allowed when aspect ratio and alpha are preserved
+- creative recoloring, redrawing, leaf replacement, font substitution, or geometry changes are prohibited without explicit owner approval
+
 ## Governance
 
 1. These hashes identify the exact owner-approved source images.
