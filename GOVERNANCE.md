@@ -13,7 +13,7 @@ The owner is the final authority for product, design, deployment and production 
 
 ## Master-design protection
 
-The file `public/reference/facebai-master-design.png` is the canonical approved UI reference.
+The approved 2026-09-24 FaceBai banana-leaf dashboard is the canonical UI composition authority. The exact source-image hash and repository preview are recorded under `docs/`.
 
 Do not silently:
 
@@ -25,6 +25,19 @@ Do not silently:
 - materially restructure the desktop three-column social experience without owner approval.
 
 Responsive adaptations are allowed when needed for usability.
+
+## Theme and production-asset protection
+
+FaceBai must support both **light mode** and **dark mode** as a first-class design requirement.
+
+Canonical approved artwork is immutable. Do not manufacture theme variants using CSS inversion, hue rotation, brightness hacks, or arbitrary recoloring.
+
+If a locked asset does not work correctly on both themes, create a deliberate separate variant, visually review it, obtain owner approval, and record its version/hash before production use.
+
+All future production assets must document their light/dark theme classification and approved usage before qualification.
+
+Canonical rules: [`docs/THEME_ASSET_RULES.md`](./docs/THEME_ASSET_RULES.md)
+Approved locked assets: [`docs/APPROVED_ASSETS.md`](./docs/APPROVED_ASSETS.md)
 
 ## Repository workflow
 
