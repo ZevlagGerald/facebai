@@ -5,6 +5,8 @@ Master visual authority: owner-approved 2026-09-24 banana-leaf FaceBai dashboard
 
 Production assets are generated and owner-approved individually. Important brand elements must never be replaced by cheap CSS approximations or redrawn substitutes.
 
+Theme adaptability is mandatory. See canonical `main` rule: `docs/THEME_ASSET_RULES.md`. Every asset must declare its light/dark classification before production qualification.
+
 ## A0 — Core brand assets
 
 ### A0.1 Primary FaceBai horizontal logo — LOCKED
@@ -30,6 +32,12 @@ Locked visual identity:
 - leaf/sprout treatment integrated with the final `i`
 - forest / emerald / lime green palette
 
+Theme classification:
+- light-surface primary logo
+- light mode: approved
+- dark mode: only where contrast is verified; otherwise use a separately generated and owner-approved dark-surface counterpart
+- CSS inversion/recolor/filter-based dark-mode conversion: prohibited
+
 Do not vector-redraw this asset by eye and call the redraw equivalent. Any future SVG must be produced and reviewed as an explicit derivative before it becomes canonical.
 
 ### A0.2 Compact mark — PENDING
@@ -42,9 +50,19 @@ Required for:
 
 Must be separately generated and owner-approved. It should derive from the accepted FaceBai visual identity without simply shrinking the full wordmark until it becomes unreadable.
 
-### A0.3 Light logo variant — PENDING
+Theme requirement:
+- must be visually qualified on both light and dark surfaces
+- if one master cannot meet both contrast requirements, generate explicit light/dark mark variants
 
-Only create if a real dark/photographic UI use case requires it.
+### A0.3 Dark-surface/light logo variant — PENDING
+
+Create before dark-mode production qualification if the canonical green wordmark lacks adequate contrast on dark surfaces.
+
+Requirements:
+- separately generated and owner-approved
+- preserve FaceBai proportions, lettering silhouette and banana-leaf identity
+- own canonical filename and hash lock
+- never created by CSS `invert`, `brightness`, `hue-rotate` or arbitrary recoloring
 
 ### A0.4 Icon package — PENDING A0.2
 
@@ -53,6 +71,8 @@ Derive deterministically after compact mark approval:
 - icon-192.png
 - icon-512.png
 - apple-touch-icon.png
+
+All icon outputs must be checked against both light and dark browser/OS surfaces.
 
 ## A1 — Banana-leaf environmental system
 
@@ -79,15 +99,32 @@ Locked characteristics:
 - subtle tropical coast/mountain scenery
 - no baked UI, text, logo or people
 
-The artwork itself must be used. CSS may position, crop, shade, blur, fade or responsively contain it, but CSS must not replace the illustration.
+Theme classification:
+- light-theme environmental background
+- light mode: approved
+- dark mode: non-destructive positioning/cropping plus neutral readability scrim may be evaluated
+- if a genuine dark environmental scene is needed, generate a separate owner-approved dark counterpart with its own hash lock
+- inversion/hue-shifting/destructive CSS recolor: prohibited
 
-### A1.2 Supplemental transparent leaf assets — PENDING / ONLY AS NEEDED
+The artwork itself must be used. CSS may position, crop, responsively contain it, or place a neutral accessibility/readability layer over it, but CSS must not replace or creatively recolor the illustration.
+
+### A1.2 Dark environmental background — CONDITIONAL / PENDING
+
+Only generate if visual qualification proves the light environmental artwork cannot support the intended dark-mode composition while retaining proper readability and FaceBai identity.
+
+If created, it must be a real generated FaceBai asset—not a CSS-darkened imitation—and requires separate owner approval/hash lock.
+
+### A1.3 Supplemental transparent leaf assets — PENDING / ONLY AS NEEDED
 
 Separate corner/edge assets may still be generated later for responsive dashboard decoration where the full background is inappropriate. They must visually match the locked primary background and master design.
 
-### A1.3 Organic paper/cream texture — PENDING / OPTIONAL
+Each must document whether it is theme-neutral or requires light/dark variants.
+
+### A1.4 Organic paper/cream texture — PENDING / OPTIONAL
 
 Only create if visual qualification shows the UI needs it. Do not manufacture decorative assets merely to fill the manifest.
+
+A dark-theme texture, if required, must be a deliberately qualified counterpart rather than a filter-altered light texture.
 
 ## A2 — Product illustration assets
 
@@ -98,7 +135,7 @@ Pending after core UI/auth requirements prove the need:
 - empty notifications
 - moderation/error empty states
 
-All must match the approved art direction and be separately reviewed.
+All must match the approved art direction, be separately reviewed, and declare theme behavior.
 
 ## A3 — Development fixtures
 
@@ -119,12 +156,17 @@ Every production asset requires:
 - SHA-256 source lock
 - accessibility role
 - derivative/compression policy
+- light/dark theme classification
+- approved light-mode usage
+- approved dark-mode usage
+- explicit counterpart requirement when one source cannot satisfy both themes
 - no silent creative alteration during optimization
 
 ## Current approved inventory
 
-1. Primary FaceBai horizontal logo — **APPROVED / LOCKED**
-2. Primary tropical background — **APPROVED / LOCKED**
+1. Primary FaceBai horizontal logo — **APPROVED / LOCKED / LIGHT-SURFACE PRIMARY**
+2. Primary tropical background — **APPROVED / LOCKED / LIGHT-THEME ENVIRONMENT**
 
-Next required asset:
-3. Compact FaceBai mark/favicon master
+Next required assets:
+3. Compact FaceBai mark/favicon master — must qualify on both themes
+4. Dark-surface FaceBai logo variant — required before dark-mode production qualification if canonical logo contrast is insufficient
