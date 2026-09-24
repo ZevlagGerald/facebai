@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { register } from "@/app/actions/auth";
 import { AuthShell } from "@/app/components/auth-shell";
+import { TurnstileField } from "@/app/components/turnstile-field";
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
@@ -19,6 +20,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
         <label>Password<input name="password" type="password" autoComplete="new-password" minLength={10} required /></label>
         <label>Confirm password<input name="confirm_password" type="password" autoComplete="new-password" minLength={10} required /></label>
         <label className="check-row"><input name="accept_terms" type="checkbox" required /><span>I agree to the <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Notice</Link>.</span></label>
+        <TurnstileField action="register" />
         <button className="primary-button" type="submit">Create account</button>
       </form>
       <div className="auth-links"><Link href="/login">Already have an account?</Link></div>
