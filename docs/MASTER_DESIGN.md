@@ -1,10 +1,16 @@
 # FaceBai Master Design Lock
 
-## Canonical reference
-
-`/public/reference/facebai-master-design.png`
-
 Approved: 2026-09-24
+
+## Canonical authority
+
+The canonical design is the owner-approved FaceBai tropical banana-leaf dashboard created on 2026-09-24. The exact source-image SHA-256 is recorded in `DESIGN_LOCK.txt`.
+
+Repository visual preview:
+
+`/public/reference/facebai-master-design-preview.jpg`
+
+The preview is a reduced derivative for convenient repository viewing; it does not replace or redefine the canonical source design.
 
 ## Locked visual principles
 

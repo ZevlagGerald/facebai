@@ -1,7 +1,12 @@
 FACEBAI MASTER DESIGN LOCK
 Approved: 2026-09-24
-File: public/reference/facebai-master-design.png
-SHA256: bebb2eea80e150ee89ee42977482a2dcf3132ae78a054d43ba04186e7e9506a7
 
-This hash identifies the canonical approved master-design image at project initialization.
-A replacement requires explicit owner approval and a new recorded hash.
+CANONICAL SOURCE IMAGE SHA256:
+bebb2eea80e150ee89ee42977482a2dcf3132ae78a054d43ba04186e7e9506a7
+
+REPOSITORY PREVIEW:
+public/reference/facebai-master-design-preview.jpg
+Preview dimensions: 320x180
+Preview SHA256: 8628ec885b1aa42fb9bd5854ed3de5923e8ab432397d83eb8f423911423a00e7
+
+The repository preview is a reduced derivative only. The canonical source hash above identifies the exact owner-approved master design at project initialization. Replacing or redefining the canonical design requires explicit owner approval and a new recorded source hash.
