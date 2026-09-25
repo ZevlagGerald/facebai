@@ -1,6 +1,6 @@
-type AuthStatusTone = "info" | "success" | "warning" | "error";
+import { InlineStatus, type InlineStatusTone } from "./inline-status";
 
-const iconByTone: Record<AuthStatusTone, string> = {
+const iconByTone: Record<InlineStatusTone, string> = {
   info: "i",
   success: "✓",
   warning: "!",
@@ -12,19 +12,21 @@ export function AuthStatus({
   title,
   children,
 }: {
-  tone: AuthStatusTone;
+  tone: InlineStatusTone;
   title: string;
   children: React.ReactNode;
 }) {
-  const role = tone === "error" ? "alert" : "status";
-
   return (
-    <div className={`auth-status auth-status-${tone}`} role={role} aria-live={tone === "error" ? "assertive" : "polite"}>
-      <span className="auth-status-icon" aria-hidden="true">{iconByTone[tone]}</span>
-      <div>
-        <strong>{title}</strong>
-        <div className="auth-status-copy">{children}</div>
-      </div>
-    </div>
+    <InlineStatus
+      tone={tone}
+      title={title}
+      className={`auth-status auth-status-${tone}`}
+      icon={iconByTone[tone]}
+      iconClassName="auth-status-icon"
+      copyClassName="auth-status-copy"
+      unstyled
+    >
+      {children}
+    </InlineStatus>
   );
 }
