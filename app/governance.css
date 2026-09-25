@@ -1,0 +1,48 @@
+:root {
+  --fb-motion-press: 90ms;
+  --fb-motion-fast: 140ms;
+  --fb-motion-standard: 180ms;
+  --fb-motion-sheet: 210ms;
+  --fb-motion-ease: cubic-bezier(.2, 0, 0, 1);
+  --fb-focus-ring-width: 3px;
+  --fb-control-target: 44px;
+}
+
+[data-facebai-action] {
+  -webkit-tap-highlight-color: transparent;
+  transition-duration: var(--fb-motion-fast);
+  transition-timing-function: var(--fb-motion-ease);
+}
+
+[data-facebai-action]:active:not(:disabled):not([aria-disabled='true']) {
+  transform: scale(.985);
+  transition-duration: var(--fb-motion-press);
+}
+
+[data-facebai-action][aria-busy='true'] {
+  cursor: progress;
+}
+
+[data-facebai-action]:focus-visible {
+  outline: var(--fb-focus-ring-width) solid color-mix(in srgb, var(--brand) 38%, transparent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+
+  [data-facebai-action]:active:not(:disabled):not([aria-disabled='true']) {
+    transform: none !important;
+  }
+}
