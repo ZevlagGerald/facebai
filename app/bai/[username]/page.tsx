@@ -5,6 +5,8 @@ import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
 import styles from "@/app/components/profile-surface.module.css";
 import { normalizeUsername, USERNAME_PATTERN } from "@/lib/auth/validation";
+import { getLocale } from "@/lib/i18n/server";
+import { getTranslations } from "@/lib/i18n/messages";
 import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,6 +22,8 @@ async function signedMediaUrl(
 }
 
 export default async function BaiProfilePage({ params }: { params: Promise<{ username: string }> }) {
+  const locale = await getLocale();
+  const t = getTranslations(locale);
   const route = await params;
   const requestedUsername = normalizeUsername(route.username);
   if (!USERNAME_PATTERN.test(requestedUsername)) notFound();
@@ -45,22 +49,22 @@ export default async function BaiProfilePage({ params }: { params: Promise<{ use
   const rightRail = (
     <div className={styles.sideStack}>
       <section className={styles.sideCard} id="about">
-        <p className={styles.eyebrow}>ABOUT</p>
-        <h2>About this Bai</h2>
-        <p>{profile.bio || "Wala pay bio."}</p>
+        <p className={styles.eyebrow}>{t("profile.about")}</p>
+        <h2>{t("profile.aboutThisBai")}</h2>
+        <p>{profile.bio || t("profile.noBio")}</p>
       </section>
       <section className={styles.sideCard}>
-        <p className={styles.eyebrow}>{isOwner ? "YOUR PROFILE" : "MGA BAI"}</p>
-        <h2>{isOwner ? "Profile controls" : "Social actions"}</h2>
+        <p className={styles.eyebrow}>{isOwner ? t("profile.yourProfile") : t("nav.friends").toUpperCase()}</p>
+        <h2>{isOwner ? t("profile.controls") : t("profile.socialActions")}</h2>
         {isOwner ? (
           <>
-            <p>You own this profile. Profile controls are kept in a separate edit view.</p>
-            <Link className={styles.profileLink} href="/ako/edit">Edit my profile</Link>
+            <p>{t("profile.ownerControlBody")}</p>
+            <Link className={styles.profileLink} href="/ako/edit">{t("profile.editMyProfile")}</Link>
           </>
         ) : (
           <>
-            <p>Friend requests arrive in a later bounded module. No fake relationship state is shown here.</p>
-            <button className={styles.disabledAction} type="button" disabled>Mga Bai · PUHON</button>
+            <p>{t("profile.friendBody")}</p>
+            <button className={styles.disabledAction} type="button" disabled>{t("profile.friendsPuhon")}</button>
           </>
         )}
       </section>
@@ -72,8 +76,9 @@ export default async function BaiProfilePage({ params }: { params: Promise<{ use
       displayName={viewerProfile.display_name}
       username={viewerProfile.username}
       activeRail={isOwner ? "ako" : null}
-      contentLabel={`${profile.display_name}'s FaceBai profile`}
+      contentLabel={`${profile.display_name} · ${t("common.profile")}`}
       rightRail={rightRail}
+      locale={locale}
     >
       <ProfileHero
         displayName={profile.display_name}
@@ -82,13 +87,14 @@ export default async function BaiProfilePage({ params }: { params: Promise<{ use
         avatarUrl={avatarUrl}
         coverUrl={coverUrl}
         actionHref={isOwner ? "/ako/edit" : undefined}
+        locale={locale}
       />
 
-      <section className={styles.streamCard} aria-label="Profile posts coming soon">
+      <section className={styles.streamCard} aria-label={t("profile.postsAndFeed")}>
         <div className={styles.streamIcon}><SocialIcon name="home" size={23} /></div>
-        <h2>Hilom pa diri.</h2>
-        <p>Profile posts arrive with the bounded posts/feed module. No fabricated posts or activity are displayed.</p>
-        <span className={styles.puhonBadge}>PUHON · POSTS & FEED</span>
+        <h2>{t("profile.noPosts")}</h2>
+        <p>{t("profile.noPostsBody")}</p>
+        <span className={styles.puhonBadge}>{t("profile.postsAndFeed")}</span>
       </section>
     </SocialShell>
   );
