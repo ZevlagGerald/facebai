@@ -101,6 +101,16 @@ export async function commitProfileMedia(input: {
     return { ok: false, errorCode: "verify_failed" };
   }
 
+  // Listing proves the Storage metadata row exists, but not that the backing object
+  // is retrievable. Require a successful signed read before committing its key.
+  const { data: signedObject, error: signedObjectError } = await supabase.storage
+    .from(PROFILE_MEDIA_BUCKET)
+    .createSignedUrl(input.path, 60);
+
+  if (signedObjectError || !signedObject?.signedUrl) {
+    return { ok: false, errorCode: "verify_failed" };
+  }
+
   const column = input.kind === "avatar" ? "avatar_key" : "cover_key";
   const { data: current, error: currentError } = await supabase
     .from("profiles")

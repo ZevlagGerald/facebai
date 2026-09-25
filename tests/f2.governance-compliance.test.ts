@@ -6,6 +6,7 @@ const editPage = readFileSync(new URL("../app/ako/edit/page.tsx", import.meta.ur
 const editForm = readFileSync(new URL("../app/components/profile-edit-form.tsx", import.meta.url), "utf8");
 const editFormCss = readFileSync(new URL("../app/components/profile-edit-form.module.css", import.meta.url), "utf8");
 const uploader = readFileSync(new URL("../app/components/profile-media-uploader.tsx", import.meta.url), "utf8");
+const profileActions = readFileSync(new URL("../app/actions/profile.ts", import.meta.url), "utf8");
 const surfaceCss = readFileSync(new URL("../app/components/profile-surface.module.css", import.meta.url), "utf8");
 
 test("profile validation errors remain contextual and associated with affected fields", () => {
@@ -45,4 +46,12 @@ test("profile media network exceptions leave pending state and expose a safe ret
   assert.match(uploader, /try \{[\s\S]*?const supabase = createClient\(\)/);
   assert.match(uploader, /catch \{[\s\S]*?Do not delete an uploaded path here[\s\S]*?setRetryFile\(file\)[\s\S]*?setState\("error"\)[\s\S]*?setMessage\(ti\("profile\.mediaUploadFailed"\)\)/);
   assert.doesNotMatch(uploader, /Do not delete an uploaded path here[\s\S]*?\.remove\(\[path\]\)/);
+});
+
+test("profile media commit requires a retrievable backing object, not metadata alone", () => {
+  assert.match(profileActions, /\.list\(folder, \{ limit: 10, search: filename \}\)/);
+  assert.match(profileActions, /\.createSignedUrl\(input\.path, 60\)/);
+  assert.match(profileActions, /signedObjectError \|\| !signedObject\?\.signedUrl/);
+  assert.match(profileActions, /return \{ ok: false, errorCode: "verify_failed" \}/);
+  assert.match(profileActions, /createSignedUrl\(input\.path, 60\)[\s\S]*?const column = input\.kind/);
 });
