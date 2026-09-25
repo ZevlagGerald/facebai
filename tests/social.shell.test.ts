@@ -8,6 +8,7 @@ const languageSwitcher = readFileSync(new URL("../app/components/language-switch
 const css = readFileSync(new URL("../app/tambayan/tambayan.module.css", import.meta.url), "utf8");
 const profilePage = readFileSync(new URL("../app/ako/page.tsx", import.meta.url), "utf8");
 const editProfilePage = readFileSync(new URL("../app/ako/edit/page.tsx", import.meta.url), "utf8");
+const editProfileForm = readFileSync(new URL("../app/components/profile-edit-form.tsx", import.meta.url), "utf8");
 const wrangler = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
 
 test("F2 GUI keeps primary navigation visible, labeled, localized, and state-honest", () => {
@@ -63,9 +64,10 @@ test("F2 header disclosures are exclusive so language and account cannot remain 
   assert.match(languageSwitcher, /name=\{variant === "social" \? "facebai-header-menu" : undefined\}/);
 });
 
-test("F2 shell keeps logout accessible inside the account menu", () => {
+test("F2 shell keeps governed logout accessible inside the account menu", () => {
   assert.match(shell, /className=\{styles\.accountMenu\}/);
-  assert.match(shell, /aria-label=\{t\("nav\.logoutAria"\)\}/);
+  assert.match(shell, /<form action=\{logout\}>/);
+  assert.match(shell, /<AuthSubmitButton[\s\S]*?className=\{styles\.logout\}[\s\S]*?idleLabel=\{t\("common\.logout"\)\}[\s\S]*?pendingLabel=\{ti\("common\.loggingOut"\)\}/);
   assert.match(css, /\.accountPopover/);
   assert.match(css, /\.logout:focus-visible/);
 });
@@ -78,11 +80,14 @@ test("F2 GUI retains engineered responsive gates and mobile bottom navigation", 
   assert.match(css, /grid-template-columns: repeat\(4, 1fr\)/);
 });
 
-test("F2 profile separates social identity from editing and keeps future content honest", () => {
+test("F2 profile separates social identity from governed focused editing and keeps future content honest", () => {
   assert.match(profilePage, /actionHref="\/ako\/edit"/);
-  assert.doesNotMatch(profilePage, /<form action=\{updateProfile\}/);
+  assert.doesNotMatch(profilePage, /<form action=\{updateProfile/);
   assert.match(profilePage, /t\("profile\.postsAndFeed"\)/);
-  assert.match(editProfilePage, /<form action=\{updateProfile\}/);
+  assert.match(editProfilePage, /<ProfileEditForm/);
+  assert.match(editProfileForm, /useActionState\(updateProfileWithState, initialState\)/);
+  assert.match(editProfileForm, /AuthSubmitButton/);
+  assert.match(editProfileForm, /GovernedDialog/);
   assert.match(editProfilePage, /ProfileMediaUploader kind="avatar"/);
   assert.match(editProfilePage, /ProfileMediaUploader kind="cover"/);
 });
