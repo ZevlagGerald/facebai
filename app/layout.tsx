@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./auth-polish.css";
+import "./governance.css";
 import { htmlLanguage } from "@/lib/i18n/config";
 import { getLocale } from "@/lib/i18n/server";
 
