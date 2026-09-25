@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { GovernedButton } from "./governed-button";
 
 export function AuthSubmitButton({
   idleLabel,
@@ -14,16 +15,16 @@ export function AuthSubmitButton({
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <GovernedButton
       className={className}
       type="submit"
-      disabled={pending}
-      aria-disabled={pending}
-      aria-busy={pending}
+      pending={pending}
+      pendingLabel={pendingLabel}
+      pendingIndicator={<span className="button-spinner" aria-hidden="true" />}
+      unstyled
       data-auth-submit
     >
-      {pending ? <span className="button-spinner" aria-hidden="true" /> : null}
-      <span>{pending ? pendingLabel : idleLabel}</span>
-    </button>
+      {idleLabel}
+    </GovernedButton>
   );
 }
