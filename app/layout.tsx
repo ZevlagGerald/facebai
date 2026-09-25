@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./auth-polish.css";
+import { htmlLanguage } from "@/lib/i18n/config";
+import { getLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "FaceBai — Tambayan sa mga Bisaya",
@@ -14,9 +16,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="ceb" suppressHydrationWarning>
+    <html lang={htmlLanguage(locale)} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );
