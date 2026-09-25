@@ -39,3 +39,28 @@ jobs:
         run: npx vinext check
       - name: Cloudflare Workers production build
         run: npm run build:vinext
+
+  browser-governance:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder_for_build_only
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAFCdCcxwW8Jx02gI
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install locked application dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Install pinned governance browser tools
+        run: npm install --no-save --no-package-lock @playwright/test@1.63.0 @axe-core/playwright@4.13.0
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser governance tests
+        run: npx playwright test
