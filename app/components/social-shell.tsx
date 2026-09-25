@@ -1,30 +1,33 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { logout } from "@/app/actions/auth";
+import { LanguageSwitcher } from "@/app/components/language-switcher";
 import { SocialIcon, type SocialIconName } from "@/app/components/social-icons";
 import { ThemeToggle } from "@/app/components/theme-toggle";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getTranslations, type MessageKey } from "@/lib/i18n/messages";
 import styles from "@/app/tambayan/tambayan.module.css";
 
 type ActiveRail = "tambayan" | "ako" | null;
-type TopNavItem = {
-  label: string;
-  helper: string;
+type NavItem = {
+  labelKey: MessageKey;
+  helperKey: MessageKey;
   icon: SocialIconName;
   href?: string;
-  badge?: string;
+  comingSoon?: boolean;
 };
 
-const topNav: readonly TopNavItem[] = [
-  { label: "Tambayan", helper: "Home feed", icon: "home", href: "/tambayan" },
-  { label: "Mga Bai", helper: "Friends", icon: "friends", badge: "PUHON" },
-  { label: "Pundok", helper: "Groups", icon: "groups", badge: "PUHON" },
-  { label: "Bai & Sell", helper: "Marketplace", icon: "market", badge: "PUHON" },
+const topNav: readonly NavItem[] = [
+  { labelKey: "nav.tambayan", helperKey: "nav.tambayanHelper", icon: "home", href: "/tambayan" },
+  { labelKey: "nav.friends", helperKey: "nav.friendsHelper", icon: "friends", comingSoon: true },
+  { labelKey: "nav.groups", helperKey: "nav.groupsHelper", icon: "groups", comingSoon: true },
+  { labelKey: "nav.market", helperKey: "nav.marketHelper", icon: "market", comingSoon: true },
 ];
 
-const personalShortcuts: readonly TopNavItem[] = [
-  { label: "Ako", helper: "Profile", icon: "user", href: "/ako" },
-  { label: "Mga Litrato", helper: "Photos", icon: "photo", badge: "PUHON" },
-  { label: "Lingaw", helper: "Entertainment", icon: "sparkles", badge: "PUHON" },
+const personalShortcuts: readonly NavItem[] = [
+  { labelKey: "nav.profile", helperKey: "common.profile", icon: "user", href: "/ako" },
+  { labelKey: "nav.photos", helperKey: "nav.photos", icon: "photo", comingSoon: true },
+  { labelKey: "nav.fun", helperKey: "nav.fun", icon: "sparkles", comingSoon: true },
 ];
 
 export function SocialShell({
@@ -34,6 +37,7 @@ export function SocialShell({
   children,
   rightRail,
   contentLabel,
+  locale = DEFAULT_LOCALE,
 }: {
   displayName: string;
   username: string;
@@ -41,57 +45,63 @@ export function SocialShell({
   children: ReactNode;
   rightRail: ReactNode;
   contentLabel: string;
+  locale?: Locale;
 }) {
   const initial = displayName.charAt(0).toUpperCase() || "B";
+  const t = getTranslations(locale);
 
   return (
     <main className={styles.shell}>
       <header className={styles.topbar}>
-        <Link className={styles.brand} href="/tambayan" aria-label="FaceBai Tambayan">
+        <Link className={styles.brand} href="/tambayan" aria-label="FaceBai">
           <img src="/brand/facebai-logo-light.webp?v=stable-20260925" alt="FaceBai" />
         </Link>
 
-        <label className={styles.search} aria-label="Search FaceBai">
+        <label className={styles.search} aria-label={t("nav.searchPlaceholder")}>
           <SocialIcon name="search" size={18} />
-          <input type="search" placeholder="Pangitaa ang imong Bai..." disabled aria-describedby="search-puhon" />
-          <small id="search-puhon" className={styles.puhonMini}>PUHON</small>
+          <input type="search" placeholder={t("nav.searchPlaceholder")} disabled aria-describedby="search-puhon" />
+          <small id="search-puhon" className={styles.puhonMini}>{t("common.puhon")}</small>
         </label>
 
-        <nav className={styles.topnav} aria-label="FaceBai main navigation">
+        <nav className={styles.topnav} aria-label="FaceBai">
           {topNav.map((item) => {
+            const label = t(item.labelKey);
+            const helper = t(item.helperKey);
             const active = item.href === "/tambayan" && activeRail === "tambayan";
+
             if (item.href) {
               return (
                 <Link
-                  key={item.label}
+                  key={item.labelKey}
                   href={item.href}
                   className={`${styles.navItem} ${active ? styles.navActive : ""}`}
                   aria-current={active ? "page" : undefined}
-                  aria-label={`${item.label}: ${item.helper}`}
+                  aria-label={`${label}: ${helper}`}
                 >
                   <SocialIcon name={item.icon} size={20} />
-                  <span className={styles.navLabel}>{item.label}</span>
+                  <span className={styles.navLabel}>{label}</span>
                 </Link>
               );
             }
 
             return (
               <span
-                key={item.label}
+                key={item.labelKey}
                 className={`${styles.navItem} ${styles.navDisabled}`}
                 aria-disabled="true"
-                aria-label={`${item.label}: ${item.helper}, coming soon`}
+                aria-label={`${label}: ${helper}, ${t("common.comingSoon")}`}
               >
                 <SocialIcon name={item.icon} size={20} />
-                <span className={styles.navLabel}>{item.label}</span>
-                {item.badge ? <b className={styles.navBadge}>{item.badge}</b> : null}
+                <span className={styles.navLabel}>{label}</span>
+                {item.comingSoon ? <b className={styles.navBadge}>{t("common.puhon")}</b> : null}
               </span>
             );
           })}
         </nav>
 
         <div className={styles.headerActions}>
-          <button className={styles.utilityButton} type="button" disabled aria-label="Notifications, coming soon" title="Hoy! — coming soon">
+          <LanguageSwitcher locale={locale} />
+          <button className={styles.utilityButton} type="button" disabled aria-label={t("common.notificationsComingSoon")} title={t("nav.notificationsTitle")}>
             <SocialIcon name="bell" size={19} />
             <span className={styles.utilityLabel}>Hoy!</span>
             <span className={styles.noticeDot} aria-hidden="true" />
@@ -99,7 +109,7 @@ export function SocialShell({
           <ThemeToggle variant="icon" />
 
           <details className={styles.accountMenu}>
-            <summary aria-label="Open FaceBai account menu" title="Account menu">
+            <summary aria-label={t("nav.accountMenu")} title={t("nav.accountMenu")}>
               <span className={styles.accountAvatar} aria-hidden="true">{initial}</span>
               <SocialIcon name="chevron-down" size={15} />
             </summary>
@@ -113,10 +123,10 @@ export function SocialShell({
               </div>
               <Link className={styles.accountLink} href="/ako">
                 <SocialIcon name="user" size={18} />
-                Ako · Profile
+                {t("nav.profileMenu")}
               </Link>
               <form action={logout}>
-                <button type="submit" className={styles.logout} aria-label="Log out of FaceBai">Lakaw sa ko</button>
+                <button type="submit" className={styles.logout} aria-label={t("nav.logoutAria")}>{t("common.logout")}</button>
               </form>
             </div>
           </details>
@@ -124,8 +134,8 @@ export function SocialShell({
       </header>
 
       <div className={styles.layout}>
-        <aside className={styles.leftRail} aria-label="FaceBai personal shortcuts">
-          <Link className={styles.profileMini} href="/ako" aria-label={`Open ${displayName}'s profile`}>
+        <aside className={styles.leftRail} aria-label={t("nav.shortcuts")}>
+          <Link className={styles.profileMini} href="/ako" aria-label={`${t("common.profile")}: ${displayName}`}>
             <div className={styles.avatar} aria-hidden="true">{initial}</div>
             <div>
               <strong>{displayName}</strong>
@@ -133,42 +143,45 @@ export function SocialShell({
             </div>
           </Link>
 
-          <p className={styles.railHeading}>IMONG SHORTCUTS</p>
+          <p className={styles.railHeading}>{t("nav.shortcuts")}</p>
           <div className={styles.railMenu}>
             {personalShortcuts.map((item) => {
+              const label = t(item.labelKey);
               const active = item.href === "/ako" && activeRail === "ako";
+
               if (item.href) {
                 return (
                   <Link
-                    key={item.label}
+                    key={item.labelKey}
                     className={`${styles.railItem} ${active ? styles.railActive : ""}`}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                   >
                     <span className={styles.railIcon}><SocialIcon name={item.icon} size={19} /></span>
-                    <span>{item.label}</span>
+                    <span>{label}</span>
                   </Link>
                 );
               }
+
               return (
-                <span key={item.label} className={`${styles.railItem} ${styles.railDisabled}`} aria-disabled="true">
+                <span key={item.labelKey} className={`${styles.railItem} ${styles.railDisabled}`} aria-disabled="true">
                   <span className={styles.railIcon}><SocialIcon name={item.icon} size={19} /></span>
-                  <span>{item.label}</span>
-                  <small>PUHON</small>
+                  <span>{label}</span>
+                  <small>{t("common.puhon")}</small>
                 </span>
               );
             })}
           </div>
 
           <div className={styles.railDivider} />
-          <p className={styles.railQuote}>“Kuan sa... ginahimo pa nato.”</p>
+          <p className={styles.railQuote}>{t("nav.quote")}</p>
         </aside>
 
         <section className={styles.feed} aria-label={contentLabel}>
           {children}
         </section>
 
-        <aside className={styles.rightRail} aria-label="FaceBai context and updates">
+        <aside className={styles.rightRail} aria-label="FaceBai">
           {rightRail}
         </aside>
       </div>
