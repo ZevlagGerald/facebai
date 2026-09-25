@@ -18,6 +18,7 @@ export type ProfileUpdateErrorCode =
 
 export type ProfileUpdateState = {
   errorCode: ProfileUpdateErrorCode | null;
+  saved: boolean;
 };
 
 export async function updateProfileWithState(
@@ -34,7 +35,7 @@ export async function updateProfileWithState(
     bio: String(formData.get("bio") ?? ""),
   });
 
-  if (!validation.ok) return { errorCode: validation.code };
+  if (!validation.ok) return { errorCode: validation.code, saved: false };
 
   const { error } = await supabase
     .from("profiles")
@@ -45,15 +46,16 @@ export async function updateProfileWithState(
     })
     .eq("id", userData.user.id);
 
-  if (error?.code === "23505") return { errorCode: "username_taken" };
-  if (error) return { errorCode: "save_failed" };
+  if (error?.code === "23505") return { errorCode: "username_taken", saved: false };
+  if (error) return { errorCode: "save_failed", saved: false };
 
-  redirect("/ako?updated=1");
+  return { errorCode: null, saved: true };
 }
 
 export async function updateProfile(formData: FormData) {
-  const state = await updateProfileWithState({ errorCode: null }, formData);
+  const state = await updateProfileWithState({ errorCode: null, saved: false }, formData);
   if (state.errorCode) redirect(`/ako/edit?error=${encodeURIComponent(state.errorCode)}`);
+  redirect("/ako?updated=1");
 }
 
 export type CommitProfileMediaErrorCode =

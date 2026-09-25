@@ -50,11 +50,13 @@ export function ProfileMediaUploader({
   label,
   locale = DEFAULT_LOCALE,
   compact = false,
+  onSuccess,
 }: {
   kind: ProfileMediaKind;
   label: string;
   locale?: Locale;
   compact?: boolean;
+  onSuccess?: () => void;
 }) {
   const router = useRouter();
   const t = getTranslations(locale);
@@ -127,7 +129,11 @@ export function ProfileMediaUploader({
       setRetryFile(null);
       setState("success");
       setMessage(`${label} ${t("profile.mediaUpdatedSuffix")}`);
-      router.refresh();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.refresh();
+      }
     } catch {
       // Do not delete an uploaded path here. A transport failure can make server-action
       // completion ambiguous, and deleting it could remove media already committed to the profile.

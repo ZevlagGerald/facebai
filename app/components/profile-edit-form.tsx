@@ -19,7 +19,7 @@ import styles from "./profile-surface.module.css";
 
 type ProfileEditSection = "bio" | "details";
 
-const initialState: ProfileUpdateState = { errorCode: null };
+const initialState: ProfileUpdateState = { errorCode: null, saved: false };
 
 const updateErrorKey: Record<ProfileUpdateErrorCode, InteractionMessageKey> = {
   display_name: "profile.validationDisplayName",
@@ -35,12 +35,18 @@ export function ProfileEditForm({
   username,
   bio,
   locale,
+  embedded = false,
+  onDirtyChange,
+  onSaved,
 }: {
   section: ProfileEditSection;
   displayName: string;
   username: string;
   bio: string;
   locale: Locale;
+  embedded?: boolean;
+  onDirtyChange?: (dirty: boolean) => void;
+  onSaved?: () => void;
 }) {
   const router = useRouter();
   const t = getTranslations(locale);
@@ -68,6 +74,25 @@ export function ProfileEditForm({
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [dirty]);
 
+  useEffect(() => {
+    if (!state.saved) return;
+    setDirty(false);
+    onDirtyChange?.(false);
+    if (onSaved) {
+      onSaved();
+    } else {
+      router.replace("/ako?updated=1");
+    }
+    // Completion is terminal for this mounted editor; the route/modal closes immediately.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.saved]);
+
+  function markDirty() {
+    if (dirty) return;
+    setDirty(true);
+    onDirtyChange?.(true);
+  }
+
   function requestClose() {
     if (dirty) {
       setDiscardOpen(true);
@@ -78,31 +103,34 @@ export function ProfileEditForm({
 
   function discardAndClose() {
     setDirty(false);
+    onDirtyChange?.(false);
     setDiscardOpen(false);
     router.push("/ako/edit");
   }
 
   return (
     <>
-      <header className={styles.focusedHeader}>
-        <div>
-          <p className={styles.eyebrow}>{t("nav.profile").toUpperCase()}</p>
-          <h1>{t("profile.editProfile")}</h1>
-        </div>
-        <GovernedButton
-          type="button"
-          className={`${styles.focusedClose} ${formStyles.closeButton}`}
-          unstyled
-          aria-label={t("common.cancel")}
-          onClick={requestClose}
-        >
-          ×
-        </GovernedButton>
-      </header>
+      {!embedded ? (
+        <header className={styles.focusedHeader}>
+          <div>
+            <p className={styles.eyebrow}>{t("nav.profile").toUpperCase()}</p>
+            <h1>{t("profile.editProfile")}</h1>
+          </div>
+          <GovernedButton
+            type="button"
+            className={`${styles.focusedClose} ${formStyles.closeButton}`}
+            unstyled
+            aria-label={t("common.cancel")}
+            onClick={requestClose}
+          >
+            ×
+          </GovernedButton>
+        </header>
+      ) : null}
 
-      <div className={styles.focusedBody}>
+      <div className={embedded ? undefined : styles.focusedBody}>
         <div className={styles.sectionHeading}>
-          <h2>{section === "bio" ? t("profile.bio") : t("profile.publicIdentity")}</h2>
+          {!embedded ? <h2>{section === "bio" ? t("profile.bio") : t("profile.publicIdentity")}</h2> : null}
         </div>
 
         {generalError ? (
@@ -113,7 +141,7 @@ export function ProfileEditForm({
           </div>
         ) : null}
 
-        <form action={formAction} className={styles.form} onChange={() => setDirty(true)}>
+        <form action={formAction} className={styles.form} onChange={markDirty}>
           {section === "bio" ? (
             <>
               <input type="hidden" name="display_name" value={displayName} />
@@ -179,24 +207,26 @@ export function ProfileEditForm({
         </form>
       </div>
 
-      <GovernedDialog
-        open={discardOpen}
-        title={ti("profile.discardTitle")}
-        closeLabel={t("common.cancel")}
-        onClose={() => setDiscardOpen(false)}
-        footer={(
-          <>
-            <GovernedButton type="button" variant="secondary" onClick={() => setDiscardOpen(false)} data-dialog-initial-focus>
-              {ti("profile.keepEditing")}
-            </GovernedButton>
-            <GovernedButton type="button" variant="danger" onClick={discardAndClose}>
-              {ti("profile.discardChanges")}
-            </GovernedButton>
-          </>
-        )}
-      >
-        <p>{ti("profile.discardBody")}</p>
-      </GovernedDialog>
+      {!embedded ? (
+        <GovernedDialog
+          open={discardOpen}
+          title={ti("profile.discardTitle")}
+          closeLabel={t("common.cancel")}
+          onClose={() => setDiscardOpen(false)}
+          footer={(
+            <>
+              <GovernedButton type="button" variant="secondary" onClick={() => setDiscardOpen(false)} data-dialog-initial-focus>
+                {ti("profile.keepEditing")}
+              </GovernedButton>
+              <GovernedButton type="button" variant="danger" onClick={discardAndClose}>
+                {ti("profile.discardChanges")}
+              </GovernedButton>
+            </>
+          )}
+        >
+          <p>{ti("profile.discardBody")}</p>
+        </GovernedDialog>
+      ) : null}
     </>
   );
 }

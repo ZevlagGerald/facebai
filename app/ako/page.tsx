@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthStatus } from "@/app/components/auth-status";
+import {
+  ProfileContextualEditor,
+  type ProfileContextualEditMode,
+} from "@/app/components/profile-contextual-editor";
 import { ProfileHero } from "@/app/components/profile-hero";
 import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
@@ -11,6 +15,12 @@ import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+function parseEditMode(value: string | string[] | undefined): ProfileContextualEditMode | null {
+  return value === "profile" || value === "avatar" || value === "cover" || value === "bio" || value === "details"
+    ? value
+    : null;
+}
 
 async function signedMediaUrl(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -35,6 +45,7 @@ export default async function AkoPage({
   const params = await searchParams;
   const errorMessage = typeof params.error === "string" ? params.error : "";
   const updated = params.updated === "1";
+  const editMode = parseEditMode(params.edit);
 
   const supabase = await createClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -89,8 +100,9 @@ export default async function AkoPage({
         coverUrl={coverUrl}
         avatarConfigured={Boolean(profile.avatar_key)}
         coverConfigured={Boolean(profile.cover_key)}
-        actionHref="/ako/edit"
-        mediaEditHref="/ako/edit"
+        actionHref="/ako?edit=profile"
+        avatarEditHref="/ako?edit=avatar"
+        coverEditHref="/ako?edit=cover"
         locale={locale}
       />
 
@@ -100,6 +112,20 @@ export default async function AkoPage({
         <p>{t("profile.noPostsBody")}</p>
         <span className={styles.puhonBadge}>{t("profile.postsAndFeed")}</span>
       </section>
+
+      {editMode ? (
+        <ProfileContextualEditor
+          mode={editMode}
+          displayName={profile.display_name}
+          username={profile.username}
+          bio={profile.bio}
+          avatarUrl={avatarUrl}
+          coverUrl={coverUrl}
+          avatarConfigured={Boolean(profile.avatar_key)}
+          coverConfigured={Boolean(profile.cover_key)}
+          locale={locale}
+        />
+      ) : null}
     </SocialShell>
   );
 }

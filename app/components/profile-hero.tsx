@@ -16,6 +16,8 @@ export function ProfileHero({
   actionHref,
   actionLabel,
   mediaEditHref,
+  avatarEditHref,
+  coverEditHref,
   locale = DEFAULT_LOCALE,
 }: {
   displayName: string;
@@ -28,6 +30,8 @@ export function ProfileHero({
   actionHref?: string;
   actionLabel?: string;
   mediaEditHref?: string;
+  avatarEditHref?: string;
+  coverEditHref?: string;
   locale?: Locale;
 }) {
   const initial = displayName.charAt(0).toUpperCase() || "B";
@@ -36,6 +40,8 @@ export function ProfileHero({
   const resolvedActionLabel = actionLabel ?? t("profile.editProfile");
   const coverFallbackLabel = coverConfigured ? ti("profile.coverPhotoUnavailable") : t("profile.noCover");
   const avatarFallbackLabel = avatarConfigured ? ti("profile.profilePhotoUnavailable") : t("profile.noProfilePhoto");
+  const resolvedAvatarEditHref = avatarEditHref ?? (mediaEditHref ? `${mediaEditHref}?section=avatar` : undefined);
+  const resolvedCoverEditHref = coverEditHref ?? (mediaEditHref ? `${mediaEditHref}?section=cover` : undefined);
 
   return (
     <section className={styles.hero} aria-label={`${displayName} · ${t("common.profile")}`}>
@@ -48,10 +54,11 @@ export function ProfileHero({
             <span>{coverFallbackLabel}</span>
           </div>
         )}
-        {mediaEditHref ? (
+        {resolvedCoverEditHref ? (
           <Link
             className={styles.coverEdit}
-            href={`${mediaEditHref}?section=cover`}
+            href={resolvedCoverEditHref}
+            scroll={false}
             aria-label={`${t("profile.editProfile")}: ${t("profile.coverPhoto")}`}
             title={t("profile.coverPhoto")}
           >
@@ -69,15 +76,16 @@ export function ProfileHero({
               <span aria-label={avatarFallbackLabel}>{initial}</span>
             )}
           </div>
-          {mediaEditHref ? (
+          {resolvedAvatarEditHref ? (
             <Link
               className={styles.avatarEdit}
-              href={`${mediaEditHref}?section=avatar`}
+              href={resolvedAvatarEditHref}
+              scroll={false}
               aria-label={`${t("profile.editProfile")}: ${t("profile.profilePhoto")}`}
               title={t("profile.profilePhoto")}
             >
               <SocialIcon name="camera" size={18} />
-          </Link>
+            </Link>
           ) : null}
         </div>
         <div className={styles.identity}>
@@ -87,7 +95,7 @@ export function ProfileHero({
         </div>
         {actionHref ? (
           <div className={styles.profileActions}>
-            <Link className={styles.primaryAction} href={actionHref}>
+            <Link className={styles.primaryAction} href={actionHref} scroll={false}>
               <SocialIcon name="edit" size={18} />
               {resolvedActionLabel}
             </Link>

@@ -5,6 +5,20 @@ import { GovernedButton } from "@/app/components/governed-button";
 import { SocialIcon } from "@/app/components/social-icons";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getInteractionTranslations } from "@/lib/i18n/interaction";
+import {
+  THEME_COOKIE,
+  THEME_COOKIE_MAX_AGE,
+  THEME_STORAGE_KEY,
+  parseTheme,
+  type Theme,
+} from "@/lib/theme/config";
+
+function persistTheme(theme: Theme) {
+  document.documentElement.dataset.theme = theme;
+  window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${THEME_COOKIE}=${theme}; Path=/; Max-Age=${THEME_COOKIE_MAX_AGE}; SameSite=Lax${secure}`;
+}
 
 export function ThemeToggle({
   variant = "text",
@@ -13,22 +27,20 @@ export function ThemeToggle({
   variant?: "text" | "icon";
   locale?: Locale;
 }) {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<Theme>("light");
   const ti = getInteractionTranslations(locale);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("facebai-theme");
-    const initial = stored === "dark" || stored === "light"
-      ? stored
-      : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    const initial = parseTheme(document.documentElement.dataset.theme)
+      ?? parseTheme(window.localStorage.getItem(THEME_STORAGE_KEY))
+      ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     document.documentElement.dataset.theme = initial;
     setTheme(initial);
   }, []);
 
   function toggle() {
     const next = theme === "light" ? "dark" : "light";
-    document.documentElement.dataset.theme = next;
-    window.localStorage.setItem("facebai-theme", next);
+    persistTheme(next);
     setTheme(next);
   }
 

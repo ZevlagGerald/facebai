@@ -9,6 +9,7 @@ const css = readFileSync(new URL("../app/tambayan/tambayan.module.css", import.m
 const profilePage = readFileSync(new URL("../app/ako/page.tsx", import.meta.url), "utf8");
 const publicProfilePage = readFileSync(new URL("../app/bai/[username]/page.tsx", import.meta.url), "utf8");
 const profileHero = readFileSync(new URL("../app/components/profile-hero.tsx", import.meta.url), "utf8");
+const contextualEditor = readFileSync(new URL("../app/components/profile-contextual-editor.tsx", import.meta.url), "utf8");
 const editProfilePage = readFileSync(new URL("../app/ako/edit/page.tsx", import.meta.url), "utf8");
 const editProfileForm = readFileSync(new URL("../app/components/profile-edit-form.tsx", import.meta.url), "utf8");
 const wrangler = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
@@ -116,14 +117,19 @@ test("F2 GUI retains engineered responsive gates and mobile bottom navigation", 
   assert.match(css, /grid-template-columns: repeat\(4, 1fr\)/);
 });
 
-test("F2 profile separates social identity from governed focused editing and keeps future content honest", () => {
-  assert.match(profilePage, /actionHref="\/ako\/edit"/);
+test("F2 profile preserves social context for bounded editing and retains standalone fallback", () => {
+  assert.match(profilePage, /actionHref="\/ako\?edit=profile"/);
+  assert.match(profilePage, /avatarEditHref="\/ako\?edit=avatar"/);
+  assert.match(profilePage, /coverEditHref="\/ako\?edit=cover"/);
+  assert.match(profilePage, /<ProfileContextualEditor/);
+  assert.match(contextualEditor, /<GovernedDialog/);
+  assert.match(contextualEditor, /href="\/ako\?edit=avatar" replace scroll=\{false\}/);
+  assert.match(contextualEditor, /href="\/ako\?edit=bio" replace scroll=\{false\}/);
+  assert.match(contextualEditor, /router\.replace\("\/ako\?updated=1"/);
   assert.doesNotMatch(profilePage, /<form action=\{updateProfile/);
-  assert.match(profilePage, /t\("profile\.postsAndFeed"\)/);
   assert.match(editProfilePage, /<ProfileEditForm/);
   assert.match(editProfileForm, /useActionState\(updateProfileWithState, initialState\)/);
-  assert.match(editProfileForm, /AuthSubmitButton/);
-  assert.match(editProfileForm, /GovernedDialog/);
+  assert.match(editProfileForm, /embedded = false/);
   assert.match(editProfilePage, /ProfileMediaUploader kind="avatar"/);
   assert.match(editProfilePage, /ProfileMediaUploader kind="cover"/);
 });

@@ -18,6 +18,31 @@ test.describe("FaceBai governance public surface", () => {
     expect(box.height).toBeGreaterThanOrEqual(44);
   });
 
+  test("explicit theme survives hard refresh and is synchronized to the cookie", async ({ page, context }) => {
+    await context.clearCookies();
+    await page.addInitScript(() => {
+      window.localStorage.setItem("facebai-theme", "dark");
+    });
+
+    await page.goto("/login", { waitUntil: "domcontentloaded" });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+    let themeCookie = (await context.cookies()).find((cookie) => cookie.name === "facebai-theme");
+    expect(themeCookie?.value).toBe("dark");
+
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+    await page.locator(".theme-toggle").click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+    themeCookie = (await context.cookies()).find((cookie) => cookie.name === "facebai-theme");
+    expect(themeCookie?.value).toBe("light");
+  });
+
   test("reduced motion suppresses nonessential transition time", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/login", { waitUntil: "domcontentloaded" });

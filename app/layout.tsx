@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 import "./auth-polish.css";
 import "./governance.css";
 import { htmlLanguage } from "@/lib/i18n/config";
 import { getLocale } from "@/lib/i18n/server";
+import { THEME_BOOTSTRAP_SCRIPT, THEME_COOKIE, parseTheme } from "@/lib/theme/config";
 
 export const metadata: Metadata = {
   title: "FaceBai — Tambayan sa mga Bisaya",
@@ -18,10 +20,18 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const locale = await getLocale();
+  const [locale, cookieStore] = await Promise.all([getLocale(), cookies()]);
+  const explicitTheme = parseTheme(cookieStore.get(THEME_COOKIE)?.value);
 
   return (
-    <html lang={htmlLanguage(locale)} suppressHydrationWarning>
+    <html
+      lang={htmlLanguage(locale)}
+      data-theme={explicitTheme ?? undefined}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );
