@@ -19,12 +19,17 @@ test("profile validation normalizes editable identity fields", () => {
   });
 });
 
-test("profile validation rejects invalid usernames and display names", () => {
-  assert.equal(validateProfileInput({ displayName: "Z", username: "valid.bai", bio: "" }).ok, false);
-  assert.equal(validateProfileInput({ displayName: "Valid Bai", username: "has-hyphen", bio: "" }).ok, false);
+test("profile validation rejects invalid usernames and display names with stable codes", () => {
+  const displayName = validateProfileInput({ displayName: "Z", username: "valid.bai", bio: "" });
+  assert.equal(displayName.ok, false);
+  if (!displayName.ok) assert.equal(displayName.code, "display_name");
+
+  const username = validateProfileInput({ displayName: "Valid Bai", username: "has-hyphen", bio: "" });
+  assert.equal(username.ok, false);
+  if (!username.ok) assert.equal(username.code, "username");
 });
 
-test("profile validation enforces the database bio limit", () => {
+test("profile validation enforces the database bio limit with a stable code", () => {
   const result = validateProfileInput({
     displayName: "Valid Bai",
     username: "valid.bai",
@@ -32,4 +37,5 @@ test("profile validation enforces the database bio limit", () => {
   });
 
   assert.equal(result.ok, false);
+  if (!result.ok) assert.equal(result.code, "bio");
 });
