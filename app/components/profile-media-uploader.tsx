@@ -85,44 +85,56 @@ export function ProfileMediaUploader({
     setState("uploading");
     setMessage(`${t("profile.mediaUploading")} ${label.toLowerCase()}…`);
 
-    const supabase = createClient();
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData.user) {
+    try {
+      const supabase = createClient();
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        setRetryFile(null);
+        setState("error");
+        setMessage(ti("profile.mediaSessionExpired"));
+        return;
+      }
+
+      const path = profileMediaPath(userData.user.id, kind, crypto.randomUUID(), extension);
+      const { error: uploadError } = await supabase.storage
+        .from(PROFILE_MEDIA_BUCKET)
+        .upload(path, file, {
+          cacheControl: "3600",
+          contentType: file.type,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        setRetryFile(file);
+        setState("error");
+        setMessage(ti("profile.mediaUploadFailed"));
+        return;
+      }
+
+      const commit = await commitProfileMedia({ kind, path });
+      if (!commit.ok) {
+        try {
+          await supabase.storage.from(PROFILE_MEDIA_BUCKET).remove([path]);
+        } catch {
+          // Best-effort orphan cleanup only; the profile commit explicitly failed.
+        }
+        setRetryFile(isRetryableCommitError(commit.errorCode) ? file : null);
+        setState("error");
+        setMessage(ti(commitMessageKey[commit.errorCode]));
+        return;
+      }
+
       setRetryFile(null);
-      setState("error");
-      setMessage(ti("profile.mediaSessionExpired"));
-      return;
-    }
-
-    const path = profileMediaPath(userData.user.id, kind, crypto.randomUUID(), extension);
-    const { error: uploadError } = await supabase.storage
-      .from(PROFILE_MEDIA_BUCKET)
-      .upload(path, file, {
-        cacheControl: "3600",
-        contentType: file.type,
-        upsert: false,
-      });
-
-    if (uploadError) {
+      setState("success");
+      setMessage(`${label} ${t("profile.mediaUpdatedSuffix")}`);
+      router.refresh();
+    } catch {
+      // Do not delete an uploaded path here. A transport failure can make server-action
+      // completion ambiguous, and deleting it could remove media already committed to the profile.
       setRetryFile(file);
       setState("error");
       setMessage(ti("profile.mediaUploadFailed"));
-      return;
     }
-
-    const commit = await commitProfileMedia({ kind, path });
-    if (!commit.ok) {
-      await supabase.storage.from(PROFILE_MEDIA_BUCKET).remove([path]);
-      setRetryFile(isRetryableCommitError(commit.errorCode) ? file : null);
-      setState("error");
-      setMessage(ti(commitMessageKey[commit.errorCode]));
-      return;
-    }
-
-    setRetryFile(null);
-    setState("success");
-    setMessage(`${label} ${t("profile.mediaUpdatedSuffix")}`);
-    router.refresh();
   }
 
   async function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {

@@ -40,3 +40,9 @@ test("profile media retry is offered only for recoverable failures", () => {
   assert.match(uploader, /userError \|\| !userData\.user[\s\S]*?setRetryFile\(null\)/);
   assert.match(uploader, /setRetryFile\(isRetryableCommitError\(commit\.errorCode\) \? file : null\)/);
 });
+
+test("profile media network exceptions leave pending state and expose a safe retry", () => {
+  assert.match(uploader, /try \{[\s\S]*?const supabase = createClient\(\)/);
+  assert.match(uploader, /catch \{[\s\S]*?Do not delete an uploaded path here[\s\S]*?setRetryFile\(file\)[\s\S]*?setState\("error"\)[\s\S]*?setMessage\(ti\("profile\.mediaUploadFailed"\)\)/);
+  assert.doesNotMatch(uploader, /Do not delete an uploaded path here[\s\S]*?\.remove\(\[path\]\)/);
+});
