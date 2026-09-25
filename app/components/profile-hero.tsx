@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { SocialIcon } from "@/app/components/social-icons";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getInteractionTranslations } from "@/lib/i18n/interaction";
-import { getTranslations } from "@/lib/i18n/messages";
 import styles from "@/app/components/profile-surface.module.css";
 
 export function ProfileHero({
@@ -35,7 +35,7 @@ export function ProfileHero({
   locale?: Locale;
 }) {
   const initial = displayName.charAt(0).toUpperCase() || "B";
-  const t = getTranslations(locale);
+  const t = getF2SocialTranslations(locale);
   const ti = getInteractionTranslations(locale);
   const resolvedActionLabel = actionLabel ?? t("profile.editProfile");
   const coverFallbackLabel = coverConfigured ? ti("profile.coverPhotoUnavailable") : t("profile.noCover");

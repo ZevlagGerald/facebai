@@ -12,7 +12,7 @@ import { GovernedButton } from "@/app/components/governed-button";
 import { GovernedDialog } from "@/app/components/governed-dialog";
 import { InlineStatus } from "@/app/components/inline-status";
 import { type Locale } from "@/lib/i18n/config";
-import { getTranslations } from "@/lib/i18n/messages";
+import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getInteractionTranslations, type InteractionMessageKey } from "@/lib/i18n/interaction";
 import formStyles from "./profile-edit-form.module.css";
 import styles from "./profile-surface.module.css";
@@ -49,7 +49,7 @@ export function ProfileEditForm({
   onSaved?: () => void;
 }) {
   const router = useRouter();
-  const t = getTranslations(locale);
+  const t = getF2SocialTranslations(locale);
   const ti = getInteractionTranslations(locale);
   const [state, formAction] = useActionState(updateProfileWithState, initialState);
   const [dirty, setDirty] = useState(false);

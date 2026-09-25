@@ -4,8 +4,8 @@ import profileStyles from "@/app/components/profile-surface.module.css";
 import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
 import { getInteractionTranslations } from "@/lib/i18n/interaction";
+import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getLocale } from "@/lib/i18n/server";
-import { getTranslations } from "@/lib/i18n/messages";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./tambayan.module.css";
 
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function TambayanPage() {
   const locale = await getLocale();
-  const t = getTranslations(locale);
+  const t = getF2SocialTranslations(locale);
   const ti = getInteractionTranslations(locale);
   const supabase = await createClient();
   const { data: userData, error } = await supabase.auth.getUser();

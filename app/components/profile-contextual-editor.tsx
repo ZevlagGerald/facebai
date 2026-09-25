@@ -7,8 +7,8 @@ import { GovernedDialog } from "@/app/components/governed-dialog";
 import { ProfileMediaUploader } from "@/app/components/profile-media-uploader";
 import { SocialIcon } from "@/app/components/social-icons";
 import { type Locale } from "@/lib/i18n/config";
+import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getInteractionTranslations } from "@/lib/i18n/interaction";
-import { getTranslations } from "@/lib/i18n/messages";
 import styles from "./profile-surface.module.css";
 
 export type ProfileContextualEditMode = "profile" | "avatar" | "cover";
@@ -35,7 +35,7 @@ export function ProfileContextualEditor({
   locale: Locale;
 }) {
   const router = useRouter();
-  const t = getTranslations(locale);
+  const t = getF2SocialTranslations(locale);
   const ti = getInteractionTranslations(locale);
   const initial = displayName.charAt(0).toUpperCase() || "B";
   const mediaUnavailable = mode === "avatar"

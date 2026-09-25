@@ -9,8 +9,8 @@ import { ProfileHero } from "@/app/components/profile-hero";
 import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
 import styles from "@/app/components/profile-surface.module.css";
+import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getLocale } from "@/lib/i18n/server";
-import { getTranslations } from "@/lib/i18n/messages";
 import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
 import { createClient } from "@/lib/supabase/server";
 
@@ -39,7 +39,7 @@ export default async function AkoPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const locale = await getLocale();
-  const t = getTranslations(locale);
+  const t = getF2SocialTranslations(locale);
   const params = await searchParams;
   const errorMessage = typeof params.error === "string" ? params.error : "";
   const updated = params.updated === "1";
