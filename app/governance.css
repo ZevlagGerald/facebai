@@ -28,6 +28,11 @@
   outline-offset: 3px;
 }
 
+/* Governance-enforced WCAG AA correction discovered by the browser accessibility gate. */
+.auth-footnote {
+  color: var(--muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html:focus-within {
     scroll-behavior: auto;
