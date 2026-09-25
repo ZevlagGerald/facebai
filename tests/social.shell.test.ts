@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const page = readFileSync(new URL("../app/tambayan/page.tsx", import.meta.url), "utf8");
+const postComposer = readFileSync(new URL("../app/components/post-composer.tsx", import.meta.url), "utf8");
 const shell = readFileSync(new URL("../app/components/social-shell.tsx", import.meta.url), "utf8");
 const languageSwitcher = readFileSync(new URL("../app/components/language-switcher.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("../app/tambayan/tambayan.module.css", import.meta.url), "utf8");
@@ -35,12 +36,14 @@ test("F2 GUI V2.1 uses separated social surfaces and distinct future-state seman
   assert.doesNotMatch(css, /--social-canvas: #0b1f17/);
 });
 
-test("F2 GUI V2.1 composer communicates with icons and localized actions", () => {
-  assert.match(page, /SocialIcon name="photo"/);
-  assert.match(page, /SocialIcon name="friends"/);
+test("F2/F3 composer retains icon-guided localized future actions across the component boundary", () => {
+  assert.match(page, /<PostComposer initial=\{initial\} locale=\{locale\} \/>/);
+  assert.match(postComposer, /SocialIcon name="photo"/);
+  assert.match(postComposer, /SocialIcon name="friends"/);
+  assert.match(postComposer, /t\("composer\.photoFuture"\)/);
+  assert.match(postComposer, /t\("composer\.withBaiFuture"\)/);
+  assert.match(postComposer, /<button type="button" disabled>/);
   assert.match(page, /SocialIcon name="sparkles"/);
-  assert.match(page, /className=\{styles\.composerState\}>\{t\("common\.puhon"\)\}/);
-  assert.match(css, /\.composerActionIcon/);
 });
 
 test("F2 authenticated Tambayan never fabricates identity when profile loading fails", () => {
