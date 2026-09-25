@@ -87,6 +87,7 @@ export default async function BaiProfilePage({ params }: { params: Promise<{ use
         avatarUrl={avatarUrl}
         coverUrl={coverUrl}
         actionHref={isOwner ? "/ako/edit" : undefined}
+        mediaEditHref={isOwner ? "/ako/edit" : undefined}
         locale={locale}
       />
 

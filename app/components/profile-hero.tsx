@@ -12,6 +12,7 @@ export function ProfileHero({
   coverUrl,
   actionHref,
   actionLabel,
+  mediaEditHref,
   locale = DEFAULT_LOCALE,
 }: {
   displayName: string;
@@ -21,6 +22,7 @@ export function ProfileHero({
   coverUrl?: string | null;
   actionHref?: string;
   actionLabel?: string;
+  mediaEditHref?: string;
   locale?: Locale;
 }) {
   const initial = displayName.charAt(0).toUpperCase() || "B";
@@ -38,15 +40,37 @@ export function ProfileHero({
             <span>{t("profile.noCover")}</span>
           </div>
         )}
+        {mediaEditHref ? (
+          <Link
+            className={styles.coverEdit}
+            href={`${mediaEditHref}?section=cover`}
+            aria-label={`${t("profile.editProfile")}: ${t("profile.coverPhoto")}`}
+            title={t("profile.coverPhoto")}
+          >
+            <SocialIcon name="camera" size={18} />
+          </Link>
+        ) : null}
       </div>
 
       <div className={styles.identityRow}>
-        <div className={styles.avatar}>
-          {avatarUrl ? (
-            <img className={styles.avatarImage} src={avatarUrl} alt={`${displayName} ${t("profile.profilePhoto")}`} />
-          ) : (
-            <span aria-label={t("profile.noProfilePhoto")}>{initial}</span>
-          )}
+        <div className={styles.avatarWrap}>
+          <div className={styles.avatar}>
+            {avatarUrl ? (
+              <img className={styles.avatarImage} src={avatarUrl} alt={`${displayName} ${t("profile.profilePhoto")}`} />
+            ) : (
+              <span aria-label={t("profile.noProfilePhoto")}>{initial}</span>
+            )}
+          </div>
+          {mediaEditHref ? (
+            <Link
+              className={styles.avatarEdit}
+              href={`${mediaEditHref}?section=avatar`}
+              aria-label={`${t("profile.editProfile")}: ${t("profile.profilePhoto")}`}
+              title={t("profile.profilePhoto")}
+            >
+              <SocialIcon name="camera" size={18} />
+            </Link>
+          ) : null}
         </div>
         <div className={styles.identity}>
           <h1>{displayName}</h1>

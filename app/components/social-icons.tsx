@@ -9,6 +9,8 @@ export type SocialIconName =
   | "photo"
   | "sparkles"
   | "chevron-down"
+  | "chevron-right"
+  | "camera"
   | "edit"
   | "sun"
   | "moon";
@@ -56,6 +58,10 @@ export function SocialIcon({
       return <svg {...common}><path d="m12 3 1.2 3.2L16.5 7.5l-3.3 1.3L12 12l-1.2-3.2-3.3-1.3 3.3-1.3L12 3Z"/><path d="m18.5 13 .8 2.1 2.2.9-2.2.9-.8 2.1-.8-2.1-2.2-.9 2.2-.9.8-2.1Z"/><path d="m5 13 .7 1.8 1.8.7-1.8.7L5 18l-.7-1.8-1.8-.7 1.8-.7L5 13Z"/></svg>;
     case "chevron-down":
       return <svg {...common}><path d="m7 9.5 5 5 5-5"/></svg>;
+    case "chevron-right":
+      return <svg {...common}><path d="m9 7 5 5-5 5"/></svg>;
+    case "camera":
+      return <svg {...common}><path d="M4 7.5h3l1.4-2h7.2l1.4 2h3a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="4"/></svg>;
     case "edit":
       return <svg {...common}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4L16.5 3.5Z"/></svg>;
     case "sun":

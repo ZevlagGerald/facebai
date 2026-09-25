@@ -21,10 +21,12 @@ export function ProfileMediaUploader({
   kind,
   label,
   locale = DEFAULT_LOCALE,
+  compact = false,
 }: {
   kind: ProfileMediaKind;
   label: string;
   locale?: Locale;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const t = getTranslations(locale);
@@ -88,10 +90,12 @@ export function ProfileMediaUploader({
 
   return (
     <div className={styles.uploader}>
-      <div className={styles.heading}>
-        <strong>{label}</strong>
-        <span>{kind === "avatar" ? t("profile.squareBest") : t("profile.wideBest")}</span>
-      </div>
+      {!compact ? (
+        <div className={styles.heading}>
+          <strong>{label}</strong>
+          <span>{kind === "avatar" ? t("profile.squareBest") : t("profile.wideBest")}</span>
+        </div>
+      ) : null}
       <input
         className={styles.fileInput}
         id={inputId}

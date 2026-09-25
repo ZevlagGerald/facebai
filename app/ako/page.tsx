@@ -84,6 +84,7 @@ export default async function AkoPage({
         avatarUrl={avatarUrl}
         coverUrl={coverUrl}
         actionHref="/ako/edit"
+        mediaEditHref="/ako/edit"
         locale={locale}
       />
 
