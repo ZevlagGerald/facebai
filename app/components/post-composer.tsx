@@ -7,6 +7,7 @@ import { AuthSubmitButton } from "@/app/components/auth-submit-button";
 import { InlineStatus } from "@/app/components/inline-status";
 import { SocialIcon } from "@/app/components/social-icons";
 import { type Locale } from "@/lib/i18n/config";
+import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getF3PostTranslations } from "@/lib/i18n/f3-posts";
 import { POST_BODY_MAX_LENGTH } from "@/lib/posts/validation";
 import styles from "./post-composer.module.css";
@@ -23,6 +24,7 @@ export function PostComposer({
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const t = getF3PostTranslations(locale);
+  const t2 = getF2SocialTranslations(locale);
   const [state, formAction] = useActionState(createPostWithState, initialState);
 
   useEffect(() => {
@@ -77,12 +79,12 @@ export function PostComposer({
       ) : null}
 
       <div className={styles.footer}>
-        <div className={styles.futureActions} aria-label="PUHON">
+        <div className={styles.futureActions} aria-label={t2("common.puhon")}>
           <button type="button" disabled>
-            <SocialIcon name="photo" size={18} /> Photo
+            <SocialIcon name="photo" size={18} /> {t2("feed.photo")}
           </button>
           <button type="button" disabled>
-            <SocialIcon name="friends" size={18} /> Bai
+            <SocialIcon name="friends" size={18} /> {t2("feed.withBai")}
           </button>
         </div>
         <AuthSubmitButton
