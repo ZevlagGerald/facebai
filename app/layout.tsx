@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./auth-polish.css";
 
 export const metadata: Metadata = {
   title: "FaceBai — Tambayan sa mga Bisaya",
