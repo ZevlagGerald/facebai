@@ -1,6 +1,9 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import profileStyles from "@/app/components/profile-surface.module.css";
 import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
+import { getInteractionTranslations } from "@/lib/i18n/interaction";
 import { getLocale } from "@/lib/i18n/server";
 import { getTranslations } from "@/lib/i18n/messages";
 import { createClient } from "@/lib/supabase/server";
@@ -11,18 +14,52 @@ export const dynamic = "force-dynamic";
 export default async function TambayanPage() {
   const locale = await getLocale();
   const t = getTranslations(locale);
+  const ti = getInteractionTranslations(locale);
   const supabase = await createClient();
   const { data: userData, error } = await supabase.auth.getUser();
   if (error || !userData.user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("username, display_name, bio")
     .eq("id", userData.user.id)
     .maybeSingle();
 
-  const displayName = profile?.display_name?.trim() || "Bai";
-  const username = profile?.username || "bai";
+  if (profileError || !profile) {
+    return (
+      <main className={styles.shell}>
+        <div className={styles.layout}>
+          <aside className={styles.leftRail} aria-hidden="true" />
+          <section className={styles.feed} aria-label={ti("profile.loadFailedTitle")}>
+            <header className={styles.feedHeading}>
+              <div>
+                <p className={styles.eyebrow}>FACEBAI</p>
+                <h1 id="profile-load-failed-title">{ti("profile.loadFailedTitle")}</h1>
+              </div>
+            </header>
+
+            <section
+              className={styles.emptyFeed}
+              role="alert"
+              aria-labelledby="profile-load-failed-title"
+            >
+              <div className={styles.emptyMark} aria-hidden="true">
+                <SocialIcon name="user" size={24} />
+              </div>
+              <p>{ti("profile.loadFailed")}</p>
+              <Link className={profileStyles.secondaryLink} href="/tambayan">
+                {ti("common.retry")}
+              </Link>
+            </section>
+          </section>
+          <aside className={styles.rightRail} aria-hidden="true" />
+        </div>
+      </main>
+    );
+  }
+
+  const displayName = profile.display_name.trim();
+  const username = profile.username;
   const initial = displayName.charAt(0).toUpperCase() || "B";
 
   const rightRail = (

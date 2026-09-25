@@ -40,6 +40,18 @@ test("F2 GUI V2.1 composer communicates with icons and localized actions", () =>
   assert.match(css, /\.composerActionIcon/);
 });
 
+test("F2 authenticated Tambayan never fabricates identity when profile loading fails", () => {
+  assert.match(page, /\{ data: profile, error: profileError \} = await supabase/);
+  assert.match(page, /if \(profileError \|\| !profile\)/);
+  assert.match(page, /role="alert"/);
+  assert.match(page, /ti\("profile\.loadFailedTitle"\)/);
+  assert.match(page, /href="\/tambayan"[\s\S]*?ti\("common\.retry"\)/);
+  assert.match(page, /const displayName = profile\.display_name\.trim\(\)/);
+  assert.match(page, /const username = profile\.username/);
+  assert.doesNotMatch(page, /profile\?\.display_name\?\.trim\(\) \|\| "Bai"/);
+  assert.doesNotMatch(page, /profile\?\.username \|\| "bai"/);
+});
+
 test("F2 GUI V2.2 uses viewport workspace while keeping the feed readable", () => {
   assert.match(css, /max-width: 1820px/);
   assert.match(css, /grid-template-columns: minmax\(260px, 1fr\) minmax\(0, 720px\) minmax\(300px, 1fr\)/);

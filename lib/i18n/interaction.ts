@@ -4,7 +4,10 @@ export type InteractionMessageKey =
   | "theme.switchDark"
   | "theme.switchLight"
   | "common.loggingOut"
+  | "common.retry"
   | "language.changing"
+  | "profile.loadFailedTitle"
+  | "profile.loadFailed"
   | "profile.validationDisplayName"
   | "profile.validationUsername"
   | "profile.validationBio"
@@ -30,7 +33,10 @@ const ceb: Record<InteractionMessageKey, string> = {
   "theme.switchDark": "Balhin sa dark mode",
   "theme.switchLight": "Balhin sa light mode",
   "common.loggingOut": "Nag-log out…",
+  "common.retry": "Usba daw",
   "language.changing": "Gina-ilis ang pinulongan…",
+  "profile.loadFailedTitle": "Dili ma-load ang imong profile",
+  "profile.loadFailed": "Dili namo makuha ang imong profile karon. Sulayi pag-usab sa makadiyot.",
   "profile.validationDisplayName": "Ang display name kinahanglan 2–80 ka karakter.",
   "profile.validationUsername": "Ang username kinahanglan 3–30 ka lowercase nga letra, numero, tuldok, o underscore.",
   "profile.validationBio": "Ang bio kinahanglan 500 ka karakter o mas mubo.",
@@ -57,7 +63,10 @@ const tl: Record<InteractionMessageKey, string> = {
   "theme.switchDark": "Lumipat sa dark mode",
   "theme.switchLight": "Lumipat sa light mode",
   "common.loggingOut": "Nagla-log out…",
+  "common.retry": "Subukan muli",
   "language.changing": "Pinapalitan ang wika…",
+  "profile.loadFailedTitle": "Hindi ma-load ang profile mo",
+  "profile.loadFailed": "Hindi namin makuha ang profile mo ngayon. Subukan muli makalipas ang ilang sandali.",
   "profile.validationDisplayName": "Dapat 2–80 character ang display name.",
   "profile.validationUsername": "Dapat 3–30 lowercase na letra, numero, tuldok, o underscore ang username.",
   "profile.validationBio": "Dapat 500 character o mas maikli ang bio.",
@@ -84,7 +93,10 @@ const en: Record<InteractionMessageKey, string> = {
   "theme.switchDark": "Switch to dark mode",
   "theme.switchLight": "Switch to light mode",
   "common.loggingOut": "Logging out…",
+  "common.retry": "Try again",
   "language.changing": "Changing language…",
+  "profile.loadFailedTitle": "We couldn't load your profile",
+  "profile.loadFailed": "Your profile is unavailable right now. Please try again in a moment.",
   "profile.validationDisplayName": "Display name must be 2–80 characters.",
   "profile.validationUsername": "Username must be 3–30 lowercase letters, numbers, dots, or underscores.",
   "profile.validationBio": "Bio must be 500 characters or fewer.",
