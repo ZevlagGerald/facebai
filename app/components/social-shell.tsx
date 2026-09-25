@@ -9,6 +9,7 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getInteractionTranslations } from "@/lib/i18n/interaction";
 import { type MessageKey } from "@/lib/i18n/messages";
+import mobileStyles from "./social-shell-mobile.module.css";
 import styles from "@/app/tambayan/tambayan.module.css";
 
 type ActiveRail = "tambayan" | "ako" | null;
@@ -27,6 +28,11 @@ const topNav: readonly NavItem[] = [
   { labelKey: "nav.friends", helperKey: "nav.friendsHelper", icon: "friends", tone: "friends", comingSoon: true },
   { labelKey: "nav.groups", helperKey: "nav.groupsHelper", icon: "groups", tone: "groups", comingSoon: true },
   { labelKey: "nav.market", helperKey: "nav.marketHelper", icon: "market", tone: "market", comingSoon: true },
+];
+
+const mobileNav: readonly NavItem[] = [
+  ...topNav,
+  { labelKey: "nav.profile", helperKey: "common.profile", icon: "user", tone: "profile", href: "/ako" },
 ];
 
 const personalShortcuts: readonly NavItem[] = [
@@ -60,18 +66,18 @@ export function SocialShell({
     <main className={styles.shell}>
       <header className={styles.topbar}>
         <div className={styles.headerLeft}>
-          <Link className={styles.brand} href="/tambayan" aria-label="FaceBai">
+          <Link className={`${styles.brand} ${mobileStyles.mobileBrand}`} href="/tambayan" aria-label="FaceBai">
             <img src="/brand/facebai-logo-light.webp?v=stable-20260925" alt="FaceBai" />
           </Link>
 
-          <label className={styles.search} aria-label={t("nav.searchPlaceholder")}>
+          <label className={`${styles.search} ${mobileStyles.desktopSearch}`} aria-label={t("nav.searchPlaceholder")}>
             <SocialIcon name="search" size={18} />
             <input type="search" placeholder={t("nav.searchPlaceholder")} disabled aria-describedby="search-puhon" />
             <small id="search-puhon" className={styles.puhonMini}>{t("common.puhon")}</small>
           </label>
         </div>
 
-        <nav className={styles.topnav} aria-label="FaceBai">
+        <nav className={`${styles.topnav} ${mobileStyles.desktopTopNav}`} aria-label="FaceBai">
           {topNav.map((item) => {
             const label = t(item.labelKey);
             const helper = t(item.helperKey);
@@ -108,6 +114,15 @@ export function SocialShell({
         </nav>
 
         <div className={styles.headerActions}>
+          <button
+            className={mobileStyles.mobileSearch}
+            type="button"
+            disabled
+            aria-label={`${t("nav.searchPlaceholder")}: ${t("common.comingSoon")}`}
+            title={t("common.comingSoon")}
+          >
+            <SocialIcon name="search" size={18} />
+          </button>
           <LanguageSwitcher locale={locale} />
           <button className={styles.utilityButton} type="button" disabled aria-label={t("common.notificationsComingSoon")} title={t("nav.notificationsTitle")}>
             <SocialIcon name="bell" size={19} />
@@ -145,7 +160,47 @@ export function SocialShell({
         </div>
       </header>
 
-      <div className={styles.layout}>
+      <nav className={mobileStyles.mobileBottomNav} aria-label="FaceBai">
+        {mobileNav.map((item) => {
+          const label = t(item.labelKey);
+          const helper = t(item.helperKey);
+          const active = item.href === "/tambayan"
+            ? activeRail === "tambayan"
+            : item.href === "/ako"
+              ? activeRail === "ako"
+              : false;
+
+          if (item.href) {
+            return (
+              <Link
+                key={item.labelKey}
+                href={item.href}
+                className={`${mobileStyles.mobileNavItem} ${active ? mobileStyles.mobileNavActive : ""}`}
+                aria-current={active ? "page" : undefined}
+                aria-label={`${label}: ${helper}`}
+              >
+                <span className={mobileStyles.mobileNavIcon} data-tone={item.tone}><SocialIcon name={item.icon} size={21} /></span>
+                <span className={mobileStyles.mobileNavLabel}>{label}</span>
+              </Link>
+            );
+          }
+
+          return (
+            <span
+              key={item.labelKey}
+              className={`${mobileStyles.mobileNavItem} ${mobileStyles.mobileNavDisabled}`}
+              aria-disabled="true"
+              aria-label={`${label}: ${helper}, ${t("common.comingSoon")}`}
+            >
+              <span className={mobileStyles.mobileNavIcon} data-tone={item.tone}><SocialIcon name={item.icon} size={21} /></span>
+              <span className={mobileStyles.mobileNavLabel}>{label}</span>
+              <span className={mobileStyles.mobilePuhonDot} aria-hidden="true" />
+            </span>
+          );
+        })}
+      </nav>
+
+      <div className={`${styles.layout} ${mobileStyles.mobileLayout}`}>
         <aside className={styles.leftRail} aria-label={t("nav.shortcuts")}>
           <Link className={styles.profileMini} href="/ako" aria-label={`${t("common.profile")}: ${displayName}`}>
             <div className={styles.avatar} aria-hidden="true">{initial}</div>
