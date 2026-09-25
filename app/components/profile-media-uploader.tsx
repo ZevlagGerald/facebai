@@ -41,6 +41,10 @@ const commitMessageKey: Record<CommitProfileMediaErrorCode, InteractionMessageKe
   save_failed: "profile.mediaSaveFailed",
 };
 
+function isRetryableCommitError(code: CommitProfileMediaErrorCode) {
+  return code === "verify_failed" || code === "profile_load_failed" || code === "save_failed";
+}
+
 export function ProfileMediaUploader({
   kind,
   label,
@@ -84,7 +88,7 @@ export function ProfileMediaUploader({
     const supabase = createClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      setRetryFile(file);
+      setRetryFile(null);
       setState("error");
       setMessage(ti("profile.mediaSessionExpired"));
       return;
@@ -109,7 +113,7 @@ export function ProfileMediaUploader({
     const commit = await commitProfileMedia({ kind, path });
     if (!commit.ok) {
       await supabase.storage.from(PROFILE_MEDIA_BUCKET).remove([path]);
-      setRetryFile(file);
+      setRetryFile(isRetryableCommitError(commit.errorCode) ? file : null);
       setState("error");
       setMessage(ti(commitMessageKey[commit.errorCode]));
       return;
