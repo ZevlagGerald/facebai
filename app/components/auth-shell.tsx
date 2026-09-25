@@ -19,7 +19,7 @@ export function AuthShell({
       <div className="auth-background" aria-hidden="true" />
       <div className="auth-shade" aria-hidden="true" />
       <LanguageSwitcher locale={locale} variant="auth" />
-      <ThemeToggle />
+      <ThemeToggle locale={locale} />
 
       <section className="auth-stage" aria-label={t("auth.accessAria")}>
         <aside className="auth-brand" aria-label="FaceBai">
