@@ -20,6 +20,10 @@ const signedUrlScopeMigration = readFileSync(
   new URL("../supabase/migrations/0005_profile_media_signed_url_scope.sql", import.meta.url),
   "utf8",
 );
+const cleanupScopeMigration = readFileSync(
+  new URL("../supabase/migrations/0006_profile_media_delete_many_scope.sql", import.meta.url),
+  "utf8",
+);
 
 test("profile media accepts only the locked image formats", () => {
   assert.equal(profileMediaExtension("image/jpeg"), "jpg");
@@ -61,4 +65,19 @@ test("profile media RLS permits signed display without reopening global listing"
   assert.match(readScopeMigration, /allow_only_operation\('object\.list'\)/);
   assert.match(readScopeMigration, /storage\.foldername\(name\)\)\[1\].*auth\.uid\(\)/s);
   assert.match(readScopeMigration, /\[2\].*in \('avatar', 'cover'\)/s);
+});
+
+test("profile media cleanup permits batch delete visibility without broadening delete ownership", () => {
+  assert.match(cleanupScopeMigration, /'object\.delete_many'/);
+  assert.match(cleanupScopeMigration, /'object\.sign'/);
+  assert.doesNotMatch(cleanupScopeMigration, /allow_only_operation\('object\.list'\)/);
+
+  const profileMediaFoundation = readFileSync(
+    new URL("../supabase/migrations/0003_profile_media.sql", import.meta.url),
+    "utf8",
+  );
+  assert.match(profileMediaFoundation, /create policy "users delete own profile media"/);
+  assert.match(profileMediaFoundation, /for delete\s+to authenticated/s);
+  assert.match(profileMediaFoundation, /storage\.foldername\(name\)\)\[1\].*auth\.uid\(\)/s);
+  assert.match(profileMediaFoundation, /\[2\].*in \('avatar', 'cover'\)/s);
 });
