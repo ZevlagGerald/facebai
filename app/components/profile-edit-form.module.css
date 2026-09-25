@@ -1,0 +1,21 @@
+.closeButton {
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.generalStatus {
+  margin-bottom: 16px;
+}
+
+.invalidField {
+  border-color: var(--error) !important;
+}
+
+.fieldError {
+  color: var(--error);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+}
