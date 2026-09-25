@@ -1,8 +1,8 @@
 # FaceBai Design & Interaction Governance v1.0
 
-Status: **CANDIDATE OFFICIAL GOVERNANCE**
+Status: **OFFICIAL — v1.0**
 
-This document is the proposed product-interface governance for FaceBai. It is intentionally not yet the root project authority. It becomes official only after explicit owner approval and a separate adoption change to `GOVERNANCE.md`.
+This document is the official product-interface governance for FaceBai, adopted by owner approval on 2026-09-25. It is normative under root `GOVERNANCE.md` and applies to all user-facing FaceBai modules unless a higher-authority owner directive or locked project rule explicitly overrides it.
 
 ## 1. Purpose
 
@@ -26,7 +26,7 @@ When documents conflict, use this order:
 1. explicit owner directive;
 2. root `GOVERNANCE.md`;
 3. locked design/theme/asset references;
-4. this governance, once officially adopted;
+4. this official governance and its normative annexes;
 5. `docs/FACEBAI_UI_PLACEMENT_STANDARD.md`;
 6. `docs/F2_GUI_VOICE_STANDARD.md`;
 7. module-specific specifications and tests.
@@ -450,17 +450,16 @@ A module may be marked `QUALIFIED` only when:
 
 `TECHNICAL PASS` is not equivalent to `QUALIFIED` when required visual/manual/runtime evidence remains outstanding.
 
-## 29. Definition of Official Governance
+## 29. Official status and versioning
 
-This candidate becomes official only after explicit owner approval.
+This document is **Official FaceBai Design & Interaction Governance v1.0**, adopted by explicit owner approval on 2026-09-25.
 
-Recommended adoption procedure:
-1. owner reviews this candidate and subordinate standards;
-2. candidate CI/document integrity passes;
-3. owner explicitly approves adoption;
-4. root `GOVERNANCE.md` is updated in a separate bounded commit to reference this document as normative product-interface governance;
-5. version is tagged in-document (v1.0) and future material changes increment the version;
-6. no production/main merge occurs unless separately approved under repository governance.
+Rules:
+1. future material governance changes must be reviewed as a bounded tranche;
+2. material changes require explicit owner approval before they become authoritative;
+3. material revisions increment the governance version;
+4. subordinate standards and module specifications may not silently weaken this governance;
+5. adoption or revision of this governance does not authorize a `main` merge, production deployment, DNS/routes changes, secret changes, or production database mutation unless separately approved under root governance.
 
 ## 30. Research references
 

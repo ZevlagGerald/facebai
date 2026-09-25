@@ -1,8 +1,8 @@
 # FaceBai Universal Interaction Contract
 
-Status: **NORMATIVE ANNEX — candidate governance v1.0**
+Status: **NORMATIVE ANNEX — official governance v1.0**
 
-This document defines the required behavior of interactive FaceBai controls. It is subordinate to `FACEBAI_DESIGN_INTERACTION_GOVERNANCE_CANDIDATE.md` until official adoption.
+This document defines the required behavior of interactive FaceBai controls. It is subordinate to `FACEBAI_DESIGN_INTERACTION_GOVERNANCE.md` under Official FaceBai Design & Interaction Governance v1.0.
 
 ## 1. Universal interaction contract
 

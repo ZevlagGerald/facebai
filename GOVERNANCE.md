@@ -55,3 +55,32 @@ See `docs/THEME_ASSET_RULES.md` and `docs/THEME_REFERENCE_LOCK.md`.
 ## Engineering principle
 
 Implement the smallest coherent tranche, verify it, report changed files/tests/risks, then continue. Avoid redesign loops and unnecessary generated assets.
+
+## Official design and interaction governance
+
+The official product-interface governance is:
+
+- `docs/FACEBAI_DESIGN_INTERACTION_GOVERNANCE.md` — **Official FaceBai Design & Interaction Governance v1.0**;
+- `docs/FACEBAI_INTERACTION_CONTRACT.md` — normative interaction annex;
+- `docs/FACEBAI_MODULE_QUALIFICATION_STANDARD.md` — normative module qualification annex.
+
+Supporting subordinate standards include:
+
+- `docs/FACEBAI_UI_PLACEMENT_STANDARD.md`;
+- `docs/F2_GUI_VOICE_STANDARD.md`.
+
+When governance documents conflict, use this authority order:
+
+1. explicit owner directive;
+2. this root `GOVERNANCE.md`;
+3. locked design/theme/asset references;
+4. `docs/FACEBAI_DESIGN_INTERACTION_GOVERNANCE.md` and its normative annexes;
+5. `docs/FACEBAI_UI_PLACEMENT_STANDARD.md`;
+6. `docs/F2_GUI_VOICE_STANDARD.md`;
+7. module-specific specifications and tests.
+
+All new or materially changed user-facing modules must follow the official design/interaction governance and applicable qualification gates before they may be called `QUALIFIED` or `FROZEN`.
+
+Official governance changes must be versioned and reviewed as a bounded tranche. Material changes to the governance or its authority hierarchy require explicit owner approval.
+
+Adoption of the design/interaction governance does not itself authorize a merge to `main`, production deployment, DNS/routes changes, secret changes, or production database mutation.

@@ -1,8 +1,8 @@
 # FaceBai Module Qualification Standard
 
-Status: **NORMATIVE ANNEX — candidate governance v1.0**
+Status: **NORMATIVE ANNEX — official governance v1.0**
 
-This document defines the evidence required before a FaceBai module may be called `QUALIFIED`.
+This document defines the evidence required before a FaceBai module may be called `QUALIFIED` under Official FaceBai Design & Interaction Governance v1.0.
 
 ## 1. Qualification principle
 
