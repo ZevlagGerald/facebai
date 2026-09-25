@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { commitProfileMedia } from "@/app/actions/profile";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getTranslations } from "@/lib/i18n/messages";
 import {
   PROFILE_MEDIA_BUCKET,
   profileMediaExtension,
@@ -18,13 +20,16 @@ type UploadState = "idle" | "uploading" | "success" | "error";
 export function ProfileMediaUploader({
   kind,
   label,
+  locale = DEFAULT_LOCALE,
 }: {
   kind: ProfileMediaKind;
   label: string;
+  locale?: Locale;
 }) {
   const router = useRouter();
+  const t = getTranslations(locale);
   const [state, setState] = useState<UploadState>("idle");
-  const [message, setMessage] = useState("JPEG, PNG, or WebP · max 5 MB");
+  const [message, setMessage] = useState(t("profile.mediaDefault"));
   const inputId = `profile-media-${kind}`;
 
   async function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -43,13 +48,13 @@ export function ProfileMediaUploader({
     if (!extension) return;
 
     setState("uploading");
-    setMessage(`Uploading ${label.toLowerCase()}…`);
+    setMessage(`${t("profile.mediaUploading")} ${label.toLowerCase()}…`);
 
     const supabase = createClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
       setState("error");
-      setMessage("Your session expired. Sign in again and retry.");
+      setMessage(t("profile.mediaSessionExpired"));
       return;
     }
 
@@ -64,7 +69,7 @@ export function ProfileMediaUploader({
 
     if (uploadError) {
       setState("error");
-      setMessage("Upload failed. Check the image and try again.");
+      setMessage(t("profile.mediaUploadFailed"));
       return;
     }
 
@@ -77,7 +82,7 @@ export function ProfileMediaUploader({
     }
 
     setState("success");
-    setMessage(`${label} updated.`);
+    setMessage(`${label} ${t("profile.mediaUpdatedSuffix")}`);
     router.refresh();
   }
 
@@ -85,7 +90,7 @@ export function ProfileMediaUploader({
     <div className={styles.uploader}>
       <div className={styles.heading}>
         <strong>{label}</strong>
-        <span>{kind === "avatar" ? "Square works best" : "Wide image works best"}</span>
+        <span>{kind === "avatar" ? t("profile.squareBest") : t("profile.wideBest")}</span>
       </div>
       <input
         className={styles.fileInput}
@@ -100,7 +105,7 @@ export function ProfileMediaUploader({
         htmlFor={inputId}
         aria-disabled={state === "uploading"}
       >
-        {state === "uploading" ? "Uploading…" : `Choose ${label.toLowerCase()}`}
+        {state === "uploading" ? t("profile.uploading") : `${t("profile.choose")} ${label.toLowerCase()}`}
       </label>
       <p
         className={`${styles.status} ${state === "error" ? styles.error : ""} ${state === "success" ? styles.success : ""}`}
