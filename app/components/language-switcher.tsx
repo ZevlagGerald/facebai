@@ -13,7 +13,10 @@ export function LanguageSwitcher({
   const t = getTranslations(locale);
 
   return (
-    <details className={`${styles.switcher} ${variant === "auth" ? styles.auth : styles.social}`}>
+    <details
+      className={`${styles.switcher} ${variant === "auth" ? styles.auth : styles.social}`}
+      name={variant === "social" ? "facebai-header-menu" : undefined}
+    >
       <summary className={styles.summary} aria-label={t("common.language")} title={t("common.language")}>
         <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
           <circle cx="12" cy="12" r="9" />

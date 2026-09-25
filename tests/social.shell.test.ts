@@ -4,6 +4,7 @@ import test from "node:test";
 
 const page = readFileSync(new URL("../app/tambayan/page.tsx", import.meta.url), "utf8");
 const shell = readFileSync(new URL("../app/components/social-shell.tsx", import.meta.url), "utf8");
+const languageSwitcher = readFileSync(new URL("../app/components/language-switcher.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("../app/tambayan/tambayan.module.css", import.meta.url), "utf8");
 const profilePage = readFileSync(new URL("../app/ako/page.tsx", import.meta.url), "utf8");
 const editProfilePage = readFileSync(new URL("../app/ako/edit/page.tsx", import.meta.url), "utf8");
@@ -38,6 +39,30 @@ test("F2 GUI V2.1 composer communicates with icons and localized actions", () =>
   assert.match(css, /\.composerActionIcon/);
 });
 
+test("F2 GUI V2.2 uses viewport workspace while keeping the feed readable", () => {
+  assert.match(css, /max-width: 1820px/);
+  assert.match(css, /grid-template-columns: minmax\(260px, 1fr\) minmax\(0, 720px\) minmax\(300px, 1fr\)/);
+  assert.match(css, /\.leftRail \{ max-width: 310px; justify-self: start; \}/);
+  assert.match(css, /\.rightRail \{ max-width: 340px; justify-self: end; \}/);
+  assert.match(css, /grid-template-columns: minmax\(330px, 1fr\) auto minmax\(330px, 1fr\)/);
+  assert.match(shell, /className=\{styles\.headerLeft\}/);
+});
+
+test("F2 GUI V2.2 differentiates destinations with stable semantic icon colors", () => {
+  assert.match(css, /--icon-friends: #3f7fdd/);
+  assert.match(css, /--icon-groups: #7b61d1/);
+  assert.match(css, /--icon-market: #168f79/);
+  assert.match(css, /--icon-photos: #d45f82/);
+  assert.match(css, /--icon-fun: #c88713/);
+  assert.match(shell, /data-tone=\{item\.tone\}/);
+  assert.match(css, /\.railIcon\[data-tone='photos'\]/);
+});
+
+test("F2 header disclosures are exclusive so language and account cannot remain open together", () => {
+  assert.match(shell, /<details className=\{styles\.accountMenu\} name="facebai-header-menu">/);
+  assert.match(languageSwitcher, /name=\{variant === "social" \? "facebai-header-menu" : undefined\}/);
+});
+
 test("F2 shell keeps logout accessible inside the account menu", () => {
   assert.match(shell, /className=\{styles\.accountMenu\}/);
   assert.match(shell, /aria-label=\{t\("nav\.logoutAria"\)\}/);
@@ -45,9 +70,8 @@ test("F2 shell keeps logout accessible inside the account menu", () => {
   assert.match(css, /\.logout:focus-visible/);
 });
 
-test("F2 GUI retains three-column desktop architecture and engineered responsive gates", () => {
-  assert.match(css, /grid-template-columns: 232px minmax\(0, 720px\) 320px/);
-  assert.match(css, /@media \(max-width: 1280px\)/);
+test("F2 GUI retains engineered responsive gates and mobile bottom navigation", () => {
+  assert.match(css, /@media \(max-width: 1400px\)/);
   assert.match(css, /@media \(max-width: 1080px\)/);
   assert.match(css, /@media \(max-width: 860px\)/);
   assert.match(css, /@media \(max-width: 720px\)/);

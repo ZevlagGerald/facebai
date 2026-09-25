@@ -9,25 +9,27 @@ import { getTranslations, type MessageKey } from "@/lib/i18n/messages";
 import styles from "@/app/tambayan/tambayan.module.css";
 
 type ActiveRail = "tambayan" | "ako" | null;
+type IconTone = "home" | "friends" | "groups" | "market" | "profile" | "photos" | "fun";
 type NavItem = {
   labelKey: MessageKey;
   helperKey: MessageKey;
   icon: SocialIconName;
+  tone: IconTone;
   href?: string;
   comingSoon?: boolean;
 };
 
 const topNav: readonly NavItem[] = [
-  { labelKey: "nav.tambayan", helperKey: "nav.tambayanHelper", icon: "home", href: "/tambayan" },
-  { labelKey: "nav.friends", helperKey: "nav.friendsHelper", icon: "friends", comingSoon: true },
-  { labelKey: "nav.groups", helperKey: "nav.groupsHelper", icon: "groups", comingSoon: true },
-  { labelKey: "nav.market", helperKey: "nav.marketHelper", icon: "market", comingSoon: true },
+  { labelKey: "nav.tambayan", helperKey: "nav.tambayanHelper", icon: "home", tone: "home", href: "/tambayan" },
+  { labelKey: "nav.friends", helperKey: "nav.friendsHelper", icon: "friends", tone: "friends", comingSoon: true },
+  { labelKey: "nav.groups", helperKey: "nav.groupsHelper", icon: "groups", tone: "groups", comingSoon: true },
+  { labelKey: "nav.market", helperKey: "nav.marketHelper", icon: "market", tone: "market", comingSoon: true },
 ];
 
 const personalShortcuts: readonly NavItem[] = [
-  { labelKey: "nav.profile", helperKey: "common.profile", icon: "user", href: "/ako" },
-  { labelKey: "nav.photos", helperKey: "nav.photos", icon: "photo", comingSoon: true },
-  { labelKey: "nav.fun", helperKey: "nav.fun", icon: "sparkles", comingSoon: true },
+  { labelKey: "nav.profile", helperKey: "common.profile", icon: "user", tone: "profile", href: "/ako" },
+  { labelKey: "nav.photos", helperKey: "nav.photos", icon: "photo", tone: "photos", comingSoon: true },
+  { labelKey: "nav.fun", helperKey: "nav.fun", icon: "sparkles", tone: "fun", comingSoon: true },
 ];
 
 export function SocialShell({
@@ -53,15 +55,17 @@ export function SocialShell({
   return (
     <main className={styles.shell}>
       <header className={styles.topbar}>
-        <Link className={styles.brand} href="/tambayan" aria-label="FaceBai">
-          <img src="/brand/facebai-logo-light.webp?v=stable-20260925" alt="FaceBai" />
-        </Link>
+        <div className={styles.headerLeft}>
+          <Link className={styles.brand} href="/tambayan" aria-label="FaceBai">
+            <img src="/brand/facebai-logo-light.webp?v=stable-20260925" alt="FaceBai" />
+          </Link>
 
-        <label className={styles.search} aria-label={t("nav.searchPlaceholder")}>
-          <SocialIcon name="search" size={18} />
-          <input type="search" placeholder={t("nav.searchPlaceholder")} disabled aria-describedby="search-puhon" />
-          <small id="search-puhon" className={styles.puhonMini}>{t("common.puhon")}</small>
-        </label>
+          <label className={styles.search} aria-label={t("nav.searchPlaceholder")}>
+            <SocialIcon name="search" size={18} />
+            <input type="search" placeholder={t("nav.searchPlaceholder")} disabled aria-describedby="search-puhon" />
+            <small id="search-puhon" className={styles.puhonMini}>{t("common.puhon")}</small>
+          </label>
+        </div>
 
         <nav className={styles.topnav} aria-label="FaceBai">
           {topNav.map((item) => {
@@ -78,7 +82,7 @@ export function SocialShell({
                   aria-current={active ? "page" : undefined}
                   aria-label={`${label}: ${helper}`}
                 >
-                  <SocialIcon name={item.icon} size={20} />
+                  <span className={styles.navGlyph} data-tone={item.tone}><SocialIcon name={item.icon} size={20} /></span>
                   <span className={styles.navLabel}>{label}</span>
                 </Link>
               );
@@ -91,7 +95,7 @@ export function SocialShell({
                 aria-disabled="true"
                 aria-label={`${label}: ${helper}, ${t("common.comingSoon")}`}
               >
-                <SocialIcon name={item.icon} size={20} />
+                <span className={styles.navGlyph} data-tone={item.tone}><SocialIcon name={item.icon} size={20} /></span>
                 <span className={styles.navLabel}>{label}</span>
                 {item.comingSoon ? <b className={styles.navBadge}>{t("common.puhon")}</b> : null}
               </span>
@@ -108,7 +112,7 @@ export function SocialShell({
           </button>
           <ThemeToggle variant="icon" />
 
-          <details className={styles.accountMenu}>
+          <details className={styles.accountMenu} name="facebai-header-menu">
             <summary aria-label={t("nav.accountMenu")} title={t("nav.accountMenu")}>
               <span className={styles.accountAvatar} aria-hidden="true">{initial}</span>
               <SocialIcon name="chevron-down" size={15} />
@@ -157,7 +161,7 @@ export function SocialShell({
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                   >
-                    <span className={styles.railIcon}><SocialIcon name={item.icon} size={19} /></span>
+                    <span className={styles.railIcon} data-tone={item.tone}><SocialIcon name={item.icon} size={19} /></span>
                     <span>{label}</span>
                   </Link>
                 );
@@ -165,7 +169,7 @@ export function SocialShell({
 
               return (
                 <span key={item.labelKey} className={`${styles.railItem} ${styles.railDisabled}`} aria-disabled="true">
-                  <span className={styles.railIcon}><SocialIcon name={item.icon} size={19} /></span>
+                  <span className={styles.railIcon} data-tone={item.tone}><SocialIcon name={item.icon} size={19} /></span>
                   <span>{label}</span>
                   <small>{t("common.puhon")}</small>
                 </span>
