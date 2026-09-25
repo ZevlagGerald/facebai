@@ -1,0 +1,68 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+
+const localeAction = readFileSync(new URL("../app/actions/locale.ts", import.meta.url), "utf8");
+const languageSwitcher = readFileSync(new URL("../app/components/language-switcher.tsx", import.meta.url), "utf8");
+const themeToggle = readFileSync(new URL("../app/components/theme-toggle.tsx", import.meta.url), "utf8");
+const shell = readFileSync(new URL("../app/components/social-shell.tsx", import.meta.url), "utf8");
+const css = readFileSync(new URL("../app/tambayan/tambayan.module.css", import.meta.url), "utf8");
+const profilePage = readFileSync(new URL("../app/ako/page.tsx", import.meta.url), "utf8");
+const editProfilePage = readFileSync(new URL("../app/ako/edit/page.tsx", import.meta.url), "utf8");
+const uploader = readFileSync(new URL("../app/components/profile-media-uploader.tsx", import.meta.url), "utf8");
+const profileAction = readFileSync(new URL("../app/actions/profile.ts", import.meta.url), "utf8");
+const media = readFileSync(new URL("../lib/profile/media.ts", import.meta.url), "utf8");
+
+test("F2 final gate persists locale safely for one year across FaceBai routes", () => {
+  assert.match(localeAction, /store\.set\(LOCALE_COOKIE, locale/);
+  assert.match(localeAction, /path: "\/"/);
+  assert.match(localeAction, /maxAge: 60 \* 60 \* 24 \* 365/);
+  assert.match(localeAction, /sameSite: "lax"/);
+  assert.match(localeAction, /secure: process\.env\.NODE_ENV === "production"/);
+});
+
+test("F2 final gate persists theme preference and honors system preference", () => {
+  assert.match(themeToggle, /localStorage\.getItem\("facebai-theme"\)/);
+  assert.match(themeToggle, /prefers-color-scheme: dark/);
+  assert.match(themeToggle, /document\.documentElement\.dataset\.theme = initial/);
+  assert.match(themeToggle, /localStorage\.setItem\("facebai-theme", next\)/);
+});
+
+test("F2 final gate keeps language and account disclosures mutually exclusive", () => {
+  assert.match(languageSwitcher, /name=\{variant === "social" \? "facebai-header-menu" : undefined\}/);
+  assert.match(shell, /<details className=\{styles\.accountMenu\} name="facebai-header-menu">/);
+});
+
+test("F2 final gate keeps account and logout reachable at mobile breakpoints", () => {
+  assert.match(shell, /<form action=\{logout\}>/);
+  assert.match(shell, /aria-label=\{t\("nav\.logoutAria"\)\}/);
+  assert.match(css, /@media \(max-width: 720px\)[\s\S]*?\.headerActions \{ grid-column: 2; grid-row: 1; \}/);
+  assert.match(css, /@media \(max-width: 720px\)[\s\S]*?\.accountPopover \{ width: min\(270px, calc\(100vw - 24px\)\); right: -2px; \}/);
+});
+
+test("F2 final gate keeps profile identity separate from owner editing", () => {
+  assert.match(profilePage, /actionHref="\/ako\/edit"/);
+  assert.doesNotMatch(profilePage, /<form action=\{updateProfile\}/);
+  assert.match(editProfilePage, /<form action=\{updateProfile\}/);
+  assert.match(editProfilePage, /ProfileMediaUploader kind="avatar"/);
+  assert.match(editProfilePage, /ProfileMediaUploader kind="cover"/);
+});
+
+test("F2 final gate constrains profile media before upload and exposes status accessibly", () => {
+  assert.match(media, /PROFILE_MEDIA_MAX_BYTES = 5 \* 1024 \* 1024/);
+  assert.match(media, /"image\/jpeg": "jpg"/);
+  assert.match(media, /"image\/png": "png"/);
+  assert.match(media, /"image\/webp": "webp"/);
+  assert.match(uploader, /accept="image\/jpeg,image\/png,image\/webp"/);
+  assert.match(uploader, /disabled=\{state === "uploading"\}/);
+  assert.match(uploader, /role="status"/);
+  assert.match(uploader, /aria-live="polite"/);
+});
+
+test("F2 final gate verifies owner-scoped media paths before profile commit and cleans replaced media", () => {
+  assert.match(profileAction, /isOwnedProfileMediaPath\(userId, input\.kind, input\.path\)/);
+  assert.match(profileAction, /\.list\(folder, \{ limit: 10, search: filename \}\)/);
+  assert.match(profileAction, /\.update\(mediaUpdate\)/);
+  assert.match(profileAction, /previousKey && previousKey !== input\.path && isOwnedProfileMediaPath/);
+  assert.match(profileAction, /\.remove\(\[previousKey\]\)/);
+});
