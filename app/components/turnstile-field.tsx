@@ -62,6 +62,9 @@ export function TurnstileField({ action }: { action: TurnstileAction }) {
   }, [action, scriptReady, setSubmitEnabled, siteKey]);
 
   useEffect(() => {
+    // Keep protected forms blocked while Turnstile is loading, missing, expired,
+    // or recovering. Server-side validation remains the final authority.
+    setSubmitEnabled(false);
     renderWidget();
     return () => {
       if (widgetIdRef.current && window.turnstile?.remove) {
@@ -69,13 +72,27 @@ export function TurnstileField({ action }: { action: TurnstileAction }) {
         widgetIdRef.current = null;
       }
     };
-  }, [renderWidget]);
+  }, [renderWidget, setSubmitEnabled]);
 
   const retry = () => {
     setToken("");
-    setStatus("ready");
     setSubmitEnabled(false);
-    if (widgetIdRef.current && window.turnstile) window.turnstile.reset(widgetIdRef.current);
+
+    if (widgetIdRef.current && window.turnstile) {
+      setStatus("ready");
+      window.turnstile.reset(widgetIdRef.current);
+      return;
+    }
+
+    if (window.turnstile) {
+      setStatus("loading");
+      renderWidget();
+      return;
+    }
+
+    // A script-network failure cannot be repaired by widget.reset(). Reloading
+    // gives the browser a clean chance to fetch Cloudflare's challenge script.
+    window.location.reload();
   };
 
   if (!siteKey) {
@@ -93,7 +110,11 @@ export function TurnstileField({ action }: { action: TurnstileAction }) {
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         strategy="afterInteractive"
         onReady={() => setScriptReady(true)}
-        onError={() => setStatus("error")}
+        onError={() => {
+          setToken("");
+          setStatus("error");
+          setSubmitEnabled(false);
+        }}
       />
       <input type="hidden" name="cf-turnstile-response" value={token} readOnly />
       <div className="turnstile-heading">
