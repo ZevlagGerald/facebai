@@ -6,8 +6,9 @@ import { LanguageSwitcher } from "@/app/components/language-switcher";
 import { SocialIcon, type SocialIconName } from "@/app/components/social-icons";
 import { ThemeToggle } from "@/app/components/theme-toggle";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getInteractionTranslations } from "@/lib/i18n/interaction";
-import { getTranslations, type MessageKey } from "@/lib/i18n/messages";
+import { type MessageKey } from "@/lib/i18n/messages";
 import styles from "@/app/tambayan/tambayan.module.css";
 
 type ActiveRail = "tambayan" | "ako" | null;
@@ -52,7 +53,7 @@ export function SocialShell({
   locale?: Locale;
 }) {
   const initial = displayName.charAt(0).toUpperCase() || "B";
-  const t = getTranslations(locale);
+  const t = getF2SocialTranslations(locale);
   const ti = getInteractionTranslations(locale);
 
   return (

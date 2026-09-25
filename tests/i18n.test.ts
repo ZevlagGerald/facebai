@@ -42,14 +42,16 @@ test("F2 social surfaces use a bounded locale polish layer without changing the 
   assert.match(f2Social, /getTranslations, type MessageKey/);
   assert.match(f2Social, /"feed\.homeFeed": "TAMBAYAN FEED"/);
   assert.match(f2Social, /"feed\.marketEyebrow": "PUHON"/);
+  assert.match(f2Social, /"nav\.profileMenu": "Akong profile"/);
   assert.match(f2Social, /"profile\.about": "BAHIN"/);
   assert.match(f2Social, /"profile\.urlEyebrow": "LINK SA PROFILE"/);
   assert.match(f2Social, /"profile\.editProfile": "Usba ang profile"/);
   assert.match(f2Social, /"profile\.profilePhoto": "Litrato sa profile"/);
   assert.match(f2Social, /"feed\.homeFeed": "FEED NG TAMBAYAN"/);
+  assert.match(f2Social, /"nav\.marketHelper": "Pamilihan"/);
   assert.match(f2Social, /"profile\.profilePhoto": "Larawan sa profile"/);
 
-  for (const source of [tambayan, profilePage, profileHero, contextualEditor, editProfilePage, editProfileForm]) {
+  for (const source of [socialShell, tambayan, profilePage, profileHero, contextualEditor, editProfilePage, editProfileForm]) {
     assert.match(source, /getF2SocialTranslations/);
   }
 });

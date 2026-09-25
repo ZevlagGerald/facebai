@@ -5,6 +5,9 @@ const f2SocialOverrides: Partial<Record<Locale, Partial<Record<MessageKey, strin
   ceb: {
     "common.profile": "Ako",
     "common.editProfile": "Usba ang profile",
+    "nav.tambayanHelper": "Tambayan feed",
+    "nav.profileMenu": "Akong profile",
+    "nav.logoutAria": "Lakaw sa FaceBai",
     "feed.homeFeed": "TAMBAYAN FEED",
     "feed.postsAndFeed": "MGA POST UG FEED · PUHON",
     "feed.marketEyebrow": "PUHON",
@@ -32,6 +35,10 @@ const f2SocialOverrides: Partial<Record<Locale, Partial<Record<MessageKey, strin
     "profile.editContentLabel": "Usba ang imong FaceBai profile",
   },
   tl: {
+    "nav.tambayanHelper": "Feed ng Tambayan",
+    "nav.friendsHelper": "Mga Kaibigan",
+    "nav.groupsHelper": "Mga Grupo",
+    "nav.marketHelper": "Pamilihan",
     "feed.homeFeed": "FEED NG TAMBAYAN",
     "feed.postsAndFeed": "MGA POST AT FEED · PARATING PA",
     "profile.noBioAdd": "Wala pang bio. Maaari kang magdagdag kapag in-edit mo ang profile.",
