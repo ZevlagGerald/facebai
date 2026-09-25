@@ -1,10 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { GovernedButton } from "@/app/components/governed-button";
 import { SocialIcon } from "@/app/components/social-icons";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getInteractionTranslations } from "@/lib/i18n/interaction";
 
-export function ThemeToggle({ variant = "text" }: { variant?: "text" | "icon" }) {
+export function ThemeToggle({
+  variant = "text",
+  locale = DEFAULT_LOCALE,
+}: {
+  variant?: "text" | "icon";
+  locale?: Locale;
+}) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const ti = getInteractionTranslations(locale);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("facebai-theme");
@@ -23,20 +33,22 @@ export function ThemeToggle({ variant = "text" }: { variant?: "text" | "icon" })
   }
 
   const nextTheme = theme === "light" ? "dark" : "light";
+  const actionLabel = nextTheme === "dark" ? ti("theme.switchDark") : ti("theme.switchLight");
 
   return (
-    <button
+    <GovernedButton
       className="theme-toggle"
       type="button"
       onClick={toggle}
-      aria-label={`Switch to ${nextTheme} mode`}
-      title={`Switch to ${nextTheme} mode`}
+      aria-label={actionLabel}
+      title={actionLabel}
+      unstyled
     >
       {variant === "icon" ? (
         <SocialIcon name={theme === "light" ? "moon" : "sun"} size={19} />
       ) : (
         theme === "light" ? "Dark" : "Light"
       )}
-    </button>
+    </GovernedButton>
   );
 }
