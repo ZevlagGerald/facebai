@@ -1,4 +1,5 @@
 import { setLocale } from "@/app/actions/locale";
+import { LocaleOptionButton } from "@/app/components/locale-option-button";
 import { LOCALE_LABELS, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/messages";
 import styles from "./language-switcher.module.css";
@@ -17,7 +18,12 @@ export function LanguageSwitcher({
       className={`${styles.switcher} ${variant === "auth" ? styles.auth : styles.social}`}
       name={variant === "social" ? "facebai-header-menu" : undefined}
     >
-      <summary className={styles.summary} aria-label={t("common.language")} title={t("common.language")}>
+      <summary
+        className={styles.summary}
+        aria-label={t("common.language")}
+        title={t("common.language")}
+        data-facebai-action
+      >
         <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
           <circle cx="12" cy="12" r="9" />
           <path d="M3 12h18M12 3c2.6 2.5 4 5.5 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.5-4-9s1.4-6.5 4-9Z" />
@@ -28,18 +34,11 @@ export function LanguageSwitcher({
       <div className={styles.menu} role="menu" aria-label={t("common.language")}>
         {SUPPORTED_LOCALES.map((option) => (
           <form key={option} action={setLocale} className={styles.optionForm}>
-            <button
-              className={styles.option}
-              type="submit"
-              name="locale"
-              value={option}
-              role="menuitem"
-              aria-current={option === locale ? "true" : undefined}
-            >
-              <strong>{LOCALE_LABELS[option]}</strong>
-              <small>{option.toUpperCase()}</small>
-              <span className={styles.check} aria-hidden="true">{option === locale ? "✓" : ""}</span>
-            </button>
+            <LocaleOptionButton
+              option={option}
+              currentLocale={locale}
+              label={LOCALE_LABELS[option]}
+            />
           </form>
         ))}
       </div>
