@@ -9,11 +9,23 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { validateProfileInput } from "@/lib/profile/validation";
 
-function fail(message: string): never {
-  redirect(`/ako/edit?error=${encodeURIComponent(message)}`);
-}
+export type ProfileUpdateErrorCode =
+  | "display_name"
+  | "username"
+  | "bio"
+  | "username_taken"
+  | "save_failed";
 
-export async function updateProfile(formData: FormData) {
+export type ProfileUpdateState = {
+  errorCode: ProfileUpdateErrorCode | null;
+};
+
+export const INITIAL_PROFILE_UPDATE_STATE: ProfileUpdateState = { errorCode: null };
+
+export async function updateProfileWithState(
+  _previousState: ProfileUpdateState,
+  formData: FormData,
+): Promise<ProfileUpdateState> {
   const supabase = await createClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) redirect("/login?next=/ako/edit");
@@ -24,7 +36,7 @@ export async function updateProfile(formData: FormData) {
     bio: String(formData.get("bio") ?? ""),
   });
 
-  if (!validation.ok) fail(validation.error);
+  if (!validation.ok) return { errorCode: validation.code };
 
   const { error } = await supabase
     .from("profiles")
@@ -35,46 +47,60 @@ export async function updateProfile(formData: FormData) {
     })
     .eq("id", userData.user.id);
 
-  if (error?.code === "23505") fail("That username is already taken. Try another one, Bai.");
-  if (error) fail("Sus, naay nisipyat while saving your profile. Please try again.");
+  if (error?.code === "23505") return { errorCode: "username_taken" };
+  if (error) return { errorCode: "save_failed" };
 
   redirect("/ako?updated=1");
 }
 
+export async function updateProfile(formData: FormData) {
+  const state = await updateProfileWithState(INITIAL_PROFILE_UPDATE_STATE, formData);
+  if (state.errorCode) redirect(`/ako/edit?error=${encodeURIComponent(state.errorCode)}`);
+}
+
+export type CommitProfileMediaErrorCode =
+  | "unsupported_kind"
+  | "session_expired"
+  | "invalid_path"
+  | "invalid_file"
+  | "verify_failed"
+  | "profile_load_failed"
+  | "save_failed";
+
 export type CommitProfileMediaResult =
   | { ok: true }
-  | { ok: false; error: string };
+  | { ok: false; errorCode: CommitProfileMediaErrorCode };
 
 export async function commitProfileMedia(input: {
   kind: ProfileMediaKind;
   path: string;
 }): Promise<CommitProfileMediaResult> {
   if (input.kind !== "avatar" && input.kind !== "cover") {
-    return { ok: false, error: "Unsupported profile media type." };
+    return { ok: false, errorCode: "unsupported_kind" };
   }
 
   const supabase = await createClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) {
-    return { ok: false, error: "Your session expired. Sign in again and retry." };
+    return { ok: false, errorCode: "session_expired" };
   }
 
   const userId = userData.user.id;
   if (!isOwnedProfileMediaPath(userId, input.kind, input.path)) {
-    return { ok: false, error: "Invalid profile media path." };
+    return { ok: false, errorCode: "invalid_path" };
   }
 
   const parts = input.path.split("/");
   const filename = parts.at(-1);
   const folder = `${userId}/${input.kind}`;
-  if (!filename) return { ok: false, error: "Invalid profile media file." };
+  if (!filename) return { ok: false, errorCode: "invalid_file" };
 
   const { data: objects, error: objectError } = await supabase.storage
     .from(PROFILE_MEDIA_BUCKET)
     .list(folder, { limit: 10, search: filename });
 
   if (objectError || !objects?.some((object) => object.name === filename)) {
-    return { ok: false, error: "Uploaded image could not be verified. Please retry." };
+    return { ok: false, errorCode: "verify_failed" };
   }
 
   const column = input.kind === "avatar" ? "avatar_key" : "cover_key";
@@ -85,7 +111,7 @@ export async function commitProfileMedia(input: {
     .maybeSingle();
 
   if (currentError || !current) {
-    return { ok: false, error: "Profile could not be loaded. Please retry." };
+    return { ok: false, errorCode: "profile_load_failed" };
   }
 
   const previousKey = current[column];
@@ -98,7 +124,7 @@ export async function commitProfileMedia(input: {
     .eq("id", userId);
 
   if (updateError) {
-    return { ok: false, error: "Profile image could not be saved. Please retry." };
+    return { ok: false, errorCode: "save_failed" };
   }
 
   if (previousKey && previousKey !== input.path && isOwnedProfileMediaPath(userId, input.kind, previousKey)) {
