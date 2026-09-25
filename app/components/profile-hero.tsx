@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { SocialIcon } from "@/app/components/social-icons";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getTranslations } from "@/lib/i18n/messages";
 import styles from "@/app/components/profile-surface.module.css";
 
 export function ProfileHero({
@@ -9,7 +11,8 @@ export function ProfileHero({
   avatarUrl,
   coverUrl,
   actionHref,
-  actionLabel = "Edit profile",
+  actionLabel,
+  locale = DEFAULT_LOCALE,
 }: {
   displayName: string;
   username: string;
@@ -18,18 +21,21 @@ export function ProfileHero({
   coverUrl?: string | null;
   actionHref?: string;
   actionLabel?: string;
+  locale?: Locale;
 }) {
   const initial = displayName.charAt(0).toUpperCase() || "B";
+  const t = getTranslations(locale);
+  const resolvedActionLabel = actionLabel ?? t("profile.editProfile");
 
   return (
-    <section className={styles.hero} aria-label={`${displayName}'s profile`}>
+    <section className={styles.hero} aria-label={`${displayName} · ${t("common.profile")}`}>
       <div className={styles.cover}>
         {coverUrl ? (
-          <img className={styles.coverImage} src={coverUrl} alt={`${displayName} cover`} />
+          <img className={styles.coverImage} src={coverUrl} alt={`${displayName} ${t("profile.coverPhoto")}`} />
         ) : (
-          <div className={styles.coverFallback} aria-label="No cover photo yet">
+          <div className={styles.coverFallback} aria-label={t("profile.noCover")}>
             <SocialIcon name="photo" size={22} />
-            <span>No cover photo yet</span>
+            <span>{t("profile.noCover")}</span>
           </div>
         )}
       </div>
@@ -37,30 +43,30 @@ export function ProfileHero({
       <div className={styles.identityRow}>
         <div className={styles.avatar}>
           {avatarUrl ? (
-            <img className={styles.avatarImage} src={avatarUrl} alt={`${displayName} profile`} />
+            <img className={styles.avatarImage} src={avatarUrl} alt={`${displayName} ${t("profile.profilePhoto")}`} />
           ) : (
-            <span aria-label="No profile photo yet">{initial}</span>
+            <span aria-label={t("profile.noProfilePhoto")}>{initial}</span>
           )}
         </div>
         <div className={styles.identity}>
           <h1>{displayName}</h1>
           <p className={styles.handle}>@{username}</p>
-          <p className={`${styles.bio} ${bio ? "" : styles.emptyBio}`}>{bio || "Wala pay bio. Kuan sa."}</p>
+          <p className={`${styles.bio} ${bio ? "" : styles.emptyBio}`}>{bio || t("profile.noBio")}</p>
         </div>
         {actionHref ? (
           <div className={styles.profileActions}>
             <Link className={styles.primaryAction} href={actionHref}>
               <SocialIcon name="edit" size={18} />
-              {actionLabel}
+              {resolvedActionLabel}
             </Link>
           </div>
         ) : null}
       </div>
 
-      <nav className={styles.profileTabs} aria-label="Profile sections">
-        <span className={`${styles.profileTab} ${styles.profileTabActive}`} aria-current="page">Profile</span>
-        <span className={styles.profileTab} aria-disabled="true">Mga Post <small>PUHON</small></span>
-        <span className={styles.profileTab} aria-disabled="true">Mga Litrato <small>PUHON</small></span>
+      <nav className={styles.profileTabs} aria-label={t("profile.sectionsAria")}>
+        <span className={`${styles.profileTab} ${styles.profileTabActive}`} aria-current="page">{t("profile.tabProfile")}</span>
+        <span className={styles.profileTab} aria-disabled="true">{t("profile.tabPosts")} <small>{t("common.puhon")}</small></span>
+        <span className={styles.profileTab} aria-disabled="true">{t("profile.tabPhotos")} <small>{t("common.puhon")}</small></span>
       </nav>
     </section>
   );
