@@ -116,7 +116,7 @@ export default async function EditAkoPage({
                   <SocialIcon name="chevron-right" size={19} />
                 </Link>
 
-                <Link className={styles.editChoice} href="/ako/edit?section=bio">
+                <a className={styles.editChoice} href="/ako/edit?section=bio" data-facebai-dirty-boundary>
                   <span className={`${styles.choicePreview} ${styles.choiceIcon}`} aria-hidden="true">
                     <SocialIcon name="edit" size={19} />
                   </span>
@@ -125,9 +125,9 @@ export default async function EditAkoPage({
                     <small>{profile.bio || t("profile.noBio")}</small>
                   </span>
                   <SocialIcon name="chevron-right" size={19} />
-                </Link>
+                </a>
 
-                <Link className={styles.editChoice} href="/ako/edit?section=details">
+                <a className={styles.editChoice} href="/ako/edit?section=details" data-facebai-dirty-boundary>
                   <span className={`${styles.choicePreview} ${styles.choiceIcon}`} aria-hidden="true">
                     <SocialIcon name="user" size={20} />
                   </span>
@@ -136,7 +136,7 @@ export default async function EditAkoPage({
                     <small>{profile.display_name} · @{profile.username}</small>
                   </span>
                   <SocialIcon name="chevron-right" size={19} />
-                </Link>
+                </a>
 
                 <div className={styles.focusedFooter}>
                   <Link className={styles.doneButton} href="/ako">{t("profile.backToProfile")}</Link>
