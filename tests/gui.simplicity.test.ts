@@ -27,11 +27,14 @@ test("F2 GUI V2.3 progressively discloses one profile task at a time", () => {
   assert.match(editPage, /section === "details"/);
 });
 
-test("F2 GUI V2.3 moves profile media editing to direct profile affordances", () => {
-  assert.match(profilePage, /mediaEditHref="\/ako\/edit"/);
-  assert.match(profileHero, /\?section=cover/);
-  assert.match(profileHero, /\?section=avatar/);
+test("F2 profile media editing uses direct contextual affordances and retains standalone fallback", () => {
+  assert.match(profilePage, /avatarEditHref="\/ako\?edit=avatar"/);
+  assert.match(profilePage, /coverEditHref="\/ako\?edit=cover"/);
+  assert.match(profileHero, /resolvedAvatarEditHref/);
+  assert.match(profileHero, /resolvedCoverEditHref/);
   assert.match(profileHero, /SocialIcon name="camera"/);
+  assert.match(editPage, /ProfileMediaUploader kind="avatar"/);
+  assert.match(editPage, /ProfileMediaUploader kind="cover"/);
 });
 
 test("focused media editors reuse the qualified uploader without duplicate heading chrome", () => {

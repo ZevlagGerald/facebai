@@ -17,7 +17,7 @@ test("theme persistence is application-level and resolved before themed body con
   assert.match(rootLayout, /<head>[\s\S]*?THEME_BOOTSTRAP_SCRIPT[\s\S]*?<\/head>/);
   assert.match(themeConfig, /cookieTheme[\s\S]*?storedTheme[\s\S]*?prefers-color-scheme: dark/);
   assert.match(themeConfig, /root\.dataset\.theme = resolvedTheme/);
-  assert.match(themeConfig, /document\.cookie = "facebai-theme="/);
+  assert.match(themeConfig, /document\.cookie = "\$\{THEME_COOKIE\}=" \+ explicitTheme/);
   assert.match(themeToggle, /persistTheme\(next\)/);
   assert.match(themeToggle, /document\.cookie = `\$\{THEME_COOKIE\}=\$\{theme\}/);
 });
