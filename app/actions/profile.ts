@@ -20,8 +20,6 @@ export type ProfileUpdateState = {
   errorCode: ProfileUpdateErrorCode | null;
 };
 
-export const INITIAL_PROFILE_UPDATE_STATE: ProfileUpdateState = { errorCode: null };
-
 export async function updateProfileWithState(
   _previousState: ProfileUpdateState,
   formData: FormData,
@@ -54,7 +52,7 @@ export async function updateProfileWithState(
 }
 
 export async function updateProfile(formData: FormData) {
-  const state = await updateProfileWithState(INITIAL_PROFILE_UPDATE_STATE, formData);
+  const state = await updateProfileWithState({ errorCode: null }, formData);
   if (state.errorCode) redirect(`/ako/edit?error=${encodeURIComponent(state.errorCode)}`);
 }
 
