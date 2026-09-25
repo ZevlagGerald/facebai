@@ -33,15 +33,19 @@ export function InlineStatus({
   const classes = unstyled
     ? className
     : [styles.status, styles[tone], className].filter(Boolean).join(" ");
+  const resolvedIconClass = unstyled
+    ? iconClassName
+    : [styles.statusIcon, iconClassName].filter(Boolean).join(" ");
+  const resolvedCopyClass = unstyled
+    ? copyClassName
+    : [styles.statusCopy, copyClassName].filter(Boolean).join(" ");
 
   return (
     <div className={classes} role={role} aria-live={tone === "error" ? "assertive" : "polite"} aria-atomic="true">
-      <span className={unstyled ? iconClassName : [styles.statusIcon, iconClassName].filter(Boolean).join(" ")} aria-hidden="true">
-        {icon ?? iconByTone[tone]}
-      </span>
-      <div className={unstyled ? copyClassName : [styles.statusCopy, copyClassName].filter(Boolean).join(" ")}>
+      <span className={resolvedIconClass} aria-hidden="true">{icon ?? iconByTone[tone]}</span>
+      <div>
         <strong>{title}</strong>
-        <div>{children}</div>
+        <div className={resolvedCopyClass}>{children}</div>
       </div>
     </div>
   );
