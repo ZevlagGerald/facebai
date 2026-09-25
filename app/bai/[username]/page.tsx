@@ -4,9 +4,21 @@ import { ProfileHero } from "@/app/components/profile-hero";
 import { SocialShell } from "@/app/components/social-shell";
 import styles from "@/app/components/profile-surface.module.css";
 import { normalizeUsername, USERNAME_PATTERN } from "@/lib/auth/validation";
+import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+async function signedMediaUrl(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  key: string | null,
+) {
+  if (!key) return null;
+  const { data, error } = await supabase.storage
+    .from(PROFILE_MEDIA_BUCKET)
+    .createSignedUrl(key, 60 * 10);
+  return error ? null : data.signedUrl;
+}
 
 export default async function BaiProfilePage({
   params,
@@ -37,6 +49,11 @@ export default async function BaiProfilePage({
   if (!viewerProfile) redirect("/tambayan");
   if (!profile) notFound();
 
+  const [avatarUrl, coverUrl] = await Promise.all([
+    signedMediaUrl(supabase, profile.avatar_key),
+    signedMediaUrl(supabase, profile.cover_key),
+  ]);
+
   const isOwner = profile.id === userData.user.id;
   const rightRail = (
     <div className={styles.sideStack}>
@@ -45,7 +62,7 @@ export default async function BaiProfilePage({
         <h2>{isOwner ? "Profile controls" : "Social actions"}</h2>
         {isOwner ? (
           <>
-            <p>You own this profile. Edit your display name, username, and bio from Ako.</p>
+            <p>You own this profile. Edit your identity and profile media from Ako.</p>
             <Link className={styles.profileLink} href="/ako">Edit my profile</Link>
           </>
         ) : (
@@ -57,9 +74,8 @@ export default async function BaiProfilePage({
       </section>
       <section className={styles.sideCard}>
         <p className={styles.eyebrow}>PROFILE MEDIA</p>
-        <h2>Avatar & cover</h2>
-        <p>Profile media remains marked coming soon until FaceBai Storage policies are qualified.</p>
-        <span className={styles.puhonBadge}>PUHON · STORAGE</span>
+        <h2>Signed-in visibility</h2>
+        <p>Avatar and cover images are stored privately and displayed only to authenticated FaceBai users.</p>
       </section>
     </div>
   );
@@ -72,7 +88,13 @@ export default async function BaiProfilePage({
       contentLabel={`${profile.display_name}'s FaceBai profile`}
       rightRail={rightRail}
     >
-      <ProfileHero displayName={profile.display_name} username={profile.username} bio={profile.bio} />
+      <ProfileHero
+        displayName={profile.display_name}
+        username={profile.username}
+        bio={profile.bio}
+        avatarUrl={avatarUrl}
+        coverUrl={coverUrl}
+      />
 
       <section className={styles.editCard}>
         <div className={styles.cardHeading}>

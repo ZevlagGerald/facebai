@@ -4,11 +4,24 @@ import { updateProfile } from "@/app/actions/profile";
 import { AuthStatus } from "@/app/components/auth-status";
 import { AuthSubmitButton } from "@/app/components/auth-submit-button";
 import { ProfileHero } from "@/app/components/profile-hero";
+import { ProfileMediaUploader } from "@/app/components/profile-media-uploader";
 import { SocialShell } from "@/app/components/social-shell";
+import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
 import { createClient } from "@/lib/supabase/server";
 import styles from "@/app/components/profile-surface.module.css";
 
 export const dynamic = "force-dynamic";
+
+async function signedMediaUrl(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  key: string | null,
+) {
+  if (!key) return null;
+  const { data, error } = await supabase.storage
+    .from(PROFILE_MEDIA_BUCKET)
+    .createSignedUrl(key, 60 * 10);
+  return error ? null : data.signedUrl;
+}
 
 export default async function AkoPage({
   searchParams,
@@ -31,6 +44,11 @@ export default async function AkoPage({
 
   if (!profile) redirect("/tambayan");
 
+  const [avatarUrl, coverUrl] = await Promise.all([
+    signedMediaUrl(supabase, profile.avatar_key),
+    signedMediaUrl(supabase, profile.cover_key),
+  ]);
+
   const rightRail = (
     <div className={styles.sideStack}>
       <section className={styles.sideCard}>
@@ -42,8 +60,9 @@ export default async function AkoPage({
       <section className={styles.sideCard}>
         <p className={styles.eyebrow}>PROFILE MEDIA</p>
         <h2>Avatar & cover</h2>
-        <p>Storage uploads are intentionally not enabled yet. We will add them only after bucket and RLS review.</p>
-        <span className={styles.puhonBadge}>PUHON · STORAGE</span>
+        <p>Images are private to signed-in FaceBai users and stored with owner-scoped paths.</p>
+        <ProfileMediaUploader kind="avatar" label="Profile photo" />
+        <ProfileMediaUploader kind="cover" label="Cover photo" />
       </section>
     </div>
   );
@@ -56,7 +75,13 @@ export default async function AkoPage({
       contentLabel="Your FaceBai profile"
       rightRail={rightRail}
     >
-      <ProfileHero displayName={profile.display_name} username={profile.username} bio={profile.bio} />
+      <ProfileHero
+        displayName={profile.display_name}
+        username={profile.username}
+        bio={profile.bio}
+        avatarUrl={avatarUrl}
+        coverUrl={coverUrl}
+      />
 
       <section className={styles.editCard}>
         <div className={styles.cardHeading}>
