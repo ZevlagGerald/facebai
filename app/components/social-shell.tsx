@@ -5,13 +5,19 @@ import { ThemeToggle } from "@/app/components/theme-toggle";
 import styles from "@/app/tambayan/tambayan.module.css";
 
 type ActiveRail = "tambayan" | "ako" | null;
+type TopNavItem = {
+  label: string;
+  helper: string;
+  href?: string;
+  badge?: string;
+};
 
-const topNav = [
+const topNav: readonly TopNavItem[] = [
   { label: "Tambayan", helper: "Home feed", href: "/tambayan" },
   { label: "Mga Bai", helper: "Friends", badge: "PUHON" },
   { label: "Pundok", helper: "Groups", badge: "PUHON" },
   { label: "Bai & Sell", helper: "Marketplace", badge: "PUHON" },
-] as const;
+];
 
 const railLinkStyle = {
   display: "flex",
