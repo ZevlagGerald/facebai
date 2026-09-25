@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { PostComposer } from "@/app/components/post-composer";
 import profileStyles from "@/app/components/profile-surface.module.css";
 import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
 import { getInteractionTranslations } from "@/lib/i18n/interaction";
 import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
+import { getF3PostTranslations } from "@/lib/i18n/f3-posts";
 import { getLocale } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./tambayan.module.css";
@@ -14,6 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function TambayanPage() {
   const locale = await getLocale();
   const t = getF2SocialTranslations(locale);
+  const t3 = getF3PostTranslations(locale);
   const ti = getInteractionTranslations(locale);
   const supabase = await createClient();
   const { data: userData, error } = await supabase.auth.getUser();
@@ -117,32 +120,14 @@ export default async function TambayanPage() {
         <p>{t("feed.welcome")}, {displayName}.</p>
       </header>
 
-      <section className={styles.composer} aria-label={t("feed.createPostPreview")}>
-        <div className={styles.composerTop}>
-          <div className={styles.avatarSmall} aria-hidden="true">{initial}</div>
-          <button type="button" disabled>{t("feed.composerPrompt")}</button>
-          <span className={styles.composerState}>{t("common.puhon")}</span>
-        </div>
-        <div className={styles.composerActions}>
-          <button type="button" disabled>
-            <span className={styles.composerActionIcon}><SocialIcon name="photo" size={19} /></span>
-            <span>{t("feed.photo")}</span>
-          </button>
-          <button type="button" disabled>
-            <span className={styles.composerActionIcon}><SocialIcon name="friends" size={19} /></span>
-            <span>{t("feed.withBai")}</span>
-          </button>
-          <button type="button" disabled>
-            <span className={styles.composerActionIcon}><SocialIcon name="sparkles" size={19} /></span>
-            <span>{t("feed.post")}</span>
-          </button>
-        </div>
+      <section className={styles.composer} aria-label={t3("composer.label")}>
+        <PostComposer initial={initial} locale={locale} />
       </section>
 
       <section className={styles.emptyFeed}>
         <div className={styles.emptyMark} aria-hidden="true"><SocialIcon name="sparkles" size={24} /></div>
-        <h2>{t("feed.emptyTitle")}</h2>
-        <p>{t("feed.emptyBody")}</p>
+        <h2>{t3("feed.pendingTitle")}</h2>
+        <p>{t3("feed.pendingBody")}</p>
         <span className={styles.puhonPill}>{t("feed.postsAndFeed")}</span>
       </section>
     </SocialShell>
