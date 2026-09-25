@@ -133,6 +133,10 @@
 
 .logout { cursor: pointer; }
 .logout:hover { border-color: color-mix(in srgb, var(--brand) 42%, var(--line)); }
+.logout:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand) 34%, transparent);
+  outline-offset: 3px;
+}
 
 .layout {
   width: min(1440px, 100%);
@@ -434,7 +438,8 @@
   .brand { width: 156px; }
   .search { grid-column: 1 / -1; grid-row: 2; }
   .headerActions { grid-column: 2; grid-row: 1; }
-  .noticeButton, .logout { display: none; }
+  .noticeButton { display: none; }
+  .logout { min-height: 36px; padding: 7px 9px; font-size: 11px; }
   .layout { grid-template-columns: 1fr; padding: 14px 12px 36px; }
   .leftRail { position: static; }
   .profileMini { display: none; }
@@ -457,7 +462,9 @@
 }
 
 @media (max-width: 430px) {
+  .headerActions { gap: 6px; }
   .headerActions :global(.theme-toggle) { padding-inline: 9px; font-size: 11px; }
+  .logout { padding-inline: 8px; }
   .search { padding: 9px 12px; }
   .welcome h1 { font-size: 28px; }
   .composerTop > button { padding-inline: 13px; font-size: 12px; }

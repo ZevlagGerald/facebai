@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic";
 
 const navItems = [
   { label: "Tambayan", helper: "Home feed", active: true },
-  { label: "Mga Bai", helper: "Friends", active: false },
-  { label: "Pundok", helper: "Groups", active: false },
+  { label: "Mga Bai", helper: "Friends", active: false, badge: "PUHON" },
+  { label: "Pundok", helper: "Groups", active: false, badge: "PUHON" },
   { label: "Bai & Sell", helper: "Marketplace", active: false, badge: "PUHON" },
 ];
 
@@ -62,7 +62,7 @@ export default async function TambayanPage() {
           </button>
           <ThemeToggle />
           <form action={logout}>
-            <button type="submit" className={styles.logout}>Lakaw sa ko</button>
+            <button type="submit" className={styles.logout} aria-label="Log out of FaceBai">Lakaw sa ko</button>
           </form>
         </div>
       </header>
@@ -131,12 +131,13 @@ export default async function TambayanPage() {
             <small>Tigoma sa ang budget, Bai.</small>
           </section>
 
-          <section className={styles.sideCard}>
+          <section className={styles.sideCard} aria-label="Notifications, coming soon">
             <div className={styles.cardHeading}>
               <div>
                 <p className={styles.eyebrow}>HOY!</p>
                 <h2>Mga pahibalo</h2>
               </div>
+              <span className={styles.puhonBadge}>PUHON</span>
             </div>
             <div className={styles.quietState}>
               <strong>Hilom pa.</strong>
