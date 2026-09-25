@@ -16,7 +16,7 @@ export function AuthShell({
       <section className="auth-stage" aria-label="FaceBai account access">
         <aside className="auth-brand" aria-label="FaceBai">
           <img className="logo logo-light" src="/brand/facebai-logo-light.webp" alt="FaceBai" />
-          <img className="logo logo-dark" src="/brand/facebai-logo-dark.webp" alt="FaceBai" />
+          <img className="logo logo-dark" src="/brand/facebai-logo-dark-v2.webp" alt="FaceBai" />
           <p className="auth-domain">facebai.party</p>
           <div className="auth-brand-copy">
             <h2>Mas Lami ang Kinabuhi Together.</h2>
