@@ -5,41 +5,45 @@ import { AuthStatus } from "@/app/components/auth-status";
 import { AuthSubmitButton } from "@/app/components/auth-submit-button";
 import { TurnstileField } from "@/app/components/turnstile-field";
 import { safeLocalPath } from "@/lib/auth/security";
+import { getLocale } from "@/lib/i18n/server";
+import { getTranslations } from "@/lib/i18n/messages";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const locale = await getLocale();
+  const t = getTranslations(locale);
   const params = await searchParams;
   const error = typeof params.error === "string" ? params.error : "";
   const message = typeof params.message === "string" ? params.message : "";
   const next = safeLocalPath(typeof params.next === "string" ? params.next : "/tambayan");
 
   return (
-    <AuthShell eyebrow="WELCOME BACK">
+    <AuthShell eyebrow={t("auth.welcomeBack")} locale={locale}>
       <div className="auth-heading">
-        <h1>Maayong pagbalik, Bai.</h1>
-        <p className="auth-copy">Sign in to continue to your FaceBai Tambayan.</p>
+        <h1>{t("auth.loginTitle")}</h1>
+        <p className="auth-copy">{t("auth.loginCopy")}</p>
       </div>
 
-      {error ? <AuthStatus tone="error" title="Sign-in unsuccessful">{error}</AuthStatus> : null}
-      {message ? <AuthStatus tone="success" title="Account updated">{message}</AuthStatus> : null}
+      {error ? <AuthStatus tone="error" title={t("auth.signInFailed")}>{error}</AuthStatus> : null}
+      {message ? <AuthStatus tone="success" title={t("auth.accountUpdated")}>{message}</AuthStatus> : null}
 
       <form action={login} className="auth-form">
         <input type="hidden" name="next" value={next} />
         <label>
-          <span>Email address</span>
+          <span>{t("auth.email")}</span>
           <input name="email" type="email" autoComplete="email" placeholder="you@example.com" required />
         </label>
         <label>
-          <span>Password</span>
-          <input name="password" type="password" autoComplete="current-password" placeholder="Enter your password" required />
+          <span>{t("auth.password")}</span>
+          <input name="password" type="password" autoComplete="current-password" placeholder={t("auth.passwordPlaceholder")} required />
         </label>
-        <div className="auth-inline-link"><Link href="/forgot-password">Forgot your password?</Link></div>
-        <TurnstileField action="login" />
-        <AuthSubmitButton idleLabel="Sign in" pendingLabel="Signing in…" />
+        <div className="auth-inline-link"><Link href="/forgot-password">{t("auth.forgotPassword")}</Link></div>
+        <TurnstileField action="login" locale={locale} />
+        <AuthSubmitButton idleLabel={t("auth.signIn")} pendingLabel={t("auth.signingIn")} />
       </form>
 
-      <div className="auth-divider"><span>New to FaceBai?</span></div>
+      <div className="auth-divider"><span>{t("auth.newToFaceBai")}</span></div>
       <div className="auth-links">
-        <Link href="/register">Create a FaceBai account</Link>
+        <Link href="/register">{t("auth.createFaceBaiAccount")}</Link>
       </div>
     </AuthShell>
   );
