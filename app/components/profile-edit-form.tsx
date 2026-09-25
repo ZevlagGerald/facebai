@@ -47,6 +47,13 @@ export function ProfileEditForm({
   const [state, formAction] = useActionState(updateProfileWithState, initialState);
   const [dirty, setDirty] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const errorCode = state.errorCode;
+  const bioError = errorCode === "bio" ? ti(updateErrorKey[errorCode]) : null;
+  const displayNameError = errorCode === "display_name" ? ti(updateErrorKey[errorCode]) : null;
+  const usernameError = errorCode === "username" || errorCode === "username_taken"
+    ? ti(updateErrorKey[errorCode])
+    : null;
+  const generalError = errorCode === "save_failed" ? ti(updateErrorKey[errorCode]) : null;
 
   useEffect(() => {
     if (!dirty) return;
@@ -97,10 +104,10 @@ export function ProfileEditForm({
           <h2>{section === "bio" ? t("profile.bio") : t("profile.publicIdentity")}</h2>
         </div>
 
-        {state.errorCode ? (
+        {generalError ? (
           <div className={styles.focusedStatus}>
             <InlineStatus tone="error" title={t("profile.notSaved")}>
-              {ti(updateErrorKey[state.errorCode])}
+              {generalError}
             </InlineStatus>
           </div>
         ) : null}
@@ -118,8 +125,11 @@ export function ProfileEditForm({
                   maxLength={500}
                   placeholder={t("profile.bioPlaceholder")}
                   autoFocus
+                  aria-invalid={bioError ? true : undefined}
+                  aria-describedby={bioError ? "profile-bio-help profile-bio-error" : "profile-bio-help"}
                 />
-                <small className={styles.help}>{t("profile.bioHelp")}</small>
+                <small id="profile-bio-help" className={styles.help}>{t("profile.bioHelp")}</small>
+                {bioError ? <small id="profile-bio-error" className={styles.fieldError} role="alert">{bioError}</small> : null}
               </label>
             </>
           ) : (
@@ -135,8 +145,11 @@ export function ProfileEditForm({
                   required
                   autoComplete="name"
                   autoFocus
+                  aria-invalid={displayNameError ? true : undefined}
+                  aria-describedby={displayNameError ? "profile-name-help profile-name-error" : "profile-name-help"}
                 />
-                <small className={styles.help}>{t("profile.displayNameHelp")}</small>
+                <small id="profile-name-help" className={styles.help}>{t("profile.displayNameHelp")}</small>
+                {displayNameError ? <small id="profile-name-error" className={styles.fieldError} role="alert">{displayNameError}</small> : null}
               </label>
               <label>
                 <span>{t("profile.username")}</span>
@@ -149,8 +162,11 @@ export function ProfileEditForm({
                   required
                   autoCapitalize="none"
                   spellCheck={false}
+                  aria-invalid={usernameError ? true : undefined}
+                  aria-describedby={usernameError ? "profile-username-help profile-username-error" : "profile-username-help"}
                 />
-                <small className={styles.help}>{t("profile.usernameHelp")}</small>
+                <small id="profile-username-help" className={styles.help}>{t("profile.usernameHelp")}</small>
+                {usernameError ? <small id="profile-username-error" className={styles.fieldError} role="alert">{usernameError}</small> : null}
               </label>
             </>
           )}
