@@ -2,20 +2,44 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { commitProfileMedia } from "@/app/actions/profile";
+import {
+  commitProfileMedia,
+  type CommitProfileMediaErrorCode,
+} from "@/app/actions/profile";
+import { GovernedButton } from "@/app/components/governed-button";
+import { InlineStatus } from "@/app/components/inline-status";
+import { ProgressIndicator } from "@/app/components/progress-indicator";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/messages";
+import { getInteractionTranslations, type InteractionMessageKey } from "@/lib/i18n/interaction";
 import {
   PROFILE_MEDIA_BUCKET,
   profileMediaExtension,
   profileMediaPath,
   type ProfileMediaKind,
-  validateProfileMediaFile,
+  type ProfileMediaValidationCode,
+  validateProfileMediaFileCode,
 } from "@/lib/profile/media";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./profile-media-uploader.module.css";
 
 type UploadState = "idle" | "uploading" | "success" | "error";
+
+const validationMessageKey: Record<ProfileMediaValidationCode, InteractionMessageKey> = {
+  invalid_type: "profile.mediaInvalidType",
+  empty: "profile.mediaEmpty",
+  too_large: "profile.mediaTooLarge",
+};
+
+const commitMessageKey: Record<CommitProfileMediaErrorCode, InteractionMessageKey> = {
+  unsupported_kind: "profile.mediaUploadFailed",
+  session_expired: "profile.mediaSessionExpired",
+  invalid_path: "profile.mediaVerifyFailed",
+  invalid_file: "profile.mediaVerifyFailed",
+  verify_failed: "profile.mediaVerifyFailed",
+  profile_load_failed: "profile.mediaProfileLoadFailed",
+  save_failed: "profile.mediaSaveFailed",
+};
 
 export function ProfileMediaUploader({
   kind,
@@ -30,33 +54,39 @@ export function ProfileMediaUploader({
 }) {
   const router = useRouter();
   const t = getTranslations(locale);
+  const ti = getInteractionTranslations(locale);
   const [state, setState] = useState<UploadState>("idle");
   const [message, setMessage] = useState(t("profile.mediaDefault"));
+  const [retryFile, setRetryFile] = useState<File | null>(null);
   const inputId = `profile-media-${kind}`;
 
-  async function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.currentTarget.files?.[0];
-    event.currentTarget.value = "";
-    if (!file) return;
-
-    const fileError = validateProfileMediaFile(file);
+  async function uploadFile(file: File) {
+    const fileError = validateProfileMediaFileCode(file);
     if (fileError) {
+      setRetryFile(null);
       setState("error");
-      setMessage(fileError);
+      setMessage(ti(validationMessageKey[fileError]));
       return;
     }
 
     const extension = profileMediaExtension(file.type);
-    if (!extension) return;
+    if (!extension) {
+      setRetryFile(null);
+      setState("error");
+      setMessage(ti("profile.mediaInvalidType"));
+      return;
+    }
 
+    setRetryFile(null);
     setState("uploading");
     setMessage(`${t("profile.mediaUploading")} ${label.toLowerCase()}…`);
 
     const supabase = createClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
+      setRetryFile(file);
       setState("error");
-      setMessage(t("profile.mediaSessionExpired"));
+      setMessage(ti("profile.mediaSessionExpired"));
       return;
     }
 
@@ -70,22 +100,32 @@ export function ProfileMediaUploader({
       });
 
     if (uploadError) {
+      setRetryFile(file);
       setState("error");
-      setMessage(t("profile.mediaUploadFailed"));
+      setMessage(ti("profile.mediaUploadFailed"));
       return;
     }
 
     const commit = await commitProfileMedia({ kind, path });
     if (!commit.ok) {
       await supabase.storage.from(PROFILE_MEDIA_BUCKET).remove([path]);
+      setRetryFile(file);
       setState("error");
-      setMessage(commit.error);
+      setMessage(ti(commitMessageKey[commit.errorCode]));
       return;
     }
 
+    setRetryFile(null);
     setState("success");
     setMessage(`${label} ${t("profile.mediaUpdatedSuffix")}`);
     router.refresh();
+  }
+
+  async function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = "";
+    if (!file) return;
+    await uploadFile(file);
   }
 
   return (
@@ -108,16 +148,27 @@ export function ProfileMediaUploader({
         className={`${styles.picker} ${state === "uploading" ? styles.pickerBusy : ""}`}
         htmlFor={inputId}
         aria-disabled={state === "uploading"}
+        data-facebai-action
       >
         {state === "uploading" ? t("profile.uploading") : `${t("profile.choose")} ${label.toLowerCase()}`}
       </label>
-      <p
-        className={`${styles.status} ${state === "error" ? styles.error : ""} ${state === "success" ? styles.success : ""}`}
-        role="status"
-        aria-live="polite"
-      >
-        {message}
-      </p>
+
+      {state === "uploading" ? (
+        <ProgressIndicator label={message} />
+      ) : state === "error" ? (
+        <div className={styles.feedbackStack}>
+          <InlineStatus tone="error" title={ti("profile.mediaErrorTitle")}>{message}</InlineStatus>
+          {retryFile ? (
+            <GovernedButton type="button" variant="secondary" onClick={() => uploadFile(retryFile)}>
+              {ti("profile.mediaRetry")}
+            </GovernedButton>
+          ) : null}
+        </div>
+      ) : state === "success" ? (
+        <InlineStatus tone="success" title={ti("profile.mediaSuccessTitle")}>{message}</InlineStatus>
+      ) : (
+        <p className={styles.status}>{message}</p>
+      )}
     </div>
   );
 }
