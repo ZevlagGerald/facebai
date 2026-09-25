@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { updateProfile } from "@/app/actions/profile";
 import { AuthStatus } from "@/app/components/auth-status";
-import { AuthSubmitButton } from "@/app/components/auth-submit-button";
 import { ProfileHero } from "@/app/components/profile-hero";
-import { ProfileMediaUploader } from "@/app/components/profile-media-uploader";
+import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
 import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
 import { createClient } from "@/lib/supabase/server";
@@ -17,9 +15,7 @@ async function signedMediaUrl(
   key: string | null,
 ) {
   if (!key) return null;
-  const { data, error } = await supabase.storage
-    .from(PROFILE_MEDIA_BUCKET)
-    .createSignedUrl(key, 60 * 10);
+  const { data, error } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).createSignedUrl(key, 60 * 10);
   return error ? null : data.signedUrl;
 }
 
@@ -51,18 +47,16 @@ export default async function AkoPage({
 
   const rightRail = (
     <div className={styles.sideStack}>
+      <section className={styles.sideCard} id="about">
+        <p className={styles.eyebrow}>ABOUT</p>
+        <h2>About this Bai</h2>
+        <p>{profile.bio || "Wala pay bio. Add one from Edit profile."}</p>
+      </section>
       <section className={styles.sideCard}>
         <p className={styles.eyebrow}>PROFILE URL</p>
         <h2>/bai/{profile.username}</h2>
-        <p>This is your stable FaceBai profile path. Changing your username also changes this URL.</p>
-        <Link className={styles.profileLink} href={`/bai/${profile.username}`}>View my profile</Link>
-      </section>
-      <section className={styles.sideCard}>
-        <p className={styles.eyebrow}>PROFILE MEDIA</p>
-        <h2>Avatar & cover</h2>
-        <p>Images are private to signed-in FaceBai users and stored with owner-scoped paths.</p>
-        <ProfileMediaUploader kind="avatar" label="Profile photo" />
-        <ProfileMediaUploader kind="cover" label="Cover photo" />
+        <p>Your FaceBai profile path follows your username.</p>
+        <Link className={styles.profileLink} href={`/bai/${profile.username}`}>View profile URL</Link>
       </section>
     </div>
   );
@@ -75,46 +69,23 @@ export default async function AkoPage({
       contentLabel="Your FaceBai profile"
       rightRail={rightRail}
     >
+      {updated ? <AuthStatus tone="success" title="Profile updated">Saved na, Bai. Your changes are live.</AuthStatus> : null}
+      {errorMessage ? <AuthStatus tone="error" title="Profile not saved">{errorMessage}</AuthStatus> : null}
+
       <ProfileHero
         displayName={profile.display_name}
         username={profile.username}
         bio={profile.bio}
         avatarUrl={avatarUrl}
         coverUrl={coverUrl}
+        actionHref="/ako/edit"
       />
 
-      <section className={styles.editCard}>
-        <div className={styles.cardHeading}>
-          <div>
-            <p className={styles.eyebrow}>AKO</p>
-            <h2>Edit profile</h2>
-          </div>
-        </div>
-
-        {updated ? <AuthStatus tone="success" title="Profile updated">Saved na, Bai. Your profile changes are live.</AuthStatus> : null}
-        {errorMessage ? <AuthStatus tone="error" title="Profile not saved">{errorMessage}</AuthStatus> : null}
-
-        <form action={updateProfile} className={styles.form}>
-          <label>
-            <span>Display name</span>
-            <input name="display_name" defaultValue={profile.display_name} minLength={2} maxLength={80} required autoComplete="name" />
-            <small className={styles.help}>This is the name other Bai will see.</small>
-          </label>
-
-          <label>
-            <span>Username</span>
-            <input name="username" defaultValue={profile.username} minLength={3} maxLength={30} required autoCapitalize="none" spellCheck={false} />
-            <small className={styles.help}>3–30 letters, numbers, dots, or underscores. Changing it changes your profile URL.</small>
-          </label>
-
-          <label>
-            <span>Bio</span>
-            <textarea name="bio" defaultValue={profile.bio} maxLength={500} placeholder="Sulti gamay bahin nimo, Bai." />
-            <small className={styles.help}>Up to 500 characters. Keep it useful and respectful.</small>
-          </label>
-
-          <AuthSubmitButton idleLabel="Save profile" pendingLabel="Saving profile…" />
-        </form>
+      <section className={styles.streamCard} aria-label="Profile posts coming soon">
+        <div className={styles.streamIcon}><SocialIcon name="home" size={23} /></div>
+        <h2>Wala pay profile posts.</h2>
+        <p>Posting and the real social feed arrive in F3. Dili ta magbutang og fake activity just to fill the page.</p>
+        <span className={styles.puhonBadge}>PUHON · POSTS & FEED</span>
       </section>
     </SocialShell>
   );

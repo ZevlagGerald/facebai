@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SocialIcon } from "@/app/components/social-icons";
 
-export function ThemeToggle() {
+export function ThemeToggle({ variant = "text" }: { variant?: "text" | "icon" }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
@@ -21,5 +22,21 @@ export function ThemeToggle() {
     setTheme(next);
   }
 
-  return <button className="theme-toggle" type="button" onClick={toggle} aria-label="Toggle light and dark mode">{theme === "light" ? "Dark" : "Light"}</button>;
+  const nextTheme = theme === "light" ? "dark" : "light";
+
+  return (
+    <button
+      className="theme-toggle"
+      type="button"
+      onClick={toggle}
+      aria-label={`Switch to ${nextTheme} mode`}
+      title={`Switch to ${nextTheme} mode`}
+    >
+      {variant === "icon" ? (
+        <SocialIcon name={theme === "light" ? "moon" : "sun"} size={19} />
+      ) : (
+        theme === "light" ? "Dark" : "Light"
+      )}
+    </button>
+  );
 }
