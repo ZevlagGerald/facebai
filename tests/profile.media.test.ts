@@ -6,6 +6,7 @@ import {
   profileMediaExtension,
   profileMediaPath,
   validateProfileMediaFile,
+  validateProfileMediaFileCode,
 } from "../lib/profile/media.ts";
 
 const userId = "123e4567-e89b-12d3-a456-426614174000";
@@ -33,4 +34,11 @@ test("profile media file validation enforces type and 5 MB ceiling", () => {
   assert.match(validateProfileMediaFile({ type: "image/svg+xml", size: 1024 }) ?? "", /JPEG, PNG, or WebP/);
   assert.match(validateProfileMediaFile({ type: "image/png", size: PROFILE_MEDIA_MAX_BYTES + 1 }) ?? "", /5 MB/);
   assert.match(validateProfileMediaFile({ type: "image/png", size: 0 }) ?? "", /empty/);
+});
+
+test("profile media validation exposes stable codes for localized UI", () => {
+  assert.equal(validateProfileMediaFileCode({ type: "image/png", size: 1024 }), null);
+  assert.equal(validateProfileMediaFileCode({ type: "image/svg+xml", size: 1024 }), "invalid_type");
+  assert.equal(validateProfileMediaFileCode({ type: "image/png", size: 0 }), "empty");
+  assert.equal(validateProfileMediaFileCode({ type: "image/png", size: PROFILE_MEDIA_MAX_BYTES + 1 }), "too_large");
 });
