@@ -77,7 +77,6 @@ export async function commitProfileMedia(input: {
     return { ok: false, error: "Uploaded image could not be verified. Please retry." };
   }
 
-  const column = input.kind === "avatar" ? "avatar_key" : "cover_key";
   const { data: current, error: currentError } = await supabase
     .from("profiles")
     .select("avatar_key, cover_key")
@@ -88,10 +87,14 @@ export async function commitProfileMedia(input: {
     return { ok: false, error: "Profile could not be loaded. Please retry." };
   }
 
-  const previousKey = current[column];
+  const previousKey = input.kind === "avatar" ? current.avatar_key : current.cover_key;
+  const mediaUpdate = input.kind === "avatar"
+    ? { avatar_key: input.path }
+    : { cover_key: input.path };
+
   const { error: updateError } = await supabase
     .from("profiles")
-    .update({ [column]: input.path })
+    .update(mediaUpdate)
     .eq("id", userId);
 
   if (updateError) {
