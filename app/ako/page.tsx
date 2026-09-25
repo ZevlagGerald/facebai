@@ -4,9 +4,11 @@ import { AuthStatus } from "@/app/components/auth-status";
 import { ProfileHero } from "@/app/components/profile-hero";
 import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
+import styles from "@/app/components/profile-surface.module.css";
+import { getLocale } from "@/lib/i18n/server";
+import { getTranslations } from "@/lib/i18n/messages";
 import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
 import { createClient } from "@/lib/supabase/server";
-import styles from "@/app/components/profile-surface.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +26,8 @@ export default async function AkoPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const locale = await getLocale();
+  const t = getTranslations(locale);
   const params = await searchParams;
   const errorMessage = typeof params.error === "string" ? params.error : "";
   const updated = params.updated === "1";
@@ -48,15 +52,15 @@ export default async function AkoPage({
   const rightRail = (
     <div className={styles.sideStack}>
       <section className={styles.sideCard} id="about">
-        <p className={styles.eyebrow}>ABOUT</p>
-        <h2>About this Bai</h2>
-        <p>{profile.bio || "Wala pay bio. Add one from Edit profile."}</p>
+        <p className={styles.eyebrow}>{t("profile.about")}</p>
+        <h2>{t("profile.aboutThisBai")}</h2>
+        <p>{profile.bio || t("profile.noBioAdd")}</p>
       </section>
       <section className={styles.sideCard}>
-        <p className={styles.eyebrow}>PROFILE URL</p>
+        <p className={styles.eyebrow}>{t("profile.urlEyebrow")}</p>
         <h2>/bai/{profile.username}</h2>
-        <p>Your FaceBai profile path follows your username.</p>
-        <Link className={styles.profileLink} href={`/bai/${profile.username}`}>View profile URL</Link>
+        <p>{t("profile.pathFollowsUsername")}</p>
+        <Link className={styles.profileLink} href={`/bai/${profile.username}`}>{t("profile.viewUrl")}</Link>
       </section>
     </div>
   );
@@ -66,11 +70,12 @@ export default async function AkoPage({
       displayName={profile.display_name}
       username={profile.username}
       activeRail="ako"
-      contentLabel="Your FaceBai profile"
+      contentLabel={t("profile.contentLabel")}
       rightRail={rightRail}
+      locale={locale}
     >
-      {updated ? <AuthStatus tone="success" title="Profile updated">Saved na, Bai. Your changes are live.</AuthStatus> : null}
-      {errorMessage ? <AuthStatus tone="error" title="Profile not saved">{errorMessage}</AuthStatus> : null}
+      {updated ? <AuthStatus tone="success" title={t("profile.updatedTitle")}>{t("profile.updatedBody")}</AuthStatus> : null}
+      {errorMessage ? <AuthStatus tone="error" title={t("profile.notSaved")}>{errorMessage}</AuthStatus> : null}
 
       <ProfileHero
         displayName={profile.display_name}
@@ -79,13 +84,14 @@ export default async function AkoPage({
         avatarUrl={avatarUrl}
         coverUrl={coverUrl}
         actionHref="/ako/edit"
+        locale={locale}
       />
 
-      <section className={styles.streamCard} aria-label="Profile posts coming soon">
+      <section className={styles.streamCard} aria-label={t("profile.postsAndFeed")}>
         <div className={styles.streamIcon}><SocialIcon name="home" size={23} /></div>
-        <h2>Wala pay profile posts.</h2>
-        <p>Posting and the real social feed arrive in F3. Dili ta magbutang og fake activity just to fill the page.</p>
-        <span className={styles.puhonBadge}>PUHON · POSTS & FEED</span>
+        <h2>{t("profile.noPosts")}</h2>
+        <p>{t("profile.noPostsBody")}</p>
+        <span className={styles.puhonBadge}>{t("profile.postsAndFeed")}</span>
       </section>
     </SocialShell>
   );
