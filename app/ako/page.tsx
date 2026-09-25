@@ -17,9 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 function parseEditMode(value: string | string[] | undefined): ProfileContextualEditMode | null {
-  return value === "profile" || value === "avatar" || value === "cover" || value === "bio" || value === "details"
-    ? value
-    : null;
+  return value === "profile" || value === "avatar" || value === "cover" ? value : null;
 }
 
 async function signedMediaUrl(

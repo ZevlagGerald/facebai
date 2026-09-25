@@ -117,14 +117,15 @@ test("F2 GUI retains engineered responsive gates and mobile bottom navigation", 
   assert.match(css, /grid-template-columns: repeat\(4, 1fr\)/);
 });
 
-test("F2 profile preserves social context for bounded editing and retains standalone fallback", () => {
+test("F2 profile preserves social context for media editing and keeps dirty text editing on the focused fallback", () => {
   assert.match(profilePage, /actionHref="\/ako\?edit=profile"/);
   assert.match(profilePage, /avatarEditHref="\/ako\?edit=avatar"/);
   assert.match(profilePage, /coverEditHref="\/ako\?edit=cover"/);
   assert.match(profilePage, /<ProfileContextualEditor/);
   assert.match(contextualEditor, /<GovernedDialog/);
   assert.match(contextualEditor, /href="\/ako\?edit=avatar" replace scroll=\{false\}/);
-  assert.match(contextualEditor, /href="\/ako\?edit=bio" replace scroll=\{false\}/);
+  assert.match(contextualEditor, /href="\/ako\/edit\?section=bio" data-facebai-dirty-boundary/);
+  assert.doesNotMatch(contextualEditor, /href="\/ako\?edit=bio"/);
   assert.match(contextualEditor, /router\.replace\("\/ako\?updated=1"/);
   assert.doesNotMatch(profilePage, /<form action=\{updateProfile/);
   assert.match(editProfilePage, /<ProfileEditForm/);

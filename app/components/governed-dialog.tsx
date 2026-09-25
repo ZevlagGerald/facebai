@@ -36,9 +36,17 @@ export function GovernedDialog({
 
     if (!open && dialog.open) {
       dialog.close();
-      returnFocusRef.current?.focus();
+      if (returnFocusRef.current?.isConnected) returnFocusRef.current.focus();
     }
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      const dialog = dialogRef.current;
+      if (dialog?.open) dialog.close();
+      if (returnFocusRef.current?.isConnected) returnFocusRef.current.focus();
+    };
+  }, []);
 
   return (
     <dialog

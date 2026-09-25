@@ -10,6 +10,7 @@ const profileHero = readFileSync(new URL("../app/components/profile-hero.tsx", i
 const contextualEditor = readFileSync(new URL("../app/components/profile-contextual-editor.tsx", import.meta.url), "utf8");
 const editForm = readFileSync(new URL("../app/components/profile-edit-form.tsx", import.meta.url), "utf8");
 const uploader = readFileSync(new URL("../app/components/profile-media-uploader.tsx", import.meta.url), "utf8");
+const dialog = readFileSync(new URL("../app/components/governed-dialog.tsx", import.meta.url), "utf8");
 
 test("theme persistence is application-level and resolved before themed body content", () => {
   assert.match(rootLayout, /cookieStore\.get\(THEME_COOKIE\)/);
@@ -22,27 +23,30 @@ test("theme persistence is application-level and resolved before themed body con
   assert.match(themeToggle, /document\.cookie = `\$\{THEME_COOKIE\}=\$\{theme\}/);
 });
 
-test("owner profile opens bounded editing inside the visible profile context", () => {
+test("owner media editing opens inside visible profile context and closes safely", () => {
   assert.match(profilePage, /parseEditMode\(params\.edit\)/);
+  assert.match(profilePage, /value === "profile" \|\| value === "avatar" \|\| value === "cover"/);
   assert.match(profilePage, /<ProfileContextualEditor/);
   assert.match(profileHero, /avatarEditHref/);
   assert.match(profileHero, /coverEditHref/);
   assert.match(profileHero, /scroll=\{false\}/);
   assert.match(contextualEditor, /<GovernedDialog/);
-  assert.match(contextualEditor, /router\.back\(\)/);
+  assert.match(contextualEditor, /router\.replace\("\/ako", \{ scroll: false \}\)/);
   assert.match(contextualEditor, /href="\/ako\?edit=avatar" replace scroll=\{false\}/);
   assert.match(contextualEditor, /href="\/ako\?edit=cover" replace scroll=\{false\}/);
-  assert.match(contextualEditor, /href="\/ako\?edit=bio" replace scroll=\{false\}/);
-  assert.match(contextualEditor, /href="\/ako\?edit=details" replace scroll=\{false\}/);
+  assert.match(dialog, /returnFocusRef\.current\?\.isConnected/);
 });
 
-test("contextual editing preserves dirty-form and upload completion contracts", () => {
-  assert.match(contextualEditor, /textDirty/);
-  assert.match(contextualEditor, /profile\.discardTitle/);
-  assert.match(contextualEditor, /<ProfileEditForm[\s\S]*?embedded[\s\S]*?onDirtyChange=\{setTextDirty\}[\s\S]*?onSaved=\{completeTask\}/);
-  assert.match(editForm, /embedded = false/);
-  assert.match(editForm, /onDirtyChange\?: \(dirty: boolean\) => void/);
-  assert.match(editForm, /onSaved\?: \(\) => void/);
+test("meaningful text edits retain the standalone dirty-boundary fallback", () => {
+  assert.match(contextualEditor, /href="\/ako\/edit\?section=bio" data-facebai-dirty-boundary/);
+  assert.match(contextualEditor, /href="\/ako\/edit\?section=details" data-facebai-dirty-boundary/);
+  assert.doesNotMatch(contextualEditor, /href="\/ako\?edit=bio"/);
+  assert.doesNotMatch(contextualEditor, /href="\/ako\?edit=details"/);
+  assert.match(editForm, /beforeunload/);
+  assert.match(editForm, /profile\.discardTitle/);
+});
+
+test("contextual media completion returns to profile without a full-page redirect", () => {
   assert.match(uploader, /onSuccess\?: \(\) => void/);
   assert.match(contextualEditor, /onSuccess=\{completeTask\}/);
   assert.match(contextualEditor, /router\.replace\("\/ako\?updated=1"/);
