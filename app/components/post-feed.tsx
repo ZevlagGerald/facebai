@@ -22,8 +22,11 @@ const localeTags: Record<Locale, string> = {
 function formatPostTimestamp(value: string, locale: Locale): string {
   const date = new Date(value);
   return new Intl.DateTimeFormat(localeTags[locale], {
-    dateStyle: "medium",
-    timeStyle: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
     timeZone: "Asia/Manila",
     timeZoneName: "short",
   }).format(date);
