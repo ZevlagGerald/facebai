@@ -23,7 +23,7 @@
 }
 
 .picker {
-  min-height: 40px;
+  min-height: var(--fb-control-target, 44px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -35,15 +35,21 @@
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
+  transition-property: transform, border-color, background-color, opacity;
 }
 
 .picker:hover {
   border-color: color-mix(in srgb, var(--brand) 42%, var(--line));
 }
 
+.picker:active:not(.pickerBusy) {
+  transform: scale(.985);
+}
+
 .pickerBusy {
   cursor: progress;
   opacity: .62;
+  pointer-events: none;
 }
 
 .fileInput {
@@ -67,6 +73,11 @@
   color: var(--muted);
   font-size: 11px;
   line-height: 1.4;
+}
+
+.feedbackStack {
+  display: grid;
+  gap: 9px;
 }
 
 .error { color: var(--error); }
