@@ -53,9 +53,9 @@ test("F3-B localizes all real composer states in Bisaya, Tagalog, and English", 
   assert.match(i18n, /"composer\.saved"/);
 });
 
-test("F3-B does not lie about feed rendering before F3-C", () => {
-  assert.match(page, /t3\("feed\.pendingTitle"\)/);
-  assert.match(page, /t3\("feed\.pendingBody"\)/);
-  assert.doesNotMatch(page, /t\("feed\.emptyTitle"\)/);
-  assert.doesNotMatch(page, /t\("feed\.emptyBody"\)/);
+test("F3-B completion hands off honestly to the real F3-C feed", () => {
+  assert.match(page, /<PostFeed/);
+  assert.doesNotMatch(page, /feed\.pendingTitle/);
+  assert.doesNotMatch(page, /feed\.pendingBody/);
+  assert.doesNotMatch(i18n, /next tranche|sunod nga tranche|susunod na feed tranche/i);
 });
