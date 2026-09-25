@@ -14,6 +14,7 @@ import { InlineStatus } from "@/app/components/inline-status";
 import { type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/messages";
 import { getInteractionTranslations, type InteractionMessageKey } from "@/lib/i18n/interaction";
+import formStyles from "./profile-edit-form.module.css";
 import styles from "./profile-surface.module.css";
 
 type ProfileEditSection = "bio" | "details";
@@ -90,7 +91,7 @@ export function ProfileEditForm({
         </div>
         <GovernedButton
           type="button"
-          className={styles.focusedClose}
+          className={`${styles.focusedClose} ${formStyles.closeButton}`}
           unstyled
           aria-label={t("common.cancel")}
           onClick={requestClose}
@@ -105,7 +106,7 @@ export function ProfileEditForm({
         </div>
 
         {generalError ? (
-          <div className={styles.focusedStatus}>
+          <div className={formStyles.generalStatus}>
             <InlineStatus tone="error" title={t("profile.notSaved")}>
               {generalError}
             </InlineStatus>
@@ -120,6 +121,7 @@ export function ProfileEditForm({
               <label>
                 <span>{t("profile.bio")}</span>
                 <textarea
+                  className={bioError ? formStyles.invalidField : undefined}
                   name="bio"
                   defaultValue={bio}
                   maxLength={500}
@@ -129,7 +131,7 @@ export function ProfileEditForm({
                   aria-describedby={bioError ? "profile-bio-help profile-bio-error" : "profile-bio-help"}
                 />
                 <small id="profile-bio-help" className={styles.help}>{t("profile.bioHelp")}</small>
-                {bioError ? <small id="profile-bio-error" className={styles.fieldError} role="alert">{bioError}</small> : null}
+                {bioError ? <small id="profile-bio-error" className={formStyles.fieldError} role="alert">{bioError}</small> : null}
               </label>
             </>
           ) : (
@@ -138,6 +140,7 @@ export function ProfileEditForm({
               <label>
                 <span>{t("profile.displayName")}</span>
                 <input
+                  className={displayNameError ? formStyles.invalidField : undefined}
                   name="display_name"
                   defaultValue={displayName}
                   minLength={2}
@@ -149,11 +152,12 @@ export function ProfileEditForm({
                   aria-describedby={displayNameError ? "profile-name-help profile-name-error" : "profile-name-help"}
                 />
                 <small id="profile-name-help" className={styles.help}>{t("profile.displayNameHelp")}</small>
-                {displayNameError ? <small id="profile-name-error" className={styles.fieldError} role="alert">{displayNameError}</small> : null}
+                {displayNameError ? <small id="profile-name-error" className={formStyles.fieldError} role="alert">{displayNameError}</small> : null}
               </label>
               <label>
                 <span>{t("profile.username")}</span>
                 <input
+                  className={usernameError ? formStyles.invalidField : undefined}
                   name="username"
                   defaultValue={username}
                   minLength={3}
@@ -166,7 +170,7 @@ export function ProfileEditForm({
                   aria-describedby={usernameError ? "profile-username-help profile-username-error" : "profile-username-help"}
                 />
                 <small id="profile-username-help" className={styles.help}>{t("profile.usernameHelp")}</small>
-                {usernameError ? <small id="profile-username-error" className={styles.fieldError} role="alert">{usernameError}</small> : null}
+                {usernameError ? <small id="profile-username-error" className={formStyles.fieldError} role="alert">{usernameError}</small> : null}
               </label>
             </>
           )}
