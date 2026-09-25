@@ -40,8 +40,9 @@ test("F2/F3 composer retains icon-guided localized future actions across the com
   assert.match(page, /<PostComposer initial=\{initial\} locale=\{locale\} \/>/);
   assert.match(postComposer, /SocialIcon name="photo"/);
   assert.match(postComposer, /SocialIcon name="friends"/);
-  assert.match(postComposer, /t\("composer\.photoFuture"\)/);
-  assert.match(postComposer, /t\("composer\.withBaiFuture"\)/);
+  assert.match(postComposer, /t2\("feed\.photo"\)/);
+  assert.match(postComposer, /t2\("feed\.withBai"\)/);
+  assert.match(postComposer, /aria-label=\{t2\("common\.puhon"\)\}/);
   assert.match(postComposer, /<button type="button" disabled>/);
   assert.match(page, /SocialIcon name="sparkles"/);
 });
