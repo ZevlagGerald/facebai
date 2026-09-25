@@ -18,8 +18,12 @@ async function signedMediaUrl(
   key: string | null,
 ) {
   if (!key) return null;
-  const { data, error } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).createSignedUrl(key, 60 * 10);
-  return error ? null : data.signedUrl;
+  try {
+    const { data, error } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).createSignedUrl(key, 60 * 10);
+    return error ? null : data.signedUrl;
+  } catch {
+    return null;
+  }
 }
 
 export default async function BaiProfilePage({ params }: { params: Promise<{ username: string }> }) {
@@ -120,6 +124,8 @@ export default async function BaiProfilePage({ params }: { params: Promise<{ use
         bio={profile.bio}
         avatarUrl={avatarUrl}
         coverUrl={coverUrl}
+        avatarConfigured={Boolean(profile.avatar_key)}
+        coverConfigured={Boolean(profile.cover_key)}
         actionHref={isOwner ? "/ako/edit" : undefined}
         mediaEditHref={isOwner ? "/ako/edit" : undefined}
         locale={locale}

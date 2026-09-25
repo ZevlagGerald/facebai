@@ -5,6 +5,7 @@ import { ProfileEditForm } from "@/app/components/profile-edit-form";
 import { ProfileMediaUploader } from "@/app/components/profile-media-uploader";
 import { SocialIcon } from "@/app/components/social-icons";
 import styles from "@/app/components/profile-surface.module.css";
+import { getInteractionTranslations } from "@/lib/i18n/interaction";
 import { getLocale } from "@/lib/i18n/server";
 import { getTranslations } from "@/lib/i18n/messages";
 import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
@@ -24,8 +25,12 @@ async function signedMediaUrl(
   key: string | null,
 ) {
   if (!key) return null;
-  const { data, error } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).createSignedUrl(key, 60 * 10);
-  return error ? null : data.signedUrl;
+  try {
+    const { data, error } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).createSignedUrl(key, 60 * 10);
+    return error ? null : data.signedUrl;
+  } catch {
+    return null;
+  }
 }
 
 export default async function EditAkoPage({
@@ -35,6 +40,7 @@ export default async function EditAkoPage({
 }) {
   const locale = await getLocale();
   const t = getTranslations(locale);
+  const ti = getInteractionTranslations(locale);
   const params = await searchParams;
   const errorMessage = typeof params.error === "string" ? params.error : "";
   const section = parseEditSection(params.section);
@@ -43,18 +49,21 @@ export default async function EditAkoPage({
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) redirect("/login?next=/ako/edit");
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("username, display_name, bio, avatar_key, cover_key")
     .eq("id", userData.user.id)
     .maybeSingle();
 
-  if (!profile) redirect("/tambayan");
+  if (profileError || !profile) redirect("/tambayan");
 
   const [avatarUrl, coverUrl] = await Promise.all([
     signedMediaUrl(supabase, profile.avatar_key),
     signedMediaUrl(supabase, profile.cover_key),
   ]);
+  const mediaPreviewUnavailable = Boolean(
+    (profile.avatar_key && !avatarUrl) || (profile.cover_key && !coverUrl),
+  );
   const initial = profile.display_name.charAt(0).toUpperCase() || "B";
   const closeHref = section ? "/ako/edit" : "/ako";
   const textSection = section === "bio" || section === "details";
@@ -89,6 +98,14 @@ export default async function EditAkoPage({
             {errorMessage ? (
               <div className={styles.focusedStatus}>
                 <AuthStatus tone="error" title={t("profile.notSaved")}>{errorMessage}</AuthStatus>
+              </div>
+            ) : null}
+
+            {mediaPreviewUnavailable ? (
+              <div className={styles.focusedStatus}>
+                <AuthStatus tone="warning" title={ti("profile.mediaPreviewUnavailableTitle")}>
+                  {ti("profile.mediaPreviewUnavailable")}
+                </AuthStatus>
               </div>
             ) : null}
 

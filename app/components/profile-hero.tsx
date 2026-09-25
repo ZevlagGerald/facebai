@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SocialIcon } from "@/app/components/social-icons";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getInteractionTranslations } from "@/lib/i18n/interaction";
 import { getTranslations } from "@/lib/i18n/messages";
 import styles from "@/app/components/profile-surface.module.css";
 
@@ -10,6 +11,8 @@ export function ProfileHero({
   bio,
   avatarUrl,
   coverUrl,
+  avatarConfigured = false,
+  coverConfigured = false,
   actionHref,
   actionLabel,
   mediaEditHref,
@@ -20,6 +23,8 @@ export function ProfileHero({
   bio: string;
   avatarUrl?: string | null;
   coverUrl?: string | null;
+  avatarConfigured?: boolean;
+  coverConfigured?: boolean;
   actionHref?: string;
   actionLabel?: string;
   mediaEditHref?: string;
@@ -27,7 +32,10 @@ export function ProfileHero({
 }) {
   const initial = displayName.charAt(0).toUpperCase() || "B";
   const t = getTranslations(locale);
+  const ti = getInteractionTranslations(locale);
   const resolvedActionLabel = actionLabel ?? t("profile.editProfile");
+  const coverFallbackLabel = coverConfigured ? ti("profile.coverPhotoUnavailable") : t("profile.noCover");
+  const avatarFallbackLabel = avatarConfigured ? ti("profile.profilePhotoUnavailable") : t("profile.noProfilePhoto");
 
   return (
     <section className={styles.hero} aria-label={`${displayName} · ${t("common.profile")}`}>
@@ -35,9 +43,9 @@ export function ProfileHero({
         {coverUrl ? (
           <img className={styles.coverImage} src={coverUrl} alt={`${displayName} ${t("profile.coverPhoto")}`} />
         ) : (
-          <div className={styles.coverFallback} aria-label={t("profile.noCover")}>
+          <div className={styles.coverFallback} aria-label={coverFallbackLabel}>
             <SocialIcon name="photo" size={22} />
-            <span>{t("profile.noCover")}</span>
+            <span>{coverFallbackLabel}</span>
           </div>
         )}
         {mediaEditHref ? (
@@ -58,7 +66,7 @@ export function ProfileHero({
             {avatarUrl ? (
               <img className={styles.avatarImage} src={avatarUrl} alt={`${displayName} ${t("profile.profilePhoto")}`} />
             ) : (
-              <span aria-label={t("profile.noProfilePhoto")}>{initial}</span>
+              <span aria-label={avatarFallbackLabel}>{initial}</span>
             )}
           </div>
           {mediaEditHref ? (
@@ -69,7 +77,7 @@ export function ProfileHero({
               title={t("profile.profilePhoto")}
             >
               <SocialIcon name="camera" size={18} />
-            </Link>
+          </Link>
           ) : null}
         </div>
         <div className={styles.identity}>

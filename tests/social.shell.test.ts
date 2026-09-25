@@ -8,6 +8,7 @@ const languageSwitcher = readFileSync(new URL("../app/components/language-switch
 const css = readFileSync(new URL("../app/tambayan/tambayan.module.css", import.meta.url), "utf8");
 const profilePage = readFileSync(new URL("../app/ako/page.tsx", import.meta.url), "utf8");
 const publicProfilePage = readFileSync(new URL("../app/bai/[username]/page.tsx", import.meta.url), "utf8");
+const profileHero = readFileSync(new URL("../app/components/profile-hero.tsx", import.meta.url), "utf8");
 const editProfilePage = readFileSync(new URL("../app/ako/edit/page.tsx", import.meta.url), "utf8");
 const editProfileForm = readFileSync(new URL("../app/components/profile-edit-form.tsx", import.meta.url), "utf8");
 const wrangler = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
@@ -59,6 +60,20 @@ test("F2 public profile distinguishes lookup failure from a true missing profile
   assert.match(publicProfilePage, /ti\("profile\.publicLoadFailedTitle"\)/);
   assert.match(publicProfilePage, /href=\{`\/bai\/\$\{requestedUsername\}`\}[\s\S]*?ti\("common\.retry"\)/);
   assert.match(publicProfilePage, /if \(!profile\) notFound\(\)/);
+});
+
+test("F2 profile media reads degrade honestly when signed previews are unavailable", () => {
+  assert.match(profilePage, /try \{[\s\S]*?createSignedUrl\(key, 60 \* 10\)[\s\S]*?catch \{[\s\S]*?return null/);
+  assert.match(publicProfilePage, /try \{[\s\S]*?createSignedUrl\(key, 60 \* 10\)[\s\S]*?catch \{[\s\S]*?return null/);
+  assert.match(editProfilePage, /try \{[\s\S]*?createSignedUrl\(key, 60 \* 10\)[\s\S]*?catch \{[\s\S]*?return null/);
+  assert.match(profilePage, /avatarConfigured=\{Boolean\(profile\.avatar_key\)\}/);
+  assert.match(profilePage, /coverConfigured=\{Boolean\(profile\.cover_key\)\}/);
+  assert.match(publicProfilePage, /avatarConfigured=\{Boolean\(profile\.avatar_key\)\}/);
+  assert.match(publicProfilePage, /coverConfigured=\{Boolean\(profile\.cover_key\)\}/);
+  assert.match(profileHero, /coverConfigured \? ti\("profile\.coverPhotoUnavailable"\) : t\("profile\.noCover"\)/);
+  assert.match(profileHero, /avatarConfigured \? ti\("profile\.profilePhotoUnavailable"\) : t\("profile\.noProfilePhoto"\)/);
+  assert.match(editProfilePage, /mediaPreviewUnavailable/);
+  assert.match(editProfilePage, /ti\("profile\.mediaPreviewUnavailableTitle"\)/);
 });
 
 test("F2 GUI V2.2 uses viewport workspace while keeping the feed readable", () => {

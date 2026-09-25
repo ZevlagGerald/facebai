@@ -10,6 +10,10 @@ export type InteractionMessageKey =
   | "profile.loadFailed"
   | "profile.publicLoadFailedTitle"
   | "profile.publicLoadFailed"
+  | "profile.profilePhotoUnavailable"
+  | "profile.coverPhotoUnavailable"
+  | "profile.mediaPreviewUnavailableTitle"
+  | "profile.mediaPreviewUnavailable"
   | "profile.validationDisplayName"
   | "profile.validationUsername"
   | "profile.validationBio"
@@ -41,6 +45,10 @@ const ceb: Record<InteractionMessageKey, string> = {
   "profile.loadFailed": "Dili namo makuha ang imong profile karon. Sulayi pag-usab sa makadiyot.",
   "profile.publicLoadFailedTitle": "Dili ma-load kini nga profile",
   "profile.publicLoadFailed": "Dili namo makuha kini nga profile karon. Sulayi pag-usab sa makadiyot.",
+  "profile.profilePhotoUnavailable": "Dili ma-load ang profile photo karon",
+  "profile.coverPhotoUnavailable": "Dili ma-load ang cover photo karon",
+  "profile.mediaPreviewUnavailableTitle": "Dili ma-preview ang profile media",
+  "profile.mediaPreviewUnavailable": "Dili ma-preview ang usa ka profile image karon. Sulayi pag-usab sa makadiyot.",
   "profile.validationDisplayName": "Ang display name kinahanglan 2–80 ka karakter.",
   "profile.validationUsername": "Ang username kinahanglan 3–30 ka lowercase nga letra, numero, tuldok, o underscore.",
   "profile.validationBio": "Ang bio kinahanglan 500 ka karakter o mas mubo.",
@@ -73,6 +81,10 @@ const tl: Record<InteractionMessageKey, string> = {
   "profile.loadFailed": "Hindi namin makuha ang profile mo ngayon. Subukan muli makalipas ang ilang sandali.",
   "profile.publicLoadFailedTitle": "Hindi ma-load ang profile na ito",
   "profile.publicLoadFailed": "Hindi namin makuha ang profile na ito ngayon. Subukan muli makalipas ang ilang sandali.",
+  "profile.profilePhotoUnavailable": "Hindi ma-load ang profile photo ngayon",
+  "profile.coverPhotoUnavailable": "Hindi ma-load ang cover photo ngayon",
+  "profile.mediaPreviewUnavailableTitle": "Hindi ma-preview ang profile media",
+  "profile.mediaPreviewUnavailable": "Hindi ma-preview ang isang profile image ngayon. Subukan muli makalipas ang ilang sandali.",
   "profile.validationDisplayName": "Dapat 2–80 character ang display name.",
   "profile.validationUsername": "Dapat 3–30 lowercase na letra, numero, tuldok, o underscore ang username.",
   "profile.validationBio": "Dapat 500 character o mas maikli ang bio.",
@@ -105,6 +117,10 @@ const en: Record<InteractionMessageKey, string> = {
   "profile.loadFailed": "Your profile is unavailable right now. Please try again in a moment.",
   "profile.publicLoadFailedTitle": "We couldn't load this profile",
   "profile.publicLoadFailed": "This profile is unavailable right now. Please try again in a moment.",
+  "profile.profilePhotoUnavailable": "Profile photo is temporarily unavailable",
+  "profile.coverPhotoUnavailable": "Cover photo is temporarily unavailable",
+  "profile.mediaPreviewUnavailableTitle": "Profile media preview unavailable",
+  "profile.mediaPreviewUnavailable": "A profile image could not be previewed right now. Please try again in a moment.",
   "profile.validationDisplayName": "Display name must be 2–80 characters.",
   "profile.validationUsername": "Username must be 3–30 lowercase letters, numbers, dots, or underscores.",
   "profile.validationBio": "Bio must be 500 characters or fewer.",

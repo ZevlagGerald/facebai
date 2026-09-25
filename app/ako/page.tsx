@@ -17,8 +17,12 @@ async function signedMediaUrl(
   key: string | null,
 ) {
   if (!key) return null;
-  const { data, error } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).createSignedUrl(key, 60 * 10);
-  return error ? null : data.signedUrl;
+  try {
+    const { data, error } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).createSignedUrl(key, 60 * 10);
+    return error ? null : data.signedUrl;
+  } catch {
+    return null;
+  }
 }
 
 export default async function AkoPage({
@@ -36,13 +40,13 @@ export default async function AkoPage({
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) redirect("/login?next=/ako");
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("username, display_name, bio, avatar_key, cover_key")
     .eq("id", userData.user.id)
     .maybeSingle();
 
-  if (!profile) redirect("/tambayan");
+  if (profileError || !profile) redirect("/tambayan");
 
   const [avatarUrl, coverUrl] = await Promise.all([
     signedMediaUrl(supabase, profile.avatar_key),
@@ -83,6 +87,8 @@ export default async function AkoPage({
         bio={profile.bio}
         avatarUrl={avatarUrl}
         coverUrl={coverUrl}
+        avatarConfigured={Boolean(profile.avatar_key)}
+        coverConfigured={Boolean(profile.cover_key)}
         actionHref="/ako/edit"
         mediaEditHref="/ako/edit"
         locale={locale}
