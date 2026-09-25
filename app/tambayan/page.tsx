@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./tambayan.module.css";
@@ -24,35 +25,36 @@ export default async function TambayanPage() {
     <>
       <section className={`${styles.sideCard} ${styles.marketCard}`}>
         <div className={styles.cardHeading}>
-          <div>
-            <p className={styles.eyebrow}>COMING SOON</p>
-            <h2>Bai & Sell</h2>
+          <div className={styles.sideTitleLead}>
+            <span className={styles.sideIcon} aria-hidden="true"><SocialIcon name="market" size={19} /></span>
+            <div>
+              <p className={styles.eyebrow}>COMING SOON</p>
+              <h2>Bai & Sell</h2>
+            </div>
           </div>
           <span className={styles.puhonBadge}>PUHON</span>
         </div>
         <p className={styles.marketPitch}>Palit. Baligya. Hangyo gamay. Walay atik.</p>
         <p>Pangita og sulit nga deal gikan sa mga Bai sa imong lugar.</p>
-        <button type="button" disabled>Puhon pa</button>
+        <button type="button" disabled>Bai & Sell · Puhon</button>
         <small>Tigoma sa ang budget, Bai.</small>
       </section>
 
       <section className={styles.sideCard} aria-label="Notifications, coming soon">
         <div className={styles.cardHeading}>
-          <div>
-            <p className={styles.eyebrow}>HOY!</p>
-            <h2>Mga pahibalo</h2>
+          <div className={styles.sideTitleLead}>
+            <span className={styles.sideIcon} aria-hidden="true"><SocialIcon name="bell" size={19} /></span>
+            <div>
+              <p className={styles.eyebrow}>HOY!</p>
+              <h2>Mga pahibalo</h2>
+            </div>
           </div>
           <span className={styles.puhonBadge}>PUHON</span>
         </div>
         <div className={styles.quietState}>
-          <strong>Hilom pa.</strong>
-          <span>Walay nangitag gubot.</span>
+          <strong>Wala pay pahibalo.</strong>
+          <span>Dinhi makita ang updates kung maablihan na ang Hoy!.</span>
         </div>
-      </section>
-
-      <section className={styles.sideCard}>
-        <p className={styles.eyebrow}>FACEBAI BETA</p>
-        <p className={styles.betaCopy}>Social features are arriving by module. Klaro ang “Puhon” aron kabalo ka unsay live ug unsay ginahimo pa.</p>
       </section>
     </>
   );
@@ -65,29 +67,41 @@ export default async function TambayanPage() {
       contentLabel="Tambayan feed"
       rightRail={rightRail}
     >
-      <div className={styles.welcome}>
-        <p className={styles.eyebrow}>TAMBAYAN</p>
-        <h1>Maayong pag-abot, {displayName}.</h1>
-        <p>Diri magsugod ang chika, updates, ug mga “pag sure oi?” moments sa mga Bai.</p>
-      </div>
+      <header className={styles.feedHeading}>
+        <div>
+          <p className={styles.eyebrow}>HOME FEED</p>
+          <h1>Tambayan</h1>
+        </div>
+        <p>Maayong pag-abot, {displayName}.</p>
+      </header>
 
       <section className={styles.composer} aria-label="Create post preview">
         <div className={styles.composerTop}>
           <div className={styles.avatarSmall} aria-hidden="true">{initial}</div>
           <button type="button" disabled>Unsa&apos;y istorya nimo ron, Bai?</button>
+          <span className={styles.composerState}>PUHON</span>
         </div>
         <div className={styles.composerActions}>
-          <button type="button" disabled>Litrato</button>
-          <button type="button" disabled>Kuyog nga Bai</button>
-          <button type="button" disabled>I-post na, Bai <span>PUHON</span></button>
+          <button type="button" disabled>
+            <span className={styles.composerActionIcon}><SocialIcon name="photo" size={19} /></span>
+            <span>Litrato</span>
+          </button>
+          <button type="button" disabled>
+            <span className={styles.composerActionIcon}><SocialIcon name="friends" size={19} /></span>
+            <span>Kuyog nga Bai</span>
+          </button>
+          <button type="button" disabled>
+            <span className={styles.composerActionIcon}><SocialIcon name="sparkles" size={19} /></span>
+            <span>I-post na, Bai</span>
+          </button>
         </div>
       </section>
 
       <section className={styles.emptyFeed}>
-        <div className={styles.emptyMark} aria-hidden="true">…</div>
-        <h2>Hilom lagi diri, Bai.</h2>
-        <p>Ikaw unta sa una, pero kuan sa — ang posting module sunod pa. Dili ta mag-atiki og fake posts.</p>
-        <span className={styles.puhonPill}>PUHON · POSTS & FEED</span>
+        <div className={styles.emptyMark} aria-hidden="true"><SocialIcon name="sparkles" size={24} /></div>
+        <h2>Hilom pa ang Tambayan.</h2>
+        <p>Puhon, dinhi makita ang mga post ug updates sa imong mga Bai.</p>
+        <span className={styles.puhonPill}>POSTS & FEED · PUHON</span>
       </section>
     </SocialShell>
   );

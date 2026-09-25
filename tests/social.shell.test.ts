@@ -18,13 +18,23 @@ test("F2 GUI V2 keeps primary navigation visible, labeled, and state-honest", ()
   assert.match(page, /aria-label="Notifications, coming soon"/);
 });
 
-test("F2 GUI V2 uses social-scoped neutral surfaces and distinct PUHON semantics", () => {
-  assert.match(css, /--social-canvas: #f6f3e9/);
-  assert.match(css, /--social-surface: #fffefa/);
+test("F2 GUI V2.1 uses separated social surfaces and distinct PUHON semantics", () => {
+  assert.match(css, /--social-canvas: #f5f2e9/);
+  assert.match(css, /--social-surface: #fffdf8/);
   assert.match(css, /--social-puhon-bg: #fff1bd/);
   assert.match(css, /:global\(html\[data-theme='dark'\]\) \.shell/);
-  assert.match(css, /--social-canvas: #0f1512/);
+  assert.match(css, /--social-canvas: #111713/);
+  assert.match(css, /--social-surface: #1d2721/);
+  assert.match(css, /--social-surface-raised: #243028/);
   assert.doesNotMatch(css, /--social-canvas: #0b1f17/);
+});
+
+test("F2 GUI V2.1 composer communicates with icons instead of text-only actions", () => {
+  assert.match(page, /SocialIcon name="photo"/);
+  assert.match(page, /SocialIcon name="friends"/);
+  assert.match(page, /SocialIcon name="sparkles"/);
+  assert.match(page, /className=\{styles\.composerState\}>PUHON/);
+  assert.match(css, /\.composerActionIcon/);
 });
 
 test("F2 GUI V2 keeps logout accessible inside the account menu instead of prime navigation", () => {
