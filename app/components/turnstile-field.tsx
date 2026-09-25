@@ -2,6 +2,8 @@
 
 import Script from "next/script";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getTranslations } from "@/lib/i18n/messages";
 
 type TurnstileAction = "register" | "login" | "password-reset" | "resend-confirmation";
 type TurnstileStatus = "loading" | "ready" | "verified" | "expired" | "error";
@@ -18,7 +20,14 @@ declare global {
   }
 }
 
-export function TurnstileField({ action }: { action: TurnstileAction }) {
+export function TurnstileField({
+  action,
+  locale = DEFAULT_LOCALE,
+}: {
+  action: TurnstileAction;
+  locale?: Locale;
+}) {
+  const t = getTranslations(locale);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
@@ -62,8 +71,6 @@ export function TurnstileField({ action }: { action: TurnstileAction }) {
   }, [action, scriptReady, setSubmitEnabled, siteKey]);
 
   useEffect(() => {
-    // Keep protected forms blocked while Turnstile is loading, missing, expired,
-    // or recovering. Server-side validation remains the final authority.
     setSubmitEnabled(false);
     renderWidget();
     return () => {
@@ -90,16 +97,14 @@ export function TurnstileField({ action }: { action: TurnstileAction }) {
       return;
     }
 
-    // A script-network failure cannot be repaired by widget.reset(). Reloading
-    // gives the browser a clean chance to fetch Cloudflare's challenge script.
     window.location.reload();
   };
 
   if (!siteKey) {
     return (
       <div className="turnstile-panel turnstile-error" role="alert">
-        <strong>Security check unavailable.</strong>
-        <span>FaceBai cannot safely submit this form right now. Please try again later.</span>
+        <strong>{t("turnstile.unavailableTitle")}</strong>
+        <span>{t("turnstile.unavailableBody")}</span>
       </div>
     );
   }
@@ -119,18 +124,18 @@ export function TurnstileField({ action }: { action: TurnstileAction }) {
       <input type="hidden" name="cf-turnstile-response" value={token} readOnly />
       <div className="turnstile-heading">
         <span className="turnstile-dot" aria-hidden="true" />
-        <strong>Security check</strong>
+        <strong>{t("turnstile.title")}</strong>
       </div>
       <p className="turnstile-message" role="status" aria-live="polite">
-        {status === "loading" ? "Loading secure verification…" : null}
-        {status === "ready" ? "Complete the check below to continue." : null}
-        {status === "verified" ? "Security check completed." : null}
-        {status === "expired" ? "Security check expired. Please verify again." : null}
-        {status === "error" ? "Security check failed to load. Please retry." : null}
+        {status === "loading" ? t("turnstile.loading") : null}
+        {status === "ready" ? t("turnstile.ready") : null}
+        {status === "verified" ? t("turnstile.verified") : null}
+        {status === "expired" ? t("turnstile.expired") : null}
+        {status === "error" ? t("turnstile.error") : null}
       </p>
       <div ref={containerRef} className="turnstile-widget" />
       {(status === "expired" || status === "error") ? (
-        <button type="button" className="turnstile-retry" onClick={retry}>Retry security check</button>
+        <button type="button" className="turnstile-retry" onClick={retry}>{t("turnstile.retry")}</button>
       ) : null}
     </div>
   );
