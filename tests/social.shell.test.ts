@@ -7,6 +7,7 @@ const shell = readFileSync(new URL("../app/components/social-shell.tsx", import.
 const languageSwitcher = readFileSync(new URL("../app/components/language-switcher.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("../app/tambayan/tambayan.module.css", import.meta.url), "utf8");
 const profilePage = readFileSync(new URL("../app/ako/page.tsx", import.meta.url), "utf8");
+const publicProfilePage = readFileSync(new URL("../app/bai/[username]/page.tsx", import.meta.url), "utf8");
 const editProfilePage = readFileSync(new URL("../app/ako/edit/page.tsx", import.meta.url), "utf8");
 const editProfileForm = readFileSync(new URL("../app/components/profile-edit-form.tsx", import.meta.url), "utf8");
 const wrangler = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
@@ -50,6 +51,14 @@ test("F2 authenticated Tambayan never fabricates identity when profile loading f
   assert.match(page, /const username = profile\.username/);
   assert.doesNotMatch(page, /profile\?\.display_name\?\.trim\(\) \|\| "Bai"/);
   assert.doesNotMatch(page, /profile\?\.username \|\| "bai"/);
+});
+
+test("F2 public profile distinguishes lookup failure from a true missing profile", () => {
+  assert.match(publicProfilePage, /\{ data: profile, error: profileError \}/);
+  assert.match(publicProfilePage, /if \(profileError\) \{[\s\S]*?<SocialShell/);
+  assert.match(publicProfilePage, /ti\("profile\.publicLoadFailedTitle"\)/);
+  assert.match(publicProfilePage, /href=\{`\/bai\/\$\{requestedUsername\}`\}[\s\S]*?ti\("common\.retry"\)/);
+  assert.match(publicProfilePage, /if \(!profile\) notFound\(\)/);
 });
 
 test("F2 GUI V2.2 uses viewport workspace while keeping the feed readable", () => {

@@ -5,6 +5,7 @@ import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
 import styles from "@/app/components/profile-surface.module.css";
 import { normalizeUsername, USERNAME_PATTERN } from "@/lib/auth/validation";
+import { getInteractionTranslations } from "@/lib/i18n/interaction";
 import { getLocale } from "@/lib/i18n/server";
 import { getTranslations } from "@/lib/i18n/messages";
 import { PROFILE_MEDIA_BUCKET } from "@/lib/profile/media";
@@ -24,6 +25,7 @@ async function signedMediaUrl(
 export default async function BaiProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const locale = await getLocale();
   const t = getTranslations(locale);
+  const ti = getInteractionTranslations(locale);
   const route = await params;
   const requestedUsername = normalizeUsername(route.username);
   if (!USERNAME_PATTERN.test(requestedUsername)) notFound();
@@ -32,12 +34,44 @@ export default async function BaiProfilePage({ params }: { params: Promise<{ use
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) redirect(`/login?next=${encodeURIComponent(`/bai/${requestedUsername}`)}`);
 
-  const [{ data: viewerProfile }, { data: profile }] = await Promise.all([
+  const [
+    { data: viewerProfile, error: viewerProfileError },
+    { data: profile, error: profileError },
+  ] = await Promise.all([
     supabase.from("profiles").select("username, display_name").eq("id", userData.user.id).maybeSingle(),
     supabase.from("profiles").select("id, username, display_name, bio, avatar_key, cover_key").eq("username", requestedUsername).maybeSingle(),
   ]);
 
-  if (!viewerProfile) redirect("/tambayan");
+  if (viewerProfileError || !viewerProfile) redirect("/tambayan");
+
+  if (profileError) {
+    return (
+      <SocialShell
+        displayName={viewerProfile.display_name}
+        username={viewerProfile.username}
+        activeRail={null}
+        contentLabel={ti("profile.publicLoadFailedTitle")}
+        rightRail={null}
+        locale={locale}
+      >
+        <section
+          className={styles.streamCard}
+          role="alert"
+          aria-labelledby="public-profile-load-failed-title"
+        >
+          <div className={styles.streamIcon} aria-hidden="true">
+            <SocialIcon name="user" size={23} />
+          </div>
+          <h2 id="public-profile-load-failed-title">{ti("profile.publicLoadFailedTitle")}</h2>
+          <p>{ti("profile.publicLoadFailed")}</p>
+          <Link className={styles.secondaryLink} href={`/bai/${requestedUsername}`}>
+            {ti("common.retry")}
+          </Link>
+        </section>
+      </SocialShell>
+    );
+  }
+
   if (!profile) notFound();
 
   const [avatarUrl, coverUrl] = await Promise.all([
