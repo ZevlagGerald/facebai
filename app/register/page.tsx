@@ -19,8 +19,8 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
       {error ? <AuthStatus tone="error" title="Registration not completed">{error}</AuthStatus> : null}
 
       <form action={register} className="auth-form">
-        <label><span>Full name</span><input name="full_name" type="text" autoComplete="name" minLength={2} maxLength={80} placeholder="Juan dela Cruz" required /></label>
-        <label><span>Username</span><input name="username" type="text" autoCapitalize="none" autoComplete="username" pattern="[a-z0-9][a-z0-9._]{2,29}" placeholder="juan.dela.cruz" aria-describedby="username-help" required /><small id="username-help">3–30 lowercase letters, numbers, dots, or underscores.</small></label>
+        <label><span>Full name</span><input name="full_name" type="text" autoComplete="name" minLength={2} maxLength={80} placeholder="Dodong Pinagtibay" required /></label>
+        <label><span>Username</span><input name="username" type="text" autoCapitalize="none" autoComplete="username" pattern="[A-Za-z0-9][A-Za-z0-9._]{2,29}" placeholder="Oskar" aria-describedby="username-help" required /><small id="username-help">3–30 letters, numbers, dots, or underscores. Usernames are saved in lowercase.</small></label>
         <label><span>Date of birth</span><input name="date_of_birth" type="date" autoComplete="bday" aria-describedby="dob-help" required /><small id="dob-help">You must be 18 or older during the private beta.</small></label>
         <label><span>Email address</span><input name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
         <label><span>Password</span><input name="password" type="password" autoComplete="new-password" minLength={10} placeholder="At least 10 characters" aria-describedby="password-help" required /><small id="password-help">Use at least 10 characters and avoid passwords you use elsewhere.</small></label>
