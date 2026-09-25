@@ -1,0 +1,178 @@
+.button {
+  min-height: var(--fb-control-target);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition-property: transform, background-color, border-color, color, opacity, box-shadow;
+}
+
+.primary {
+  background: var(--brand);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--brand) 82%, #000);
+}
+
+.secondary {
+  background: var(--surface-solid);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: transparent;
+}
+
+.danger {
+  background: var(--error);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--error) 82%, #000);
+}
+
+.button:hover:not(:disabled) {
+  filter: brightness(1.04);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+.iconButton {
+  width: var(--fb-control-target);
+  min-width: var(--fb-control-target);
+  padding: 0;
+  border-radius: 999px;
+}
+
+.spinner,
+.progressSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  opacity: .8;
+  animation: governedSpin .75s linear infinite;
+}
+
+@keyframes governedSpin {
+  to { transform: rotate(360deg); }
+}
+
+.status {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 13px;
+  line-height: 1.45;
+}
+
+.statusIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+}
+
+.statusCopy { min-width: 0; }
+.statusCopy strong { display: block; margin-bottom: 2px; }
+.info { color: var(--info); background: color-mix(in srgb, var(--info) 7%, transparent); }
+.success { color: var(--success); background: color-mix(in srgb, var(--success) 8%, transparent); }
+.warning { color: var(--warning); background: color-mix(in srgb, var(--warning) 9%, transparent); }
+.error { color: var(--error); background: color-mix(in srgb, var(--error) 8%, transparent); }
+
+.progress {
+  min-height: var(--fb-control-target);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dialog {
+  width: min(640px, calc(100vw - 32px));
+  max-height: min(760px, calc(100vh - 32px));
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 0;
+  background: var(--surface-solid);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, .52);
+  backdrop-filter: blur(2px);
+}
+
+.dialogHeader {
+  min-height: 64px;
+  padding: 12px 14px 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dialogHeader h2 { margin: 0; font-size: 20px; }
+.dialogBody { padding: 20px; }
+.dialogFooter { padding: 14px 20px 20px; display: flex; justify-content: flex-end; gap: 10px; }
+
+.disclosure {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-solid);
+}
+
+.disclosure summary {
+  min-height: var(--fb-control-target);
+  padding: 10px 13px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.disclosureBody { padding: 0 13px 13px; }
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .dialog {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+}
