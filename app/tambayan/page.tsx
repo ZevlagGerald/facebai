@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PostComposer } from "@/app/components/post-composer";
+import { PostFeed, type PostFeedItem } from "@/app/components/post-feed";
 import profileStyles from "@/app/components/profile-surface.module.css";
 import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
@@ -8,12 +9,31 @@ import { getInteractionTranslations } from "@/lib/i18n/interaction";
 import { getF2SocialTranslations } from "@/lib/i18n/f2-social";
 import { getF3PostTranslations } from "@/lib/i18n/f3-posts";
 import { getLocale } from "@/lib/i18n/server";
+import {
+  buildPostFeedCursorFilter,
+  encodePostFeedCursor,
+  parsePostFeedCursor,
+  POST_FEED_PAGE_SIZE,
+} from "@/lib/posts/feed";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./tambayan.module.css";
 
 export const dynamic = "force-dynamic";
 
-export default async function TambayanPage() {
+type TambayanSearchParams = {
+  cursor?: string | string[];
+};
+
+export default async function TambayanPage({
+  searchParams,
+}: {
+  searchParams?: Promise<TambayanSearchParams>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const rawCursor = Array.isArray(params.cursor) ? params.cursor[0] : params.cursor;
+  const cursor = parsePostFeedCursor(rawCursor);
+  if (rawCursor && !cursor) redirect("/tambayan");
+
   const locale = await getLocale();
   const t = getF2SocialTranslations(locale);
   const t3 = getF3PostTranslations(locale);
@@ -60,6 +80,41 @@ export default async function TambayanPage() {
       </main>
     );
   }
+
+  let postsQuery = supabase
+    .from("posts")
+    .select("id, body, created_at, author:profiles!posts_author_id_fkey(username, display_name)")
+    .eq("visibility", "public")
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(POST_FEED_PAGE_SIZE + 1);
+
+  if (cursor) {
+    postsQuery = postsQuery.or(buildPostFeedCursorFilter(cursor));
+  }
+
+  const { data: postRows, error: postsError } = await postsQuery;
+  const visibleRows = postRows?.slice(0, POST_FEED_PAGE_SIZE) ?? [];
+  const posts: PostFeedItem[] = visibleRows.flatMap((row) => {
+    if (!row.author) return [];
+
+    return [{
+      id: row.id,
+      body: row.body,
+      createdAt: row.created_at,
+      author: {
+        username: row.author.username,
+        displayName: row.author.display_name,
+      },
+    }];
+  });
+  const authorIntegrityFailed = posts.length !== visibleRows.length;
+  const feedLoadFailed = Boolean(postsError) || authorIntegrityFailed;
+  const hasMore = (postRows?.length ?? 0) > POST_FEED_PAGE_SIZE;
+  const lastVisibleRow = visibleRows.at(-1);
+  const nextCursor = hasMore && lastVisibleRow
+    ? encodePostFeedCursor({ createdAt: lastVisibleRow.created_at, id: lastVisibleRow.id })
+    : null;
 
   const displayName = profile.display_name.trim();
   const username = profile.username;
@@ -124,12 +179,26 @@ export default async function TambayanPage() {
         <PostComposer initial={initial} locale={locale} />
       </section>
 
-      <section className={styles.emptyFeed}>
-        <div className={styles.emptyMark} aria-hidden="true"><SocialIcon name="sparkles" size={24} /></div>
-        <h2>{t3("feed.pendingTitle")}</h2>
-        <p>{t3("feed.pendingBody")}</p>
-        <span className={styles.puhonPill}>{t("feed.postsAndFeed")}</span>
-      </section>
+      {feedLoadFailed ? (
+        <section className={styles.emptyFeed} role="alert">
+          <div className={styles.emptyMark} aria-hidden="true"><SocialIcon name="sparkles" size={24} /></div>
+          <h2>{t3("feed.loadFailedTitle")}</h2>
+          <p>{t3("feed.loadFailedBody")}</p>
+          <Link
+            className={profileStyles.secondaryLink}
+            href={rawCursor ? { pathname: "/tambayan", query: { cursor: rawCursor } } : "/tambayan"}
+          >
+            {ti("common.retry")}
+          </Link>
+        </section>
+      ) : (
+        <PostFeed
+          posts={posts}
+          locale={locale}
+          nextCursor={nextCursor}
+          paged={Boolean(cursor)}
+        />
+      )}
     </SocialShell>
   );
 }
