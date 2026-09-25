@@ -1,12 +1,16 @@
 import { redirect } from "next/navigation";
 import { SocialIcon } from "@/app/components/social-icons";
 import { SocialShell } from "@/app/components/social-shell";
+import { getLocale } from "@/lib/i18n/server";
+import { getTranslations } from "@/lib/i18n/messages";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./tambayan.module.css";
 
 export const dynamic = "force-dynamic";
 
 export default async function TambayanPage() {
+  const locale = await getLocale();
+  const t = getTranslations(locale);
   const supabase = await createClient();
   const { data: userData, error } = await supabase.auth.getUser();
   if (error || !userData.user) redirect("/login");
@@ -28,32 +32,32 @@ export default async function TambayanPage() {
           <div className={styles.sideTitleLead}>
             <span className={styles.sideIcon} aria-hidden="true"><SocialIcon name="market" size={19} /></span>
             <div>
-              <p className={styles.eyebrow}>COMING SOON</p>
+              <p className={styles.eyebrow}>{t("feed.marketEyebrow")}</p>
               <h2>Bai & Sell</h2>
             </div>
           </div>
-          <span className={styles.puhonBadge}>PUHON</span>
+          <span className={styles.puhonBadge}>{t("common.puhon")}</span>
         </div>
-        <p className={styles.marketPitch}>Palit. Baligya. Hangyo gamay. Walay atik.</p>
-        <p>Pangita og sulit nga deal gikan sa mga Bai sa imong lugar.</p>
-        <button type="button" disabled>Bai & Sell · Puhon</button>
-        <small>Tigoma sa ang budget, Bai.</small>
+        <p className={styles.marketPitch}>{t("feed.marketPitch")}</p>
+        <p>{t("feed.marketBody")}</p>
+        <button type="button" disabled>{t("feed.marketDisabled")}</button>
+        <small>{t("feed.marketFootnote")}</small>
       </section>
 
-      <section className={styles.sideCard} aria-label="Notifications, coming soon">
+      <section className={styles.sideCard} aria-label={t("feed.notificationsAria")}>
         <div className={styles.cardHeading}>
           <div className={styles.sideTitleLead}>
             <span className={styles.sideIcon} aria-hidden="true"><SocialIcon name="bell" size={19} /></span>
             <div>
-              <p className={styles.eyebrow}>HOY!</p>
-              <h2>Mga pahibalo</h2>
+              <p className={styles.eyebrow}>{t("feed.notificationsEyebrow")}</p>
+              <h2>{t("feed.notificationsTitle")}</h2>
             </div>
           </div>
-          <span className={styles.puhonBadge}>PUHON</span>
+          <span className={styles.puhonBadge}>{t("common.puhon")}</span>
         </div>
         <div className={styles.quietState}>
-          <strong>Wala pay pahibalo.</strong>
-          <span>Dinhi makita ang updates kung maablihan na ang Hoy!.</span>
+          <strong>{t("feed.notificationsEmpty")}</strong>
+          <span>{t("feed.notificationsBody")}</span>
         </div>
       </section>
     </>
@@ -64,44 +68,45 @@ export default async function TambayanPage() {
       displayName={displayName}
       username={username}
       activeRail="tambayan"
-      contentLabel="Tambayan feed"
+      contentLabel={t("feed.contentLabel")}
       rightRail={rightRail}
+      locale={locale}
     >
       <header className={styles.feedHeading}>
         <div>
-          <p className={styles.eyebrow}>HOME FEED</p>
-          <h1>Tambayan</h1>
+          <p className={styles.eyebrow}>{t("feed.homeFeed")}</p>
+          <h1>{t("feed.title")}</h1>
         </div>
-        <p>Maayong pag-abot, {displayName}.</p>
+        <p>{t("feed.welcome")}, {displayName}.</p>
       </header>
 
-      <section className={styles.composer} aria-label="Create post preview">
+      <section className={styles.composer} aria-label={t("feed.createPostPreview")}>
         <div className={styles.composerTop}>
           <div className={styles.avatarSmall} aria-hidden="true">{initial}</div>
-          <button type="button" disabled>Unsa&apos;y istorya nimo ron, Bai?</button>
-          <span className={styles.composerState}>PUHON</span>
+          <button type="button" disabled>{t("feed.composerPrompt")}</button>
+          <span className={styles.composerState}>{t("common.puhon")}</span>
         </div>
         <div className={styles.composerActions}>
           <button type="button" disabled>
             <span className={styles.composerActionIcon}><SocialIcon name="photo" size={19} /></span>
-            <span>Litrato</span>
+            <span>{t("feed.photo")}</span>
           </button>
           <button type="button" disabled>
             <span className={styles.composerActionIcon}><SocialIcon name="friends" size={19} /></span>
-            <span>Kuyog nga Bai</span>
+            <span>{t("feed.withBai")}</span>
           </button>
           <button type="button" disabled>
             <span className={styles.composerActionIcon}><SocialIcon name="sparkles" size={19} /></span>
-            <span>I-post na, Bai</span>
+            <span>{t("feed.post")}</span>
           </button>
         </div>
       </section>
 
       <section className={styles.emptyFeed}>
         <div className={styles.emptyMark} aria-hidden="true"><SocialIcon name="sparkles" size={24} /></div>
-        <h2>Hilom pa ang Tambayan.</h2>
-        <p>Puhon, dinhi makita ang mga post ug updates sa imong mga Bai.</p>
-        <span className={styles.puhonPill}>POSTS & FEED · PUHON</span>
+        <h2>{t("feed.emptyTitle")}</h2>
+        <p>{t("feed.emptyBody")}</p>
+        <span className={styles.puhonPill}>{t("feed.postsAndFeed")}</span>
       </section>
     </SocialShell>
   );
