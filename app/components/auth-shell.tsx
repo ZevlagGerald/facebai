@@ -2,6 +2,7 @@ import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/messages";
+import styles from "./auth-shell.module.css";
 
 export function AuthShell({
   children,
@@ -18,8 +19,10 @@ export function AuthShell({
     <main className="auth-shell">
       <div className="auth-background" aria-hidden="true" />
       <div className="auth-shade" aria-hidden="true" />
-      <LanguageSwitcher locale={locale} variant="auth" />
-      <ThemeToggle locale={locale} />
+      <div className={styles.controls}>
+        <LanguageSwitcher locale={locale} variant="auth" />
+        <ThemeToggle locale={locale} />
+      </div>
 
       <section className="auth-stage" aria-label={t("auth.accessAria")}>
         <aside className="auth-brand" aria-label="FaceBai">
