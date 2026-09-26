@@ -31,6 +31,7 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
     successes: {
       recovery_sent: "Kung mahimo ang recovery alang sa maong email, gipadala na ang sunod nga instruksyon. Susiha ang inbox ug spam folder.",
       verification_sent: "Gipadala ang bag-ong verification email. Susiha ang inbox ug spam folder.",
+      password_updated: "Na-update ang imong password. Sign in pag-usab gamit ang bag-ong password.",
     },
   },
   tl: {
@@ -55,6 +56,7 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
     successes: {
       recovery_sent: "Kung available ang recovery para sa email na iyon, naipadala na ang susunod na instruksyon. Tingnan ang inbox at spam folder.",
       verification_sent: "Naipadala ang bagong verification email. Tingnan ang inbox at spam folder.",
+      password_updated: "Na-update ang iyong password. Mag-sign in muli gamit ang bagong password.",
     },
   },
   en: {
@@ -79,6 +81,7 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
     successes: {
       recovery_sent: "If recovery is available for that email, the next instructions have been sent. Check the inbox and spam folder.",
       verification_sent: "A new verification email has been sent. Check the inbox and spam folder.",
+      password_updated: "Your password has been updated. Sign in again with the new password.",
     },
   },
 };
