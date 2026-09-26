@@ -7,10 +7,12 @@ export function AuthSubmitButton({
   idleLabel,
   pendingLabel,
   className = "primary-button",
+  disabled = false,
 }: {
   idleLabel: string;
   pendingLabel: string;
   className?: string;
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
 
@@ -21,6 +23,7 @@ export function AuthSubmitButton({
       pending={pending}
       pendingLabel={pendingLabel}
       pendingIndicator={<span className="button-spinner" aria-hidden="true" />}
+      disabled={disabled}
       unstyled
       data-auth-submit
     >
