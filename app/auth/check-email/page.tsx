@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { resendSignupConfirmation } from "@/app/actions/auth";
 import { AuthShell } from "@/app/components/auth-shell";
 import { AuthStatus } from "@/app/components/auth-status";
-import { AuthSubmitButton } from "@/app/components/auth-submit-button";
-import { TurnstileField } from "@/app/components/turnstile-field";
+import { ResendVerificationForm } from "@/app/components/auth-forms";
 import { getLocale } from "@/lib/i18n/server";
 import { getTranslations } from "@/lib/i18n/messages";
 
@@ -14,8 +12,6 @@ export default async function CheckEmailPage({ searchParams }: { searchParams: P
   const rawEmail = typeof params.email === "string" ? params.email : "";
   const canResend = rawEmail.includes("@");
   const email = canResend ? rawEmail : t("auth.email");
-  const sent = params.sent === "1";
-  const error = typeof params.error === "string" ? params.error : "";
 
   return (
     <AuthShell eyebrow={t("auth.verifyEmailEyebrow")} locale={locale}>
@@ -26,16 +22,8 @@ export default async function CheckEmailPage({ searchParams }: { searchParams: P
       </div>
 
       <AuthStatus tone="info" title={t("auth.didntReceive")}>{t("auth.didntReceiveBody")}</AuthStatus>
-      {sent ? <AuthStatus tone="success" title={t("auth.verificationSent")}>{t("auth.verificationSentBody")}</AuthStatus> : null}
-      {error ? <AuthStatus tone="error" title={t("auth.resendFailed")}>{error}</AuthStatus> : null}
 
-      {canResend ? (
-        <form action={resendSignupConfirmation} className="auth-form">
-          <input name="email" type="hidden" value={rawEmail} />
-          <TurnstileField action="resend-confirmation" locale={locale} />
-          <AuthSubmitButton idleLabel={t("auth.resendVerification")} pendingLabel={t("auth.sendingVerification")} />
-        </form>
-      ) : null}
+      {canResend ? <ResendVerificationForm locale={locale} email={rawEmail} /> : null}
 
       <div className="auth-links"><Link href="/register">{t("auth.useDifferentEmail")}</Link><Link href="/login">{t("auth.backToSignIn")}</Link></div>
     </AuthShell>
