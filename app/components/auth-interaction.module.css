@@ -1,0 +1,21 @@
+.fieldError {
+  margin: -2px 0 0;
+  color: var(--error);
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 650;
+}
+
+.inputInvalid {
+  border-color: color-mix(in srgb, var(--error) 60%, var(--line)) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 12%, transparent) !important;
+}
+
+.completion {
+  display: grid;
+  gap: 12px;
+}
+
+.securityError {
+  margin-top: -8px;
+}
