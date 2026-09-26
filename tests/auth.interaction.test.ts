@@ -79,11 +79,13 @@ test("stable Supabase provider errors map to bounded interaction categories", ()
   assert.equal(authProviderFailureKind(null), "other");
 });
 
-test("every auth interaction code is localized in Bisaya, Tagalog, and English", () => {
+test("every auth interaction code and completion action is localized in Bisaya, Tagalog, and English", () => {
   for (const locale of ["ceb", "tl", "en"] as const) {
     const copy = getAuthInteractionCopy(locale);
     assert.ok(copy.attentionTitle.length > 0, locale);
     assert.ok(copy.successTitle.length > 0, locale);
+    assert.ok(copy.requestAnotherVerification.length > 0, `${locale}:requestAnotherVerification`);
+    assert.ok(copy.requestAnotherVerificationHint.length > 0, `${locale}:requestAnotherVerificationHint`);
     for (const code of ERROR_CODES) assert.ok(copy.errors[code]?.length > 0, `${locale}:${code}`);
     for (const code of SUCCESS_CODES) assert.ok(copy.successes[code]?.length > 0, `${locale}:${code}`);
   }
@@ -129,10 +131,30 @@ test("auth forms preserve only safe fields while credentials and Turnstile remou
   assert.doesNotMatch(source, /\bnoValidate\b/u);
 });
 
+test("Turnstile-gated auth submits are controlled by React state for the current action revision", () => {
+  const forms = read("app/components/auth-forms.tsx");
+  const submit = read("app/components/auth-submit-button.tsx");
+
+  assert.ok(forms.includes("function useSecurityGate(revision: number)"));
+  assert.ok(forms.includes("gate.revision === revision && gate.verified"));
+  assert.ok(forms.includes("onVerifiedChange={securityGate.onVerifiedChange}"));
+  assert.equal(forms.split("disabled={!securityGate.verified}").length - 1, 4);
+  assert.ok(submit.includes("disabled = false"));
+  assert.ok(submit.includes("disabled={disabled}"));
+});
+
 test("password recovery and resend success replace the unfinished form state", () => {
   const source = read("app/components/auth-forms.tsx");
   assert.match(source, /if \(state\.status === "success"\) \{[\s\S]*?<FormStatus state=\{state\} locale=\{locale\}/u);
   assert.match(source, /export function ResendVerificationForm[\s\S]*?if \(state\.status === "success"\)/u);
+  assert.ok(source.includes("interaction.requestAnotherVerificationHint"));
+  assert.ok(source.includes("interaction.requestAnotherVerification"));
+  assert.doesNotMatch(source, />\{t\("auth\.resendVerification"\)\}<\/Link>/u);
+});
+
+test("new-password inputs do not ship hard-coded English requirement placeholders", () => {
+  const source = read("app/components/auth-forms.tsx");
+  assert.doesNotMatch(source, /placeholder="At least 10 characters"/u);
 });
 
 test("auth pages use stable status codes rather than raw English error query strings", () => {
