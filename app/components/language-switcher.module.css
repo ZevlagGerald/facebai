@@ -57,16 +57,15 @@
 .option small { color: var(--social-muted, var(--muted)); font-size: 9px; font-weight: 850; letter-spacing: .08em; }
 .check { font-size: 13px; font-weight: 900; }
 
-.auth { position: fixed; top: 18px; right: 82px; z-index: 4; }
-.auth .summary { min-height: 39px; background: var(--surface-solid); color: var(--text); box-shadow: 0 5px 18px rgba(18, 62, 33, .10); }
+.auth { position: relative; z-index: 4; }
+.auth .summary { min-height: 44px; background: var(--surface-solid); color: var(--text); box-shadow: 0 5px 18px rgba(18, 62, 33, .10); }
 .auth .menu { background: var(--surface-solid); color: var(--text); }
 
 @media (max-width: 720px) {
   .social .summary { width: 40px; height: 40px; min-height: 40px; justify-content: center; padding: 0; }
   .social .currentLabel,
   .social .chevron { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .auth { top: 18px; right: 76px; }
   .auth .currentLabel { display: none; }
-  .auth .summary { width: 42px; justify-content: center; padding: 0; }
+  .auth .summary { width: 44px; min-height: 44px; justify-content: center; padding: 0; }
   .auth .chevron { display: none; }
 }
