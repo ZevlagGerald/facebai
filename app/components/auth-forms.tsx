@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useCallback, useState } from "react";
 import {
   login,
   register,
@@ -77,9 +77,20 @@ function describedBy(...ids: Array<string | false | undefined>) {
   return ids.filter(Boolean).join(" ") || undefined;
 }
 
+function useSecurityGate(revision: number) {
+  const [gate, setGate] = useState({ revision: -1, verified: false });
+  const verified = gate.revision === revision && gate.verified;
+  const onVerifiedChange = useCallback((nextVerified: boolean) => {
+    setGate({ revision, verified: nextVerified });
+  }, [revision]);
+
+  return { verified, onVerifiedChange };
+}
+
 export function LoginForm({ locale, next }: { locale: Locale; next: string }) {
   const t = getTranslations(locale);
   const [state, formAction] = useActionState(login, INITIAL_AUTH_ACTION_STATE);
+  const securityGate = useSecurityGate(state.revision);
   const emailError = "login-email-error";
   const passwordError = "login-password-error";
   const securityError = "login-security-error";
@@ -121,9 +132,18 @@ export function LoginForm({ locale, next }: { locale: Locale; next: string }) {
           <FieldError state={state} field="password" locale={locale} id={passwordError} />
         </label>
         <div className="auth-inline-link"><Link href="/forgot-password">{t("auth.forgotPassword")}</Link></div>
-        <TurnstileField key={`login-turnstile-${state.revision}`} action="login" locale={locale} />
+        <TurnstileField
+          key={`login-turnstile-${state.revision}`}
+          action="login"
+          locale={locale}
+          onVerifiedChange={securityGate.onVerifiedChange}
+        />
         <FieldError state={state} field="security" locale={locale} id={securityError} className={styles.securityError} />
-        <AuthSubmitButton idleLabel={t("auth.signIn")} pendingLabel={t("auth.signingIn")} />
+        <AuthSubmitButton
+          idleLabel={t("auth.signIn")}
+          pendingLabel={t("auth.signingIn")}
+          disabled={!securityGate.verified}
+        />
       </form>
     </>
   );
@@ -132,6 +152,7 @@ export function LoginForm({ locale, next }: { locale: Locale; next: string }) {
 export function RegisterForm({ locale }: { locale: Locale }) {
   const t = getTranslations(locale);
   const [state, formAction] = useActionState(register, INITIAL_AUTH_ACTION_STATE);
+  const securityGate = useSecurityGate(state.revision);
   const errorId = (field: AuthField) => `register-${field}-error`;
 
   return (
@@ -215,7 +236,6 @@ export function RegisterForm({ locale }: { locale: Locale }) {
             type="password"
             autoComplete="new-password"
             minLength={10}
-            placeholder="At least 10 characters"
             className={invalidClass(state, "password")}
             aria-invalid={Boolean(state.fieldErrors?.password)}
             aria-describedby={describedBy("password-help", state.fieldErrors?.password && errorId("password"))}
@@ -253,9 +273,18 @@ export function RegisterForm({ locale }: { locale: Locale }) {
           <span>{t("auth.agreePrefix")} <Link href="/terms">{t("auth.terms")}</Link> {t("auth.and")} <Link href="/privacy">{t("auth.privacy")}</Link>.</span>
           <FieldError state={state} field="accept_terms" locale={locale} id={errorId("accept_terms")} className={styles.checkError} />
         </label>
-        <TurnstileField key={`register-turnstile-${state.revision}`} action="register" locale={locale} />
+        <TurnstileField
+          key={`register-turnstile-${state.revision}`}
+          action="register"
+          locale={locale}
+          onVerifiedChange={securityGate.onVerifiedChange}
+        />
         <FieldError state={state} field="security" locale={locale} id={errorId("security")} className={styles.securityError} />
-        <AuthSubmitButton idleLabel={t("auth.createAccount")} pendingLabel={t("auth.creatingAccount")} />
+        <AuthSubmitButton
+          idleLabel={t("auth.createAccount")}
+          pendingLabel={t("auth.creatingAccount")}
+          disabled={!securityGate.verified}
+        />
       </form>
     </>
   );
@@ -264,6 +293,7 @@ export function RegisterForm({ locale }: { locale: Locale }) {
 export function ForgotPasswordForm({ locale }: { locale: Locale }) {
   const t = getTranslations(locale);
   const [state, formAction] = useActionState(requestPasswordReset, INITIAL_AUTH_ACTION_STATE);
+  const securityGate = useSecurityGate(state.revision);
   const emailError = "recovery-email-error";
   const securityError = "recovery-security-error";
 
@@ -291,9 +321,18 @@ export function ForgotPasswordForm({ locale }: { locale: Locale }) {
           />
           <FieldError state={state} field="email" locale={locale} id={emailError} />
         </label>
-        <TurnstileField key={`recovery-turnstile-${state.revision}`} action="password-reset" locale={locale} />
+        <TurnstileField
+          key={`recovery-turnstile-${state.revision}`}
+          action="password-reset"
+          locale={locale}
+          onVerifiedChange={securityGate.onVerifiedChange}
+        />
         <FieldError state={state} field="security" locale={locale} id={securityError} className={styles.securityError} />
-        <AuthSubmitButton idleLabel={t("auth.sendRecovery")} pendingLabel={t("auth.sendingRecovery")} />
+        <AuthSubmitButton
+          idleLabel={t("auth.sendRecovery")}
+          pendingLabel={t("auth.sendingRecovery")}
+          disabled={!securityGate.verified}
+        />
       </form>
     </>
   );
@@ -301,7 +340,9 @@ export function ForgotPasswordForm({ locale }: { locale: Locale }) {
 
 export function ResendVerificationForm({ locale, email }: { locale: Locale; email: string }) {
   const t = getTranslations(locale);
+  const interaction = getAuthInteractionCopy(locale);
   const [state, formAction] = useActionState(resendSignupConfirmation, INITIAL_AUTH_ACTION_STATE);
+  const securityGate = useSecurityGate(state.revision);
   const securityError = "resend-security-error";
 
   if (state.status === "success") {
@@ -309,8 +350,9 @@ export function ResendVerificationForm({ locale, email }: { locale: Locale; emai
     return (
       <div className={styles.completion}>
         <FormStatus state={state} locale={locale} />
+        <p className={styles.completionHint}>{interaction.requestAnotherVerificationHint}</p>
         <div className="auth-action-stack">
-          <Link className="secondary-button auth-button-link" href={returnPath}>{t("auth.resendVerification")}</Link>
+          <Link className="secondary-button auth-button-link" href={returnPath}>{interaction.requestAnotherVerification}</Link>
         </div>
       </div>
     );
@@ -321,9 +363,18 @@ export function ResendVerificationForm({ locale, email }: { locale: Locale; emai
       <FormStatus state={state} locale={locale} />
       <form action={formAction} className="auth-form">
         <input name="email" type="hidden" value={email} />
-        <TurnstileField key={`resend-turnstile-${state.revision}`} action="resend-confirmation" locale={locale} />
+        <TurnstileField
+          key={`resend-turnstile-${state.revision}`}
+          action="resend-confirmation"
+          locale={locale}
+          onVerifiedChange={securityGate.onVerifiedChange}
+        />
         <FieldError state={state} field="security" locale={locale} id={securityError} className={styles.securityError} />
-        <AuthSubmitButton idleLabel={t("auth.resendVerification")} pendingLabel={t("auth.sendingVerification")} />
+        <AuthSubmitButton
+          idleLabel={t("auth.resendVerification")}
+          pendingLabel={t("auth.sendingVerification")}
+          disabled={!securityGate.verified}
+        />
       </form>
     </>
   );
@@ -347,7 +398,6 @@ export function UpdatePasswordForm({ locale }: { locale: Locale }) {
             type="password"
             autoComplete="new-password"
             minLength={10}
-            placeholder="At least 10 characters"
             className={invalidClass(state, "password")}
             aria-invalid={Boolean(state.fieldErrors?.password)}
             aria-describedby={state.fieldErrors?.password ? passwordError : undefined}
