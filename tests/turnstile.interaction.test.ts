@@ -119,6 +119,17 @@ test("Turnstile component wires delayed, expiry, timeout, error diagnostics, and
   assert.ok(source.includes('aria-busy={status === "loading" || status === "retrying" ? true : undefined}'));
 });
 
+test("Turnstile verification state is reported through React instead of DOM button mutation", () => {
+  const source = read("app/components/turnstile-field.tsx");
+
+  assert.ok(source.includes("onVerifiedChange?: (verified: boolean) => void"));
+  assert.ok(source.includes("onVerifiedChange?.(true)"));
+  assert.ok(source.includes("onVerifiedChange?.(false)"));
+  assert.doesNotMatch(source, /closest\(["']form["']\)/u);
+  assert.doesNotMatch(source, /querySelector/u);
+  assert.doesNotMatch(source, /submit\.disabled/u);
+});
+
 test("FaceBai owns one Turnstile response field and disables Cloudflare duplicate form injection", () => {
   const source = read("app/components/turnstile-field.tsx");
   const responseFieldCount = source.split('name="cf-turnstile-response"').length - 1;
