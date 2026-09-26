@@ -165,7 +165,11 @@ export function TurnstileField({
     }
 
     if (window.turnstile) {
-      setScriptReady(true);
+      if (scriptReady) {
+        renderWidget();
+      } else {
+        setScriptReady(true);
+      }
       return;
     }
 
@@ -181,9 +185,11 @@ export function TurnstileField({
     );
   }
 
-  const errorMessage = failure?.kind === "unsupported"
-    ? copy.unsupported
-    : copy.errors[failure?.kind ?? "unknown"];
+  const errorMessage = !failure
+    ? copy.errors.unknown
+    : failure.kind === "unsupported"
+      ? copy.unsupported
+      : copy.errors[failure.kind];
   const message = status === "loading"
     ? copy.loading
     : status === "delayed"
