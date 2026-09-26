@@ -3,21 +3,46 @@
 import { redirect } from "next/navigation";
 import {
   type AuthActionState,
+  type AuthErrorCode,
   type AuthField,
   type AuthSafeValues,
   authErrorState,
   authSuccessState,
 } from "@/lib/auth/action-state";
+import { authProviderFailureKind } from "@/lib/auth/provider-errors";
 import { createClient } from "@/lib/supabase/server";
 import { isAdult, normalizeUsername, USERNAME_PATTERN } from "@/lib/auth/validation";
 import { canonicalSiteUrl, FACEBAI_LEGAL_VERSION, safeLocalPath, turnstileRequired } from "@/lib/auth/security";
+
+type FieldErrors = Partial<Record<AuthField, AuthErrorCode>>;
 
 function captchaToken(formData: FormData) {
   return String(formData.get("cf-turnstile-response") ?? "").trim();
 }
 
-function hasFieldErrors(errors: Partial<Record<AuthField, unknown>>) {
+function hasFieldErrors(errors: FieldErrors) {
   return Object.keys(errors).length > 0;
+}
+
+function commonProviderFailure(
+  previous: AuthActionState,
+  error: unknown,
+  values: AuthSafeValues | undefined,
+  fallback: AuthErrorCode,
+): AuthActionState {
+  const kind = authProviderFailureKind(error);
+  if (kind === "captcha") {
+    return authErrorState(previous, { fieldErrors: { security: "security_failed" }, values });
+  }
+  if (kind === "request_rate_limit") {
+    return authErrorState(previous, { formError: "too_many_requests", values });
+  }
+  return authErrorState(previous, { formError: fallback, values });
+}
+
+function shouldObscureEmailDeliveryFailure(error: unknown) {
+  const kind = authProviderFailureKind(error);
+  return kind === "email_rate_limit" || kind === "email_delivery_restricted" || kind === "user_not_found";
 }
 
 export async function register(previous: AuthActionState, formData: FormData): Promise<AuthActionState> {
@@ -38,7 +63,7 @@ export async function register(previous: AuthActionState, formData: FormData): P
     accept_terms: acceptedTerms,
   };
 
-  const fieldErrors: Partial<Record<AuthField, import("@/lib/auth/action-state").AuthErrorCode>> = {};
+  const fieldErrors: FieldErrors = {};
   if (fullName.length < 2 || fullName.length > 80) fieldErrors.full_name = "full_name_invalid";
   if (!USERNAME_PATTERN.test(username)) fieldErrors.username = "username_invalid";
   if (!isAdult(dateOfBirth)) fieldErrors.date_of_birth = "adult_required";
@@ -69,7 +94,7 @@ export async function register(previous: AuthActionState, formData: FormData): P
     },
   });
 
-  if (error) return authErrorState(previous, { formError: "registration_failed", values });
+  if (error) return commonProviderFailure(previous, error, values, "registration_failed");
   redirect(`/auth/check-email?email=${encodeURIComponent(email)}`);
 }
 
@@ -77,7 +102,7 @@ export async function resendSignupConfirmation(previous: AuthActionState, formDa
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const token = captchaToken(formData);
   const values: AuthSafeValues = { email };
-  const fieldErrors: Partial<Record<AuthField, import("@/lib/auth/action-state").AuthErrorCode>> = {};
+  const fieldErrors: FieldErrors = {};
 
   if (!email.includes("@")) fieldErrors.email = "email_invalid";
   if (turnstileRequired() && !token) fieldErrors.security = "security_required";
@@ -90,7 +115,12 @@ export async function resendSignupConfirmation(previous: AuthActionState, formDa
     options: { captchaToken: token || undefined },
   });
 
-  if (error) return authErrorState(previous, { formError: "verification_resend_failed", values });
+  if (error) {
+    if (shouldObscureEmailDeliveryFailure(error)) {
+      return authSuccessState(previous, "verification_sent", values);
+    }
+    return commonProviderFailure(previous, error, values, "verification_resend_failed");
+  }
   return authSuccessState(previous, "verification_sent", values);
 }
 
@@ -100,7 +130,7 @@ export async function login(previous: AuthActionState, formData: FormData): Prom
   const next = safeLocalPath(String(formData.get("next") ?? "/tambayan"));
   const token = captchaToken(formData);
   const values: AuthSafeValues = { email, next };
-  const fieldErrors: Partial<Record<AuthField, import("@/lib/auth/action-state").AuthErrorCode>> = {};
+  const fieldErrors: FieldErrors = {};
 
   if (!email.includes("@")) fieldErrors.email = "email_invalid";
   if (!password) fieldErrors.password = "login_failed";
@@ -114,7 +144,7 @@ export async function login(previous: AuthActionState, formData: FormData): Prom
     options: { captchaToken: token || undefined },
   });
 
-  if (error) return authErrorState(previous, { formError: "login_failed", values });
+  if (error) return commonProviderFailure(previous, error, values, "login_failed");
   redirect(next);
 }
 
@@ -122,7 +152,7 @@ export async function requestPasswordReset(previous: AuthActionState, formData: 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const token = captchaToken(formData);
   const values: AuthSafeValues = { email };
-  const fieldErrors: Partial<Record<AuthField, import("@/lib/auth/action-state").AuthErrorCode>> = {};
+  const fieldErrors: FieldErrors = {};
 
   if (!email.includes("@")) fieldErrors.email = "email_invalid";
   if (turnstileRequired() && !token) fieldErrors.security = "security_required";
@@ -134,15 +164,21 @@ export async function requestPasswordReset(previous: AuthActionState, formData: 
     captchaToken: token || undefined,
   });
 
-  // Keep account-existence behavior opaque while still surfacing operational failures.
-  if (error) return authErrorState(previous, { formError: "recovery_failed", values });
+  if (error) {
+    // Supabase intentionally obscures account existence for /recover. Keep
+    // email-address-specific delivery failures equally opaque in our UI.
+    if (shouldObscureEmailDeliveryFailure(error)) {
+      return authSuccessState(previous, "recovery_sent", values);
+    }
+    return commonProviderFailure(previous, error, values, "recovery_failed");
+  }
   return authSuccessState(previous, "recovery_sent", values);
 }
 
 export async function updatePassword(previous: AuthActionState, formData: FormData): Promise<AuthActionState> {
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirm_password") ?? "");
-  const fieldErrors: Partial<Record<AuthField, import("@/lib/auth/action-state").AuthErrorCode>> = {};
+  const fieldErrors: FieldErrors = {};
 
   if (password.length < 10) fieldErrors.password = "password_too_short";
   if (password !== confirmPassword) fieldErrors.confirm_password = "passwords_mismatch";
@@ -155,7 +191,7 @@ export async function updatePassword(previous: AuthActionState, formData: FormDa
   }
 
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) return authErrorState(previous, { formError: "password_update_failed" });
+  if (error) return commonProviderFailure(previous, error, undefined, "password_update_failed");
 
   await supabase.auth.signOut();
   redirect("/login?status=password-updated");
