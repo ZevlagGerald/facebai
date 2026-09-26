@@ -6,6 +6,7 @@ export type AuthProviderFailureKind =
   | "captcha"
   | "request_rate_limit"
   | "email_rate_limit"
+  | "email_delivery_restricted"
   | "user_not_found"
   | "other";
 
@@ -22,6 +23,8 @@ export function authProviderFailureKind(error: unknown): AuthProviderFailureKind
       return "request_rate_limit";
     case "over_email_send_rate_limit":
       return "email_rate_limit";
+    case "email_address_not_authorized":
+      return "email_delivery_restricted";
     case "user_not_found":
       return "user_not_found";
     default:
