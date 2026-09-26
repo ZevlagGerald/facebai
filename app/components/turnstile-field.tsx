@@ -42,9 +42,11 @@ declare global {
 export function TurnstileField({
   action,
   locale = DEFAULT_LOCALE,
+  onVerifiedChange,
 }: {
   action: TurnstileAction;
   locale?: Locale;
+  onVerifiedChange?: (verified: boolean) => void;
 }) {
   const copy = getTurnstileInteractionCopy(locale);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -55,16 +57,10 @@ export function TurnstileField({
   const [status, setStatus] = useState<TurnstileStatus>("loading");
   const [failure, setFailure] = useState<TurnstileFailure | null>(null);
 
-  const setSubmitEnabled = useCallback((enabled: boolean) => {
-    const form = containerRef.current?.closest("form");
-    const submit = form?.querySelector<HTMLButtonElement>("[data-auth-submit]");
-    if (submit) submit.disabled = !enabled;
-  }, []);
-
   const blockSubmission = useCallback(() => {
     setToken("");
-    setSubmitEnabled(false);
-  }, [setSubmitEnabled]);
+    onVerifiedChange?.(false);
+  }, [onVerifiedChange]);
 
   const renderWidget = useCallback(() => {
     if (!siteKey || !scriptReady || !containerRef.current || !window.turnstile) return;
@@ -72,7 +68,7 @@ export function TurnstileField({
 
     setFailure(null);
     setStatus("ready");
-    setSubmitEnabled(false);
+    onVerifiedChange?.(false);
 
     try {
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
@@ -89,12 +85,12 @@ export function TurnstileField({
           setFailure(null);
           setToken(value);
           setStatus("verified");
-          setSubmitEnabled(true);
+          onVerifiedChange?.(true);
         },
         "before-interactive-callback": () => {
           setFailure(null);
           setStatus("ready");
-          setSubmitEnabled(false);
+          onVerifiedChange?.(false);
         },
         "expired-callback": () => {
           blockSubmission();
@@ -123,19 +119,20 @@ export function TurnstileField({
       setFailure({ code: null, kind: "iframe_load", retryable: true });
       setStatus("error");
     }
-  }, [action, blockSubmission, scriptReady, setSubmitEnabled, siteKey]);
+  }, [action, blockSubmission, onVerifiedChange, scriptReady, siteKey]);
 
   useEffect(() => {
-    setSubmitEnabled(false);
+    onVerifiedChange?.(false);
     renderWidget();
 
     return () => {
+      onVerifiedChange?.(false);
       if (widgetIdRef.current && window.turnstile?.remove) {
         window.turnstile.remove(widgetIdRef.current);
         widgetIdRef.current = null;
       }
     };
-  }, [renderWidget, setSubmitEnabled]);
+  }, [onVerifiedChange, renderWidget]);
 
   useEffect(() => {
     if (status !== "loading" && status !== "retrying") return;
