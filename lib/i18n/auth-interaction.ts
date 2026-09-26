@@ -4,6 +4,8 @@ import type { Locale } from "@/lib/i18n/config";
 type AuthInteractionCopy = {
   attentionTitle: string;
   successTitle: string;
+  requestAnotherVerification: string;
+  requestAnotherVerificationHint: string;
   errors: Record<AuthErrorCode, string>;
   successes: Record<AuthSuccessCode, string>;
 };
@@ -12,6 +14,8 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
   ceb: {
     attentionTitle: "Naay kinahanglan ayuhon",
     successTitle: "Nahuman na",
+    requestAnotherVerification: "Mangayo og laing verification email",
+    requestAnotherVerificationHint: "Kung kinahanglan nimo og bag-ong email, ablihi pag-usab ang resend form ug kompletoha ang security check.",
     errors: {
       full_name_invalid: "Ibutang ang imong ngalan gamit ang 2–80 ka karakter.",
       username_invalid: "Ang username kinahanglan 3–30 ka lowercase nga letra, numero, tuldok, o underscore.",
@@ -40,6 +44,8 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
   tl: {
     attentionTitle: "May kailangang ayusin",
     successTitle: "Tapos na",
+    requestAnotherVerification: "Humingi ng isa pang verification email",
+    requestAnotherVerificationHint: "Kung kailangan mo ng panibagong email, buksan muli ang resend form at kumpletuhin ang security check.",
     errors: {
       full_name_invalid: "Ilagay ang iyong pangalan gamit ang 2–80 character.",
       username_invalid: "Ang username ay dapat 3–30 lowercase na letra, numero, tuldok, o underscore.",
@@ -68,6 +74,8 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
   en: {
     attentionTitle: "Something needs attention",
     successTitle: "Completed",
+    requestAnotherVerification: "Request another verification email",
+    requestAnotherVerificationHint: "If you need another email, reopen the resend form and complete the security check again.",
     errors: {
       full_name_invalid: "Enter your name using 2–80 characters.",
       username_invalid: "Username must be 3–30 lowercase letters, numbers, dots, or underscores.",
