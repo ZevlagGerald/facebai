@@ -24,7 +24,7 @@ export type AuthErrorCode =
   | "password_update_failed"
   | "session_expired";
 
-export type AuthSuccessCode = "recovery_sent" | "verification_sent";
+export type AuthSuccessCode = "recovery_sent" | "verification_sent" | "password_updated";
 
 export type AuthSafeValues = {
   full_name?: string;
