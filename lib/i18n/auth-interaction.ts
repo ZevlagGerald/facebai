@@ -32,8 +32,8 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
       session_expired: "Nahuman na ang recovery session. Pangayo og bag-ong recovery link aron makapadayon.",
     },
     successes: {
-      recovery_sent: "Kung mahimo ang recovery alang sa maong email, gipadala na ang sunod nga instruksyon. Susiha ang inbox ug spam folder.",
-      verification_sent: "Gipadala ang bag-ong verification email. Susiha ang inbox ug spam folder.",
+      recovery_sent: "Kung mahimo ang recovery alang sa maong email, susiha ang inbox ug spam folder para sa instruksyon. Kung walay moabot, hulata kadiyot sa dili pa mosulay pag-usab.",
+      verification_sent: "Kung mahimo ang bag-ong verification email, susiha ang inbox ug spam folder. Kung walay moabot, hulata kadiyot sa dili pa mosulay pag-usab.",
       password_updated: "Na-update ang imong password. Sign in pag-usab gamit ang bag-ong password.",
     },
   },
@@ -60,8 +60,8 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
       session_expired: "Tapos na ang recovery session. Humingi ng bagong recovery link para magpatuloy.",
     },
     successes: {
-      recovery_sent: "Kung available ang recovery para sa email na iyon, naipadala na ang susunod na instruksyon. Tingnan ang inbox at spam folder.",
-      verification_sent: "Naipadala ang bagong verification email. Tingnan ang inbox at spam folder.",
+      recovery_sent: "Kung available ang recovery para sa email na iyon, tingnan ang inbox at spam folder para sa instruksyon. Kung walang dumating, maghintay sandali bago subukan muli.",
+      verification_sent: "Kung maaaring magpadala ng bagong verification email, tingnan ang inbox at spam folder. Kung walang dumating, maghintay sandali bago subukan muli.",
       password_updated: "Na-update ang iyong password. Mag-sign in muli gamit ang bagong password.",
     },
   },
@@ -88,8 +88,8 @@ const COPY: Record<Locale, AuthInteractionCopy> = {
       session_expired: "The recovery session has ended. Request a new recovery link to continue.",
     },
     successes: {
-      recovery_sent: "If recovery is available for that email, the next instructions have been sent. Check the inbox and spam folder.",
-      verification_sent: "A new verification email has been sent. Check the inbox and spam folder.",
+      recovery_sent: "If recovery is available for that email, check the inbox and spam folder for instructions. If nothing arrives, wait a moment before trying again.",
+      verification_sent: "If another verification email can be sent, check the inbox and spam folder. If nothing arrives, wait a moment before trying again.",
       password_updated: "Your password has been updated. Sign in again with the new password.",
     },
   },
