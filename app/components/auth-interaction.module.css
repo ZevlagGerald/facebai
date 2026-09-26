@@ -19,3 +19,8 @@
 .securityError {
   margin-top: -8px;
 }
+
+.checkError {
+  grid-column: 2;
+  margin-top: 0;
+}
