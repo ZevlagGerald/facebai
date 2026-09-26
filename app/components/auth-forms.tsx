@@ -87,11 +87,12 @@ export function LoginForm({ locale, next }: { locale: Locale; next: string }) {
   return (
     <>
       <FormStatus state={state} locale={locale} />
-      <form action={formAction} className="auth-form" noValidate>
+      <form action={formAction} className="auth-form">
         <input type="hidden" name="next" value={next} />
         <label>
           <span>{t("auth.email")}</span>
           <input
+            key={`login-email-${state.revision}`}
             name="email"
             type="email"
             autoComplete="email"
@@ -131,16 +132,16 @@ export function LoginForm({ locale, next }: { locale: Locale; next: string }) {
 export function RegisterForm({ locale }: { locale: Locale }) {
   const t = getTranslations(locale);
   const [state, formAction] = useActionState(register, INITIAL_AUTH_ACTION_STATE);
-
   const errorId = (field: AuthField) => `register-${field}-error`;
 
   return (
     <>
       <FormStatus state={state} locale={locale} />
-      <form action={formAction} className="auth-form" noValidate>
+      <form action={formAction} className="auth-form">
         <label>
           <span>{t("auth.fullName")}</span>
           <input
+            key={`register-full-name-${state.revision}`}
             name="full_name"
             type="text"
             autoComplete="name"
@@ -158,6 +159,7 @@ export function RegisterForm({ locale }: { locale: Locale }) {
         <label>
           <span>{t("auth.username")}</span>
           <input
+            key={`register-username-${state.revision}`}
             name="username"
             type="text"
             autoCapitalize="none"
@@ -176,6 +178,7 @@ export function RegisterForm({ locale }: { locale: Locale }) {
         <label>
           <span>{t("auth.dateOfBirth")}</span>
           <input
+            key={`register-dob-${state.revision}`}
             name="date_of_birth"
             type="date"
             autoComplete="bday"
@@ -191,6 +194,7 @@ export function RegisterForm({ locale }: { locale: Locale }) {
         <label>
           <span>{t("auth.email")}</span>
           <input
+            key={`register-email-${state.revision}`}
             name="email"
             type="email"
             autoComplete="email"
@@ -238,6 +242,7 @@ export function RegisterForm({ locale }: { locale: Locale }) {
         </label>
         <label className="check-row">
           <input
+            key={`register-terms-${state.revision}`}
             name="accept_terms"
             type="checkbox"
             defaultChecked={state.values?.accept_terms ?? false}
@@ -246,7 +251,7 @@ export function RegisterForm({ locale }: { locale: Locale }) {
             required
           />
           <span>{t("auth.agreePrefix")} <Link href="/terms">{t("auth.terms")}</Link> {t("auth.and")} <Link href="/privacy">{t("auth.privacy")}</Link>.</span>
-          <FieldError state={state} field="accept_terms" locale={locale} id={errorId("accept_terms")} />
+          <FieldError state={state} field="accept_terms" locale={locale} id={errorId("accept_terms")} className={styles.checkError} />
         </label>
         <TurnstileField key={`register-turnstile-${state.revision}`} action="register" locale={locale} />
         <FieldError state={state} field="security" locale={locale} id={errorId("security")} className={styles.securityError} />
@@ -263,24 +268,17 @@ export function ForgotPasswordForm({ locale }: { locale: Locale }) {
   const securityError = "recovery-security-error";
 
   if (state.status === "success") {
-    return (
-      <div className={styles.completion}>
-        <FormStatus state={state} locale={locale} />
-        <div className="auth-action-stack">
-          <Link className="primary-button auth-button-link" href="/login">{t("auth.backToSignIn")}</Link>
-          <Link className="secondary-button auth-button-link" href="/forgot-password">{t("auth.sendRecovery")}</Link>
-        </div>
-      </div>
-    );
+    return <div className={styles.completion}><FormStatus state={state} locale={locale} /></div>;
   }
 
   return (
     <>
       <FormStatus state={state} locale={locale} />
-      <form action={formAction} className="auth-form" noValidate>
+      <form action={formAction} className="auth-form">
         <label>
           <span>{t("auth.email")}</span>
           <input
+            key={`recovery-email-${state.revision}`}
             name="email"
             type="email"
             autoComplete="email"
@@ -321,7 +319,7 @@ export function ResendVerificationForm({ locale, email }: { locale: Locale; emai
   return (
     <>
       <FormStatus state={state} locale={locale} />
-      <form action={formAction} className="auth-form" noValidate>
+      <form action={formAction} className="auth-form">
         <input name="email" type="hidden" value={email} />
         <TurnstileField key={`resend-turnstile-${state.revision}`} action="resend-confirmation" locale={locale} />
         <FieldError state={state} field="security" locale={locale} id={securityError} className={styles.securityError} />
@@ -340,7 +338,7 @@ export function UpdatePasswordForm({ locale }: { locale: Locale }) {
   return (
     <>
       <FormStatus state={state} locale={locale} />
-      <form action={formAction} className="auth-form" noValidate>
+      <form action={formAction} className="auth-form">
         <label>
           <span>{t("auth.newPassword")}</span>
           <input
